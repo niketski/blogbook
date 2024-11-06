@@ -19,6 +19,9 @@ if (!cached) {
 
 async function dbConnect() {
   if (cached.conn) {
+
+    console.log('connected to mongodb using cached connection.');
+
     return cached.conn;
   }
   if (!cached.promise) {
@@ -31,6 +34,9 @@ async function dbConnect() {
   }
   try {
     cached.conn = await cached.promise;
+
+    console.log('connected to mongodb.');
+    
   } catch (e) {
     cached.promise = null;
     throw e;
