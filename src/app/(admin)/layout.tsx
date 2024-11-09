@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
+import '@/app/admin.css';
 import { Poppins } from 'next/font/google';
+
+// components
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import AdminSidebar from "@/components/admin-sidebar";
 
 const fontPoppins = Poppins({
   subsets: ['latin'],
@@ -23,7 +28,15 @@ export default function RootLayout({
       <body
         className={`${fontPoppins.variable} antialiased bg-white`}
       >
-        {children}
+        <SidebarProvider>
+          <aside>
+            <AdminSidebar/>
+          </aside>
+          <main>
+            <SidebarTrigger/>
+            {children}
+          </main>
+        </SidebarProvider>
       </body>
     </html>
   );
