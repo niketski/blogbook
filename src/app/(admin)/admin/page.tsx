@@ -1,4 +1,5 @@
-export default function UserAdminPage() {
+export default async function UserAdminPage() {
+
     return (
         <div>
             This is user admin page.

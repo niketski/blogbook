@@ -11,10 +11,12 @@ import {
     SidebarMenuButton, 
     SidebarMenuSub,
     SidebarMenuSubButton,
-    SidebarMenuSubItem
+    SidebarMenuSubItem,
+    SidebarFooter
 } from "./ui/sidebar";
+import { Button } from "./ui/button";
 import { Collapsible, CollapsibleTrigger } from "@radix-ui/react-collapsible";
-import { Newspaper, User, ChevronRight, LayoutDashboard } from "lucide-react";
+import { Newspaper, User, ChevronRight, LayoutDashboard, LogOut } from "lucide-react";
 import Link from "next/link";
 import { CollapsibleContent } from "./ui/collapsible";
 
@@ -28,7 +30,12 @@ const menuData = [
         url: '/admin/blog',
         title: 'Blogs',
         icon: Newspaper,
+        isActive: false,
         items: [
+            {
+                url: '/admin/blog',
+                title: 'All blogs'
+            },
             {
                 url: '/admin/blog/category',
                 title: 'Categories'
@@ -59,6 +66,7 @@ export default function AdminSidebar() {
                                 <Collapsible
                                     className="group/collapsible" 
                                     key={item.title}
+                                    defaultOpen={item.isActive}
                                     asChild>
 
                                         <SidebarMenuItem>
@@ -111,6 +119,13 @@ export default function AdminSidebar() {
                 </SidebarGroupContent>
             </SidebarGroup>
         </SidebarContent>
+        <SidebarFooter>
+            <div>
+                <Button variant="ghost">
+                    <LogOut/> Signout
+                </Button>
+            </div>
+        </SidebarFooter>
        </Sidebar>
     );
 }
