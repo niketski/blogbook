@@ -32,8 +32,8 @@ export default function RootLayout({
           <aside>
             <AdminSidebar/>
           </aside>
-          <main>
-            <SidebarTrigger/>
+          <main className="flex-1 py-[60px] px-[30px] relative w-full">
+            <SidebarTrigger className="absolute top-0 left-0"/>
             {children}
           </main>
         </SidebarProvider>
