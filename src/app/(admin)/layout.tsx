@@ -4,8 +4,7 @@ import '@/app/admin.css';
 import { Poppins } from 'next/font/google';
 
 // components
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import AdminSidebar from "@/components/admin-sidebar";
+import AdminContainer from "@/components/admin-container";
 
 const fontPoppins = Poppins({
   subsets: ['latin'],
@@ -28,15 +27,9 @@ export default function RootLayout({
       <body
         className={`${fontPoppins.variable} antialiased bg-white`}
       >
-        <SidebarProvider>
-          <aside>
-            <AdminSidebar/>
-          </aside>
-          <main className="flex-1 py-[60px] px-[30px] relative w-full">
-            <SidebarTrigger className="absolute top-0 left-0"/>
+          <AdminContainer>
             {children}
-          </main>
-        </SidebarProvider>
+          </AdminContainer>
       </body>
     </html>
   );

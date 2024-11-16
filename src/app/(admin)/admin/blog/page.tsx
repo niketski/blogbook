@@ -92,7 +92,7 @@ export default async function BlogsPage() {
             </div>
             <div>
                 <div className="w-full overflow-auto">
-                    <Table className="min-w-[800px] lg:min-w-full">
+                    <Table className="min-w-[800px]">
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Title</TableHead>
