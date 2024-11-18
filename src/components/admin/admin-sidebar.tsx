@@ -14,12 +14,12 @@ import {
     SidebarMenuSubItem,
     SidebarFooter,
     
-} from "./ui/sidebar";
-import { Button } from "./ui/button";
+} from "../ui/sidebar";
+import { Button } from "../ui/button";
 import { Collapsible, CollapsibleTrigger } from "@radix-ui/react-collapsible";
 import { Newspaper, User, ChevronRight, LayoutDashboard, LogOut } from "lucide-react";
 import Link from "next/link";
-import { CollapsibleContent } from "./ui/collapsible";
+import { CollapsibleContent } from "../ui/collapsible";
 
 const menuData = [
     {

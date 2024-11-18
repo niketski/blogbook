@@ -4,7 +4,7 @@ import '@/app/admin.css';
 import { Poppins } from 'next/font/google';
 
 // components
-import AdminContainer from "@/components/admin-container";
+import AdminContainer from "@/components/admin/admin-container";
 
 const fontPoppins = Poppins({
   subsets: ['latin'],
