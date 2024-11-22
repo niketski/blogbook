@@ -1,7 +1,8 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Ellipsis, Plus } from 'lucide-react';
+import Link from "next/link";
 import {
     Table,
     TableBody,
@@ -35,7 +36,8 @@ export default async function BlogsPage() {
     return (
         <div>
             <h1 className="font-bold text-4xl mb-10">Blogs</h1>
-            <Button className="mb-5 font-bold"><Plus/> Create Blog</Button>
+            {/* <Button className="mb-5 font-bold"><Plus/> Create Blog</Button> */}
+            <Link className={buttonVariants()} href="/admin/blog/create"><Plus/> Create Blog</Link>
             <div className="max-w-[350px] lg:ml-auto mb-7 lg:mb-0">
                 <form>
                     <div className="flex items-center">
