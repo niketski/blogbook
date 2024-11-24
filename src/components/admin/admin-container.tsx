@@ -14,8 +14,6 @@ export default function AdminContainer (
 
     const [isCollapsed, setIsCollapsed] = useState(true);
 
-    console.log(isCollapsed);
-
     return (
         <SidebarProvider>
           <AdminSidebar/>
