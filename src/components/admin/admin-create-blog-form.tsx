@@ -59,8 +59,8 @@ export default function AdminCreateBlogForm() {
         <div>
             <form>
 
-                <div className="flex">
-                    <div className="w-3/4">
+                <div className="flex flex-col-reverse xl:flex-row">
+                    <div className="xl:w-3/4">
                         <div className="mb-5">
                             <Label 
                                 htmlFor="title"
@@ -106,8 +106,8 @@ export default function AdminCreateBlogForm() {
                         </div>
                     </div>
 
-                    <div className="w-1/4 pl-8">
-                        <div className="rounded-[6px] shadow p-8">
+                    <div className="mb-8 lg:mb-0 xl:w-1/4 xl:pl-8">
+                        <div className="rounded-[6px] shadow p-5 xl:p-8">
                             <Button 
                                 type="submit"
                                 className="mb-5">Save</Button>
@@ -177,7 +177,7 @@ export default function AdminCreateBlogForm() {
 
                             <div className="mb-5">
                                 <Label htmlFor="featured-image" className="mb-2 block font-bold">Featured Image</Label>
-                                <div className="relative">
+                                <div className="relative max-w-[300px] xl:max-w-full">
                                     <Input
                                         type="file"
                                         name="featured-image"
@@ -200,7 +200,7 @@ export default function AdminCreateBlogForm() {
                                             alt="Image Preview"
                                             className="rounded h-[180px] object-cover object-center"/> : 
                                             
-                                            <div className="w-[300px] h-[180px] bg-gray-100 rounded"></div>
+                                            <div className="w-full h-[180px] bg-gray-100 rounded"></div>
                                         }
                                 </div>
 
