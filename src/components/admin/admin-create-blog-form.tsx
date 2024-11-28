@@ -15,11 +15,16 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from '@/components/ui/checkbox';
 import { useRef, useState } from "react";
 import Image from "next/image";
+import createBlog from "@/actions/blog";
+import { useActionState } from "react";
 
 export default function AdminCreateBlogForm() {
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const inputRef = useRef<HTMLInputElement | null>(null);
-
+    const [formState, formAction, isPending] = useActionState(createBlog, {
+        message: '',
+        errors: {}
+    });
     const handleInputFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
         const file = e.target.files?.[0];
@@ -57,7 +62,7 @@ export default function AdminCreateBlogForm() {
 
     return (
         <div>
-            <form>
+            <form action={formAction}>
 
                 <div className="flex flex-col-reverse xl:flex-row">
                     <div className="xl:w-3/4">
@@ -116,7 +121,7 @@ export default function AdminCreateBlogForm() {
                                 <Label 
                                     htmlFor="status"
                                     className="mb-2 block font-bold">Status</Label>
-                                <Select>
+                                <Select name="status">
                                     <SelectTrigger>
                                        <SelectValue placeholder="Draft"/>
                                     </SelectTrigger>
@@ -150,7 +155,7 @@ export default function AdminCreateBlogForm() {
                                 <Label className="mb-2 block font-bold">Tags</Label>
                                 <div className="flex items-center mb-2">
                                     <Checkbox 
-                                        name="tags" 
+                                        name="tags[]" 
                                         value="Tag 1"
                                         id="tag-1"/>
 
@@ -158,7 +163,7 @@ export default function AdminCreateBlogForm() {
                                 </div>
                                 <div className="flex items-center mb-2">
                                     <Checkbox 
-                                        name="tags" 
+                                        name="tags[]" 
                                         value="Tag 2"
                                         id="tag-2"/>
 
@@ -166,13 +171,12 @@ export default function AdminCreateBlogForm() {
                                 </div>
                                 <div className="flex items-center mb-2">
                                     <Checkbox 
-                                        name="tags" 
+                                        name="tags[]" 
                                         value="Tag 3"
                                         id="tag-3"/>
 
                                     <Label htmlFor="tag-3" className="ml-[10px]">Tag 3</Label>
                                 </div>
-                                
                             </div>
 
                             <div className="mb-5">
