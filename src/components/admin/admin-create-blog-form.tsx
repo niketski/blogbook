@@ -17,6 +17,41 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import createBlog from "@/actions/blog";
 import { useActionState } from "react";
+import { Check, ChevronsUpDown, X } from "lucide-react"
+import { cn } from "@/lib/utils";
+import {
+Command,
+CommandEmpty,
+CommandGroup,
+CommandInput,
+CommandItem,
+CommandList,
+} from "@/components/ui/command";
+import {
+Popover,
+PopoverContent,
+PopoverTrigger,
+} from "@/components/ui/popover";
+
+interface ICommandOption {
+    value: string,
+    label: string
+}
+
+const tagsOptions: ICommandOption[] = [
+{
+    value: "tag-1",
+    label: "Tag 1",
+},
+{
+    value: "tag-2",
+    label: "Tag 2",
+},
+{
+    value: "tag-3",
+    label: "Tag 3",
+}
+];
 
 export default function AdminCreateBlogForm() {
     const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -25,6 +60,10 @@ export default function AdminCreateBlogForm() {
         message: '',
         errors: {}
     });
+    // const [tags, setTags] = useState([]);
+    const [open, setOpen] = useState(false)
+    const [tags, setTags] = useState<ICommandOption[]>([]);
+
     const handleInputFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
         const file = e.target.files?.[0];
@@ -58,6 +97,24 @@ export default function AdminCreateBlogForm() {
         
         setImagePreview(null);
 
+    };
+
+    const isSelectedOption = (value: string) => {
+
+        const selectedOption = tags.find(tag => tag.value === value);
+
+        if(selectedOption) {
+            return true;
+        } else {
+            return false;
+        }
+
+        
+    };
+
+    const handleRemoveTag = (value: string) => {
+
+        setTags(prevTags => [...prevTags].filter(item => item.value != value));
     };
 
     return (
@@ -153,30 +210,102 @@ export default function AdminCreateBlogForm() {
 
                             <div className="mb-5">
                                 <Label className="mb-2 block font-bold">Tags</Label>
-                                <div className="flex items-center mb-2">
-                                    <Checkbox 
-                                        name="tags[]" 
-                                        value="Tag 1"
-                                        id="tag-1"/>
+                                <div>
+                                    <Input
+                                        name="tags"
+                                        className="hidden" 
+                                        defaultValue={`${tags && tags.map(item => item.value)}`}/>
+                                        {tags &&
+                                            tags.map(tag => {
+                                                return(
+                                                    <Button 
+                                                        key={tag.value} 
+                                                        className="mb-4 mr-2 text-xs leading-none rounded-xl py-2 px-2 pr-3"
+                                                        onClick={() => { handleRemoveTag(tag.value) }}>
+                                                            <X size={10} strokeWidth={1} /> {tag.label}
+                                                    </Button>
+                                                );
+                                            })
+                                        }
+                                        <Popover open={open} onOpenChange={setOpen}>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                variant="outline"
+                                                role="combobox"
+                                                aria-expanded={open}
+                                                className="w-full justify-between h-[36px]"
+                                                >
+                                                Click to select tags
+                                                <ChevronsUpDown className="opacity-50" />
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-full p-0">
+                                                <Command>
+                                                    <CommandInput placeholder="Search framework..." />
+                                                    <CommandList>
+                                                        <CommandEmpty>No framework found.</CommandEmpty>
+                                                        <CommandGroup>
+                                                        {tagsOptions.map((tag: ICommandOption) => (
+                                                            <CommandItem
+                                                                key={tag.value}
+                                                                value={tag.value}
+                                                                onSelect={(currentValue) => {
+                                                                    setTags(prevTags => {
 
-                                    <Label htmlFor="tag-1" className="ml-[10px]">Tag 1</Label>
-                                </div>
-                                <div className="flex items-center mb-2">
-                                    <Checkbox 
-                                        name="tags[]" 
-                                        value="Tag 2"
-                                        id="tag-2"/>
+                                                                        // remove tag if it exist
+                                                                        if(prevTags.findIndex(item => item.value === currentValue) > -1) {
 
-                                    <Label htmlFor="tag-2" className="ml-[10px]">Tag 2</Label>
-                                </div>
-                                <div className="flex items-center mb-2">
-                                    <Checkbox 
-                                        name="tags[]" 
-                                        value="Tag 3"
-                                        id="tag-3"/>
+                                                                            return [...prevTags].filter(item => item.value != currentValue);
 
-                                    <Label htmlFor="tag-3" className="ml-[10px]">Tag 3</Label>
+                                                                        } 
+
+                                                                        return [...prevTags, { value: tag.value, label: tag.label }]
+                                                            
+                                                                    });
+                                                                    setOpen(false)
+                                                                }}
+                                                                >
+                                                                {tag.label}
+                                                                <Check
+                                                                    className={cn(
+                                                                    "ml-auto",  
+                                                                    `${isSelectedOption(tag.value) ? 'opacity-100' : 'opacity-0'}`
+                                                                    )}
+                                                                />
+                                                            </CommandItem>
+                                                        ))}
+                                                        </CommandGroup>
+                                                    </CommandList>
+                                                </Command>
+                                            </PopoverContent>
+                                        </Popover>
                                 </div>
+                                <noscript>
+                                    <div className="flex items-center mb-2">
+                                        <Checkbox 
+                                            name="tags[]" 
+                                            value="Tag 1"
+                                            id="tag-1"/>
+
+                                        <Label htmlFor="tag-1" className="ml-[10px]">Tag 1</Label>
+                                    </div>
+                                    <div className="flex items-center mb-2">
+                                        <Checkbox 
+                                            name="tags[]" 
+                                            value="Tag 2"
+                                            id="tag-2"/>
+
+                                        <Label htmlFor="tag-2" className="ml-[10px]">Tag 2</Label>
+                                    </div>
+                                    <div className="flex items-center mb-2">
+                                        <Checkbox 
+                                            name="tags[]" 
+                                            value="Tag 3"
+                                            id="tag-3"/>
+
+                                        <Label htmlFor="tag-3" className="ml-[10px]">Tag 3</Label>
+                                    </div>
+                                </noscript>
                             </div>
 
                             <div className="mb-5">
