@@ -32,13 +32,11 @@ Popover,
 PopoverContent,
 PopoverTrigger,
 } from "@/components/ui/popover";
+import ComboBox from "@/components/ui/combo-box";
+import { IComboBoxOption } from "@/components/ui/combo-box";
 
-interface ICommandOption {
-    value: string,
-    label: string
-}
 
-const tagsOptions: ICommandOption[] = [
+const tagsOptions: IComboBoxOption[] = [
 {
     value: "tag-1",
     label: "Tag 1",
@@ -62,7 +60,7 @@ export default function AdminCreateBlogForm() {
     });
     // const [tags, setTags] = useState([]);
     const [open, setOpen] = useState(false)
-    const [tags, setTags] = useState<ICommandOption[]>([]);
+    const [tags, setTags] = useState<IComboBoxOption[]>([]);
 
     const handleInputFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
@@ -215,70 +213,13 @@ export default function AdminCreateBlogForm() {
                                         name="tags"
                                         className="hidden" 
                                         defaultValue={`${tags && tags.map(item => item.value)}`}/>
-                                        {tags &&
-                                            tags.map(tag => {
-                                                return(
-                                                    <Button 
-                                                        key={tag.value} 
-                                                        className="mb-4 mr-2 text-xs leading-none rounded-xl py-2 px-2 pr-3"
-                                                        onClick={() => { handleRemoveTag(tag.value) }}>
-                                                            <X size={10} strokeWidth={1} /> {tag.label}
-                                                    </Button>
-                                                );
-                                            })
-                                        }
-                                        <Popover open={open} onOpenChange={setOpen}>
-                                            <PopoverTrigger asChild>
-                                                <Button
-                                                variant="outline"
-                                                role="combobox"
-                                                aria-expanded={open}
-                                                className="w-full justify-between h-[36px]"
-                                                >
-                                                Click to select tags
-                                                <ChevronsUpDown className="opacity-50" />
-                                                </Button>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-full p-0">
-                                                <Command>
-                                                    <CommandInput placeholder="Search framework..." />
-                                                    <CommandList>
-                                                        <CommandEmpty>No framework found.</CommandEmpty>
-                                                        <CommandGroup>
-                                                        {tagsOptions.map((tag: ICommandOption) => (
-                                                            <CommandItem
-                                                                key={tag.value}
-                                                                value={tag.value}
-                                                                onSelect={(currentValue) => {
-                                                                    setTags(prevTags => {
 
-                                                                        // remove tag if it exist
-                                                                        if(prevTags.findIndex(item => item.value === currentValue) > -1) {
-
-                                                                            return [...prevTags].filter(item => item.value != currentValue);
-
-                                                                        } 
-
-                                                                        return [...prevTags, { value: tag.value, label: tag.label }]
-                                                            
-                                                                    });
-                                                                    setOpen(false)
-                                                                }}
-                                                                >
-                                                                {tag.label}
-                                                                <Check
-                                                                    className={cn(
-                                                                    "ml-auto",  
-                                                                    `${isSelectedOption(tag.value) ? 'opacity-100' : 'opacity-0'}`
-                                                                    )}
-                                                                />
-                                                            </CommandItem>
-                                                        ))}
-                                                        </CommandGroup>
-                                                    </CommandList>
-                                                </Command>
-                                            </PopoverContent>
-                                        </Popover>
+                                        <ComboBox
+                                            options={tagsOptions}
+                                            selectedOptions={tags}
+                                            setComboBoxState={setTags}
+                                            placeholder="Select tags..."/>
+                                            
                                 </div>
                                 <noscript>
                                     <div className="flex items-center mb-2">
