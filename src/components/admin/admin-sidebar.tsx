@@ -34,6 +34,10 @@ const menuData = [
         isActive: false,
         items: [
             {
+                url: '/admin/blog/create',
+                title: 'Create'
+            },
+            {
                 url: '/admin/blog',
                 title: 'All blogs'
             },
