@@ -56,6 +56,16 @@ export default function AdminCreateBlogForm() {
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [formState, formAction, isPending] = useActionState(createBlog, {
         message: '',
+        values: {
+            title: '',
+            content: '',
+            status: '',
+            category: '',
+            tags: '',
+            featuredImage: undefined,
+            metaTitle: '',
+            metaDescription: '',
+        },
         errors: {}
     });
     // const [tags, setTags] = useState([]);
@@ -80,9 +90,7 @@ export default function AdminCreateBlogForm() {
     };
 
     const handleUpdateImageClick = () => {
-
         inputRef.current?.click();
-
     };
 
     const handleRemoveFeaturedImage = () => {
@@ -97,23 +105,7 @@ export default function AdminCreateBlogForm() {
 
     };
 
-    const isSelectedOption = (value: string) => {
-
-        const selectedOption = tags.find(tag => tag.value === value);
-
-        if(selectedOption) {
-            return true;
-        } else {
-            return false;
-        }
-
-        
-    };
-
-    const handleRemoveTag = (value: string) => {
-
-        setTags(prevTags => [...prevTags].filter(item => item.value != value));
-    };
+    console.log(formState);
 
     return (
         <div>
@@ -149,7 +141,7 @@ export default function AdminCreateBlogForm() {
                                     className="mb-2 block font-bold">Meta title</Label>
                                 <Input
                                     id="meta-title"
-                                    name="meta-title"/>
+                                    name="meta_title"/>
                             </div>
 
                             <div className="mb-5">
@@ -158,7 +150,7 @@ export default function AdminCreateBlogForm() {
                                     className="mb-2 block font-bold">Meta description</Label>
                                 <Textarea
                                     id="meta-description"
-                                    name="meta-description"
+                                    name="meta_description"
                                     className="min-h-[150px]"/>
                             </div>
 
@@ -176,7 +168,7 @@ export default function AdminCreateBlogForm() {
                                 <Label 
                                     htmlFor="status"
                                     className="mb-2 block font-bold">Status</Label>
-                                <Select name="status">
+                                <Select name="status" defaultValue="draft">
                                     <SelectTrigger>
                                        <SelectValue placeholder="Draft"/>
                                     </SelectTrigger>
@@ -218,7 +210,7 @@ export default function AdminCreateBlogForm() {
                                             options={tagsOptions}
                                             selectedOptions={tags}
                                             setComboBoxState={setTags}
-                                            placeholder="Select tags..."/>
+                                            placeholder="Click to select tags..."/>
                                             
                                 </div>
                                 <noscript>
@@ -254,7 +246,7 @@ export default function AdminCreateBlogForm() {
                                 <div className="relative max-w-[300px] xl:max-w-full">
                                     <Input
                                         type="file"
-                                        name="featured-image"
+                                        name="featured_image"
                                         id="featured-image"
                                         accept="image/*"
                                         onChange={handleInputFileChange}
