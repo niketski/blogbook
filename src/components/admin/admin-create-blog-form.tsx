@@ -13,7 +13,7 @@ import {
   } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from '@/components/ui/checkbox';
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import createBlog from "@/actions/blog";
 import { useActionState } from "react";
@@ -56,10 +56,20 @@ export default function AdminCreateBlogForm() {
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [formState, formAction, isPending] = useActionState(createBlog, {
         message: '',
+        status: 'pending',
+        values: {
+            title: '',
+            content: '',
+            status: '',
+            category: '',
+            tags: '',
+            featuredImage: undefined,
+            metaTitle: '',
+            metaDescription: '',
+        },
         errors: {}
     });
-    // const [tags, setTags] = useState([]);
-    const [open, setOpen] = useState(false)
+
     const [tags, setTags] = useState<IComboBoxOption[]>([]);
 
     const handleInputFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,9 +90,7 @@ export default function AdminCreateBlogForm() {
     };
 
     const handleUpdateImageClick = () => {
-
         inputRef.current?.click();
-
     };
 
     const handleRemoveFeaturedImage = () => {
@@ -97,23 +105,17 @@ export default function AdminCreateBlogForm() {
 
     };
 
-    const isSelectedOption = (value: string) => {
+    useEffect(() => {
+        
+        // clear some of the data after successfull submition
+        if(formState.status === 'success') {
 
-        const selectedOption = tags.find(tag => tag.value === value);
-
-        if(selectedOption) {
-            return true;
-        } else {
-            return false;
+            setImagePreview(null);
+            setTags([]);
+            
         }
 
-        
-    };
-
-    const handleRemoveTag = (value: string) => {
-
-        setTags(prevTags => [...prevTags].filter(item => item.value != value));
-    };
+    }, [formState.status]);
 
     return (
         <div>
@@ -127,17 +129,28 @@ export default function AdminCreateBlogForm() {
                                 className="mb-2 block font-bold">Title</Label>
                             <Input
                                 id="title"
-                                name="title"/>
+                                name="title"
+                                defaultValue={formState.values.title}
+                                className={`${formState.errors.title ? 'border-red-500' : ''}`}/>
+
+                            {formState.errors.title &&
+                                <p className="text-sm text-red-500 mt-4">{formState.errors.title.join(', ')}</p>
+                            }
                         </div>
 
-                        <div className="mb-10">
+                        <div className="mb-10"> 
                             <Label
                                 htmlFor="content"
                                 className="mb-2 block font-bold">Content</Label>
                             <Textarea
                                 id="content"
                                 name="content"
-                                className="min-h-[300px]"/>
+                                className={`min-h-[300px] ${formState.errors.content ? 'border-red-500' : ''}`}
+                                defaultValue={formState.values.content}/>
+
+                            {formState.errors.content &&
+                                <p className="text-sm text-red-500 mt-4">{formState.errors.content[0]}</p>
+                            }
                         </div>
 
                         <div>
@@ -149,7 +162,7 @@ export default function AdminCreateBlogForm() {
                                     className="mb-2 block font-bold">Meta title</Label>
                                 <Input
                                     id="meta-title"
-                                    name="meta-title"/>
+                                    name="meta_title"/>
                             </div>
 
                             <div className="mb-5">
@@ -158,7 +171,7 @@ export default function AdminCreateBlogForm() {
                                     className="mb-2 block font-bold">Meta description</Label>
                                 <Textarea
                                     id="meta-description"
-                                    name="meta-description"
+                                    name="meta_description"
                                     className="min-h-[150px]"/>
                             </div>
 
@@ -176,7 +189,7 @@ export default function AdminCreateBlogForm() {
                                 <Label 
                                     htmlFor="status"
                                     className="mb-2 block font-bold">Status</Label>
-                                <Select name="status">
+                                <Select name="status" defaultValue="draft">
                                     <SelectTrigger>
                                        <SelectValue placeholder="Draft"/>
                                     </SelectTrigger>
@@ -218,7 +231,7 @@ export default function AdminCreateBlogForm() {
                                             options={tagsOptions}
                                             selectedOptions={tags}
                                             setComboBoxState={setTags}
-                                            placeholder="Select tags..."/>
+                                            placeholder="Click to select tags..."/>
                                             
                                 </div>
                                 <noscript>
@@ -254,7 +267,7 @@ export default function AdminCreateBlogForm() {
                                 <div className="relative max-w-[300px] xl:max-w-full">
                                     <Input
                                         type="file"
-                                        name="featured-image"
+                                        name="featured_image"
                                         id="featured-image"
                                         accept="image/*"
                                         onChange={handleInputFileChange}
