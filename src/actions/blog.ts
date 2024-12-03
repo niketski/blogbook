@@ -5,6 +5,7 @@ import z from 'zod';
 
 interface CreateBlogFormState {
     message: string,
+    status: 'error' | 'success' | 'pending',
     values: {
         title: string,
         content: string,
@@ -26,13 +27,6 @@ interface CreateBlogFormState {
         metaDescription?: string[],
         _form?: string
     }
-}
-
-interface InputFile {
-    size: number,
-    type: string,
-    name: string,
-    lastModified: number
 }
 
 export default async function createBlog(prevState: CreateBlogFormState, formData: FormData): Promise<CreateBlogFormState> {
@@ -68,8 +62,9 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
         if(!result.success) {
 
             const currentErrors = result.error.flatten().fieldErrors;
-            console.log(currentErrors);
+         
             return {
+                status: 'error',
                 values: {...data},
                 message: 'Please make sure all of the fields are valid.',
                 errors: currentErrors
@@ -78,7 +73,17 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
         
 
         return {
-            values: {...data},
+            status: 'success',
+            values: {
+                title: '',
+                content: '',
+                status: 'pending',
+                category: '',
+                tags: '',
+                featuredImage: undefined,
+                metaTitle: '',
+                metaDescription: '',
+            },
             message: 'A blog has been created successfully!',
             errors: {}
         }
@@ -99,6 +104,7 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
         };
 
         return {
+            status: 'error',
             values: {...data},
             errors: {
                 _form: 'Something went wrong.'

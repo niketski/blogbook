@@ -13,7 +13,7 @@ import {
   } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from '@/components/ui/checkbox';
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import createBlog from "@/actions/blog";
 import { useActionState } from "react";
@@ -56,6 +56,7 @@ export default function AdminCreateBlogForm() {
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [formState, formAction, isPending] = useActionState(createBlog, {
         message: '',
+        status: 'pending',
         values: {
             title: '',
             content: '',
@@ -68,8 +69,7 @@ export default function AdminCreateBlogForm() {
         },
         errors: {}
     });
-    // const [tags, setTags] = useState([]);
-    const [open, setOpen] = useState(false)
+
     const [tags, setTags] = useState<IComboBoxOption[]>([]);
 
     const handleInputFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,7 +105,17 @@ export default function AdminCreateBlogForm() {
 
     };
 
-    console.log(formState);
+    useEffect(() => {
+        
+        // clear some of the data after successfull submition
+        if(formState.status === 'success') {
+
+            setImagePreview(null);
+            setTags([]);
+            
+        }
+
+    }, [formState.status]);
 
     return (
         <div>
@@ -119,17 +129,28 @@ export default function AdminCreateBlogForm() {
                                 className="mb-2 block font-bold">Title</Label>
                             <Input
                                 id="title"
-                                name="title"/>
+                                name="title"
+                                defaultValue={formState.values.title}
+                                className={`${formState.errors.title ? 'border-red-500' : ''}`}/>
+
+                            {formState.errors.title &&
+                                <p className="text-sm text-red-500 mt-4">{formState.errors.title.join(', ')}</p>
+                            }
                         </div>
 
-                        <div className="mb-10">
+                        <div className="mb-10"> 
                             <Label
                                 htmlFor="content"
                                 className="mb-2 block font-bold">Content</Label>
                             <Textarea
                                 id="content"
                                 name="content"
-                                className="min-h-[300px]"/>
+                                className={`min-h-[300px] ${formState.errors.content ? 'border-red-500' : ''}`}
+                                defaultValue={formState.values.content}/>
+
+                            {formState.errors.content &&
+                                <p className="text-sm text-red-500 mt-4">{formState.errors.content[0]}</p>
+                            }
                         </div>
 
                         <div>
