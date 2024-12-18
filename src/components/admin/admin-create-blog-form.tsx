@@ -17,23 +17,11 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import createBlog from "@/actions/blog";
 import { useActionState } from "react";
-import { Check, ChevronsUpDown, X } from "lucide-react"
-import { cn } from "@/lib/utils";
-import {
-Command,
-CommandEmpty,
-CommandGroup,
-CommandInput,
-CommandItem,
-CommandList,
-} from "@/components/ui/command";
-import {
-Popover,
-PopoverContent,
-PopoverTrigger,
-} from "@/components/ui/popover";
 import ComboBox from "@/components/ui/combo-box";
 import { IComboBoxOption } from "@/components/ui/combo-box";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+
 
 
 const tagsOptions: IComboBoxOption[] = [
@@ -117,12 +105,25 @@ export default function AdminCreateBlogForm() {
 
     }, [formState.status]);
 
+    console.log('fe: ', formState);
+
+    console.log(imagePreview);
+
     return (
         <div>
             <form action={formAction}>
 
                 <div className="flex flex-col-reverse xl:flex-row">
                     <div className="xl:w-3/4">
+                    {formState.errors._form && 
+                        <Alert variant="destructive" className="mb-9">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertTitle>Error</AlertTitle>
+                                <AlertDescription>
+                                {formState.errors._form}
+                            </AlertDescription>
+                        </Alert>
+                    }
                         <div className="mb-5">
                             <Label 
                                 htmlFor="title"
@@ -162,7 +163,8 @@ export default function AdminCreateBlogForm() {
                                     className="mb-2 block font-bold">Meta title</Label>
                                 <Input
                                     id="meta-title"
-                                    name="meta_title"/>
+                                    name="metaTitle"
+                                    defaultValue={formState.values.metaTitle}/>
                             </div>
 
                             <div className="mb-5">
@@ -171,8 +173,9 @@ export default function AdminCreateBlogForm() {
                                     className="mb-2 block font-bold">Meta description</Label>
                                 <Textarea
                                     id="meta-description"
-                                    name="meta_description"
-                                    className="min-h-[150px]"/>
+                                    name="metaDescription"
+                                    className="min-h-[150px]"
+                                    defaultValue={formState.values.metaDescription}/>
                             </div>
 
                             
@@ -280,16 +283,18 @@ export default function AdminCreateBlogForm() {
                                     }
 
                                     {imagePreview ? 
-                                        <Image 
-                                            src={imagePreview} 
-                                            width="300"     
-                                            height="280" 
-                                            alt="Image Preview"
-                                            className="rounded h-[180px] object-cover object-center"/> : 
+                                            <Image 
+                                                src={imagePreview} 
+                                                width="300"     
+                                                height="280" 
+                                                alt="Image Preview"
+                                                className={`rounded h-[180px] object-cover object-center ${formState.errors.featuredImage ? 'border border-red-500' : ''}`}/> : 
                                             
-                                            <div className="w-full h-[180px] bg-gray-100 rounded"></div>
+                                            <div className={`w-full h-[180px] bg-gray-100 rounded ${formState.errors.featuredImage ? 'border border-red-500' : ''}`}></div>
                                         }
                                 </div>
+
+                                {formState.errors.featuredImage ? <p className="text-sm text-red-500 mt-4">{formState.errors.featuredImage[0]}</p> : ''}
 
                                 {imagePreview &&
                                     <div className="pt-4">

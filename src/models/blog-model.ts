@@ -1,11 +1,13 @@
-import{ Schema, Document, Types, model} from "mongoose";
+import{ Schema, Document, Types, model, models } from "mongoose";
 
 interface IBlog extends Document {
     title: string,
     content: string,
     featuredImage: string,
-    tags: Types.ObjectId[],
-    category: Types.ObjectId,
+    // tags: Types.ObjectId[],
+    // category: Types.ObjectId,
+    tags: string,
+    category: string,
     status: string,
     metaTitle: string,
     metaDescription: string
@@ -20,22 +22,32 @@ const BlogSchema = new Schema<IBlog>({
     content: {
         type: String,
     },
-    tags: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'Tag' 
-        }
-    ],
-    category: {
-        type: Schema.Types.ObjectId,
-        ref: 'Category'
+    featuredImage: {
+        type: String
     },
+    // category: {
+    //     type: Schema.Types.ObjectId,
+    //     ref: 'Category'
+    // },
+    // tags: [
+    // {
+    //     type: Schema.Types.ObjectId,
+    //     ref: 'Tag' 
+    // }
+    category: {
+        type: String,
+    },
+    tags: [
+    {
+        type: String
+    }
+    ],
     status: String,
     metaTitle: String,
     metaDescription: String,
     
 }, { timestamps: true });
 
-const BlogModel = model<typeof BlogSchema>('Blog', BlogSchema);
+const BlogModel = models.Blog || model<typeof BlogSchema>('Blog', BlogSchema);
 
 export default BlogModel;
