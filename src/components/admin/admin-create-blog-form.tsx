@@ -40,7 +40,7 @@ const tagsOptions: IComboBoxOption[] = [
 ];
 
 export default function AdminCreateBlogForm() {
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [imagePreview, setImagePreview] = useState<string>('');
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [formState, formAction, isPending] = useActionState(createBlog, {
         message: '',
@@ -51,7 +51,7 @@ export default function AdminCreateBlogForm() {
             status: '',
             category: '',
             tags: '',
-            featuredImage: undefined,
+            featuredImage: '',
             metaTitle: '',
             metaDescription: '',
         },
@@ -89,7 +89,7 @@ export default function AdminCreateBlogForm() {
             
         }
         
-        setImagePreview(null);
+        setImagePreview('');
 
     };
 
@@ -98,7 +98,7 @@ export default function AdminCreateBlogForm() {
         // clear some of the data after successfull submition
         if(formState.status === 'success') {
 
-            setImagePreview(null);
+            setImagePreview('');
             setTags([]);
             
         }
@@ -270,12 +270,17 @@ export default function AdminCreateBlogForm() {
                                 <div className="relative max-w-[300px] xl:max-w-full">
                                     <Input
                                         type="file"
-                                        name="featured_image"
+                                        name="featured_image_file"
                                         id="featured-image"
                                         accept="image/*"
                                         onChange={handleInputFileChange}
                                         className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
                                         ref={inputRef}/>
+
+                                    <Input
+                                        type="hidden"
+                                        name="featuredImage"
+                                        defaultValue={imagePreview}/>
 
                                     {
                                         !imagePreview &&

@@ -37,11 +37,9 @@ const BlogSchema = new Schema<IBlog>({
     category: {
         type: String,
     },
-    tags: [
-    {
+    tags: {
         type: String
-    }
-    ],
+    },
     status: String,
     metaTitle: String,
     metaDescription: String,
