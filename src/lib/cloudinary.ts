@@ -15,7 +15,7 @@ export const isExceededTheFileLimit = (file: string) => {
 
     // Calculate the size in bytes
     // Each Base64 character represents 6 bits of data (3/4 byte)
-    const sizeInBytes = (base64Data.length * 3) / 4;
+    const sizeInBytes = (file.length * 3) / 4;
 
     // Define the size limit in bytes (10 MB = 10 * 1024 * 1024 bytes)
     const maxSizeInBytes = MAX_FILE_MB * 1024 * 1024;

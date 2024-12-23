@@ -3,7 +3,10 @@ import{ Schema, Document, Types, model, models } from "mongoose";
 interface IBlog extends Document {
     title: string,
     content: string,
-    featuredImage: string,
+    featuredImage: {
+        url: string,
+        id: string
+    },
     // tags: Types.ObjectId[],
     // category: Types.ObjectId,
     tags: string,
@@ -23,7 +26,7 @@ const BlogSchema = new Schema<IBlog>({
         type: String,
     },
     featuredImage: {
-        type: String
+        type: Object
     },
     // category: {
     //     type: Schema.Types.ObjectId,

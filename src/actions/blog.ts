@@ -5,6 +5,7 @@ import { type UploadApiResponse } from 'cloudinary';
 import { title } from 'process';
 import BlogModel from '@/models/blog-model';
 import z from 'zod';
+import { isExceededTheFileLimit } from '@/lib/cloudinary';
 
 interface CreateBlogFormState {
     message: string,
@@ -35,17 +36,6 @@ interface CreateBlogFormState {
 
 export default async function createBlog(prevState: CreateBlogFormState, formData: FormData): Promise<CreateBlogFormState> {
 
-    // const data = {
-    //     title: formData.get('title') as string,
-    //     content: formData.get('content') as string,
-    //     status: formData.get('status') as string,
-    //     category: formData.get('category') as string,
-    //     tags: formData.get('tags') as string,
-    //     featuredImage: formData.get('featured_image') as string,
-    //     metaTitle: formData.get('metaTitle') as string,
-    //     metaDescription: formData.get('metaDescription') as string
-    // };
-
     try {
 
         const title = formData.get('title') as string;
@@ -65,29 +55,11 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
             status: z.enum(['published', 'draft']),
             category: z.string(),
             tags: z.string(),
-            featuredImage: z.string(),
-            // featuredImage: z.custom<File>((file) => {
-            //     console.log(file.size);
-            //     return file instanceof File && file.size > 0;
-
-            // }, { message: 'Featured image is required.' })
-            // .refine(file => acceptedImages.includes(file.type), { message: 'Please use a valid image file.' })
-            // .refine(file => file.size < MAX_FILE_SIZE, { message: `Please only upload images less than ${megabytes} MB.` }),
+            featuredImage: z.string()
+                .refine(file => isExceededTheFileLimit(file), { message: 'Please use image less than 5 MB.' }),
             metaTitle: z.string().optional(),
             metaDescription: z.string().optional()
         });
-
-         
-        // const data = {
-        //     title: formData.get('title') as string,
-        //     content: formData.get('content') as string,
-        //     status: formData.get('status') as string,
-        //     category: formData.get('category') as string,
-        //     tags: formData.get('tags') as string,
-        //     featuredImage: formData.get('featured_image') as string,
-        //     metaTitle: formData.get('metaTitle') as string,
-        //     metaDescription: formData.get('metaDescription') as string
-        // };
 
         const result = formSchema.safeParse({
             title,
@@ -103,19 +75,6 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
         if(!result.success) {
 
             const currentErrors = result.error.flatten().fieldErrors;
-            
-            // console.log({
-            //     title: formData.get('title') as string,
-            //     content: formData.get('content') as string,
-            //     status: formData.get('status') as string,
-            //     category: formData.get('category') as string,
-            //     tags: formData.get('tags') as string,
-            //     featuredImage: formData.get('featured_image') as string,
-            //     metaTitle: formData.get('metaTitle') as string,
-            //     metaDescription: formData.get('metaDescription') as string
-            // });
-
-            console.log(featuredImage);
             
             return {
                 status: 'error',
@@ -135,36 +94,21 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
         }
 
 
-        // upload image to cloudinary
-        // const file = data.featuredImage;
-        
-        // convert file/blob object into array buffer
-        // const arrayBuffer = await file.arrayBuffer();
-        // const buffer = new Uint8Array(arrayBuffer);
-        
-        // upload array buffer via upload stream
-        // const uploadResult: UploadApiResponse = await new Promise((resolve, reject)  => {
+        // upload image as base64 URI to cloudinary
+        const cloudinaryImage = await cloudinary.uploader.upload(featuredImage, { folder: 'blogbook' });
 
-        //     cloudinary.uploader.upload_stream({ folder: 'blogbook' }, (error, uploadResult ) => {
-                
-        //         if (error || !uploadResult) {
-        //             return reject(new Error('Upload failed'));
-        //         }
-
-        //         return resolve(uploadResult);
-                
-        //     }).end(buffer);
-        // });
-        
+    
         // save blog to the database
-
         const newBlog = new BlogModel({
             title,
             content,
             status,
             category,
             tags,
-            featuredImage,
+            featuredImage: {
+                url: cloudinaryImage.secure_url,
+                id: cloudinaryImage.public_id
+            },
             metaTitle,
             metaDescription
         });

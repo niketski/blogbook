@@ -20,7 +20,7 @@ import { useActionState } from "react";
 import ComboBox from "@/components/ui/combo-box";
 import { IComboBoxOption } from "@/components/ui/combo-box";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, LoaderCircle } from "lucide-react";
 
 
 
@@ -109,6 +109,8 @@ export default function AdminCreateBlogForm() {
 
     console.log(imagePreview);
 
+    console.log(isPending);
+
     return (
         <div>
             <form action={formAction}>
@@ -186,7 +188,14 @@ export default function AdminCreateBlogForm() {
                         <div className="rounded-[6px] shadow p-5 xl:p-8">
                             <Button 
                                 type="submit"
-                                className="mb-5">Save</Button>
+                                className={`mb-5 ${isPending ? 'pointer-events-none' : ''}`} 
+                                disabled={isPending ? true : false}>
+
+                                    {isPending ? 'Processing...' : 'Save'}
+                                    
+                                    {isPending ? <LoaderCircle className="animate-spin"/> : ''}
+
+                            </Button>
 
                             <div className="mb-5">
                                 <Label 
