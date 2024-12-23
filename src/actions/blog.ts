@@ -6,6 +6,7 @@ import { title } from 'process';
 import BlogModel from '@/models/blog-model';
 import z from 'zod';
 import { isExceededTheFileLimit } from '@/lib/cloudinary';
+import { isExceededFileLimit } from '@/lib/utils';
 
 interface CreateBlogFormState {
     message: string,
@@ -38,6 +39,7 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
 
     try {
 
+        // form data
         const title = formData.get('title') as string;
         const content = formData.get('content') as string;
         const status = formData.get('status') as string;
@@ -46,6 +48,7 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
         const featuredImage = formData.get('featuredImage') as string;
         const metaTitle = formData.get('metaTitle') as string;
         const metaDescription = formData.get('metaDescription') as string;
+
         const acceptedImages = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         const megabytes = 1;
         const MAX_FILE_SIZE = megabytes * 1024 * 1024; 

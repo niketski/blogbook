@@ -21,6 +21,8 @@ import ComboBox from "@/components/ui/combo-box";
 import { IComboBoxOption } from "@/components/ui/combo-box";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, LoaderCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { isExceededFileLimit } from "@/lib/utils";
 
 
 
@@ -40,8 +42,11 @@ const tagsOptions: IComboBoxOption[] = [
 ];
 
 export default function AdminCreateBlogForm() {
+    const { toast } = useToast();
+    
     const [imagePreview, setImagePreview] = useState<string>('');
     const inputRef = useRef<HTMLInputElement | null>(null);
+    const [isFileExceeded, setIsFileExceeded] = useState(false);
     const [formState, formAction, isPending] = useActionState(createBlog, {
         message: '',
         status: 'pending',
@@ -90,6 +95,7 @@ export default function AdminCreateBlogForm() {
         }
         
         setImagePreview('');
+        setIsFileExceeded(false);
 
     };
 
@@ -99,17 +105,35 @@ export default function AdminCreateBlogForm() {
         if(formState.status === 'success') {
 
             setImagePreview('');
+
             setTags([]);
-            
+
+            toast({
+                title: 'Success',
+                description: 'The blog has been created successfully!'
+            });
         }
 
     }, [formState.status]);
 
-    console.log('fe: ', formState);
+    useEffect(() => {
 
-    console.log(imagePreview);
+        const result = isExceededFileLimit({
+            file: imagePreview,
+            maxMb: 10
+        });
 
-    console.log(isPending);
+        if(result) {
+
+            setIsFileExceeded(true);
+
+        } else {
+            
+            setIsFileExceeded(false);
+
+        }
+
+    }, [imagePreview]);
 
     return (
         <div>
@@ -302,13 +326,14 @@ export default function AdminCreateBlogForm() {
                                                 width="300"     
                                                 height="280" 
                                                 alt="Image Preview"
-                                                className={`rounded h-[180px] object-cover object-center ${formState.errors.featuredImage ? 'border border-red-500' : ''}`}/> : 
+                                                className={`rounded h-[180px] object-cover object-center ${(formState.errors.featuredImage || isFileExceeded) ? 'border border-red-500' : ''}`}/> : 
                                             
-                                            <div className={`w-full h-[180px] bg-gray-100 rounded ${formState.errors.featuredImage ? 'border border-red-500' : ''}`}></div>
+                                            <div className={`w-full h-[180px] bg-gray-100 rounded ${(formState.errors.featuredImage || isFileExceeded) ? 'border border-red-500' : ''}`}></div>
                                         }
                                 </div>
 
                                 {formState.errors.featuredImage ? <p className="text-sm text-red-500 mt-4">{formState.errors.featuredImage[0]}</p> : ''}
+                                {isFileExceeded ? <p className="text-sm text-red-500 mt-4">Please use image less than 10 MB.</p> : ''}
 
                                 {imagePreview &&
                                     <div className="pt-4">

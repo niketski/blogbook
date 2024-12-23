@@ -1,6 +1,6 @@
 'use client'
 
-export default async function ErrorBlog({ error, reset } : { error: Error, reset: any }) {
+export default function ErrorBlog({ error, reset } : { error: Error, reset: any }) {
 
     console.log(error.message);
     console.log(error);
