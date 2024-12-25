@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "@/app/globals.css";
 import '@/app/admin.css';
 import { Poppins } from 'next/font/google';
+import { Toaster } from "@/components/ui/toaster";
 
 // components
 import AdminContainer from "@/components/admin/admin-container";
@@ -30,6 +31,7 @@ export default function RootLayout({
           <AdminContainer>
             {children}
           </AdminContainer>
+          <Toaster/>
       </body>
     </html>
   );
