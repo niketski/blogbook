@@ -1,6 +1,7 @@
 'use server'
 
 import z from 'zod';
+import CategoryModel from '@/models/category-model';
 
 interface CreateCategoryFormState {
     message: string,
@@ -47,6 +48,15 @@ export default async function createCategory(prevState: CreateCategoryFormState,
                 },
             }
         }
+
+        const newCategory = new CategoryModel({
+            name,
+            slug,
+        });
+
+        await newCategory.save();
+
+        console.log(newCategory);
 
         return {
             message: 'Category has been created successfully!',
