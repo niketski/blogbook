@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Plus, Ellipsis } from "lucide-react";
+import AdminCreateCategoryForm from "@/components/admin/admin-create-category-form";
 import {
     Table,
     TableBody,
@@ -18,11 +19,40 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+  } from "@/components/ui/dialog";
+
 export default function BlogCategoryPage() {
+
     return (
         <div>
             <h1 className="font-bold text-4xl mb-10">Category</h1>
-            <Button><Plus/> Create Category</Button>
+
+            {/* create category form */}
+            <Dialog>
+                <DialogTrigger asChild>
+                    <Button><Plus/> Create Category</Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Create Category</DialogTitle>
+                        <DialogDescription>
+                            Create a new blog category.
+                        </DialogDescription>
+                        <div className="pt-4">
+                            <AdminCreateCategoryForm/>
+                        </div>
+                    </DialogHeader>
+                </DialogContent>
+            </Dialog>
+
+            {/* category table */}
             <div className="pt-[60px]">
                 <div className="w-full overflow-auto">
                     <Table className="min-w-[800px]">
@@ -91,44 +121,6 @@ export default function BlogCategoryPage() {
                                     </DropdownMenu>
                                 </TableCell>
                             </TableRow>
-                            {/* <TableRow>
-                                <TableCell><span className="font-bold">Sample Blog 2</span></TableCell>
-                                <TableCell>Category 2</TableCell>
-                                <TableCell>tag 2</TableCell>
-                                <TableCell>11/11/2024</TableCell>
-                                <TableCell>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="link"><Ellipsis/></Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent>
-                                            <DropdownMenuLabel>Action</DropdownMenuLabel>
-                                            <DropdownMenuSeparator />
-                                            <DropdownMenuItem>Edit</DropdownMenuItem>
-                                            <DropdownMenuItem>Delete</DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell><span className="font-bold">Sample Blog 3</span></TableCell>
-                                <TableCell>Category 3</TableCell>
-                                <TableCell>tag 3</TableCell>
-                                <TableCell>11/11/2024</TableCell>
-                                <TableCell>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="link"><Ellipsis/></Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent>
-                                            <DropdownMenuLabel>Action</DropdownMenuLabel>
-                                            <DropdownMenuSeparator />
-                                            <DropdownMenuItem>Edit</DropdownMenuItem>
-                                            <DropdownMenuItem>Delete</DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
-                            </TableRow> */}
                         </TableBody>
                     </Table>
                 </div>
