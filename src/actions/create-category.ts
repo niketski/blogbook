@@ -2,6 +2,7 @@
 
 import z from 'zod';
 import CategoryModel from '@/models/category-model';
+import { revalidatePath } from 'next/cache';
 
 interface CreateCategoryFormState {
     message: string,
@@ -25,7 +26,7 @@ export default async function createCategory(prevState: CreateCategoryFormState,
         const slug: string = formData.get('slug') as string;
         const formSchema = z.object({
             name: z.string().min(1, { message: 'Name is required.' }),
-            slug: z.string().min(1, { message: 'Slug is required.' }).refine(slug => /^[a-zA-Z0-9_-]*$/.test(slug), { message: 'Please don\'t include special characters.' })
+            slug: z.string().min(1, { message: 'Slug is required.' }).refine(slug => /^[a-zA-Z0-9_-]*$/.test(slug), { message: 'Please don\'t include space or special characters.' })
         });
 
         const result = formSchema.safeParse({
@@ -58,6 +59,8 @@ export default async function createCategory(prevState: CreateCategoryFormState,
 
         console.log(newCategory);
 
+        revalidatePath('/admin/blog/category');
+
         return {
             message: 'Category has been created successfully!',
             status: 'success',
@@ -72,8 +75,28 @@ export default async function createCategory(prevState: CreateCategoryFormState,
 
         const name: string = formData.get('name') as string;
         const slug: string = formData.get('slug') as string;
+        const responseError: CreateCategoryFormState = {
+            status: 'error',
+            values: {
+                name,
+                slug,
+            },
+            errors: {
+                _form: 'The category either name or slug already exist, please use unique name or slug.',
+            },
+            message: 'There\'s error sending data.'
+        };
 
-        console.log(error.message);
+        // duplicate slug or name validation error
+        if(error.code === 11000) {
+
+            return {
+                ...responseError, 
+                errors: {
+                    _form: 'The category either name or slug already exist, please use unique name or slug.'
+                }
+            }
+        }
 
         return {
             status: 'error',
