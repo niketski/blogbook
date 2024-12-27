@@ -18,4 +18,6 @@ const CategorySchema = new Schema<ICategory>({
 
 const CategoryModel = models.Category || model<typeof CategorySchema>('Category', CategorySchema);
 
+export { type ICategory };
+
 export default CategoryModel;

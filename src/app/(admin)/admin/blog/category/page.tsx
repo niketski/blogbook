@@ -1,7 +1,10 @@
+'use client'
+
 import CategoryModel from "@/models/category-model";
 import { Button } from "@/components/ui/button";
 import { Plus, Ellipsis } from "lucide-react";
 import AdminCreateCategoryForm from "@/components/admin/admin-create-category-form";
+import { ICategory } from "@/models/category-model";
 import {
     Table,
     TableBody,
@@ -29,8 +32,8 @@ import {
     DialogTrigger,
   } from "@/components/ui/dialog";
 
-export default async function BlogCategoryPage() {
-    const categories = await CategoryModel.find({});
+export default function BlogCategoryPage() {
+    const categories: any[] = [];
 
     return (
         <div>
@@ -91,7 +94,12 @@ export default async function BlogCategoryPage() {
                                                     <DropdownMenuContent>
                                                         <DropdownMenuLabel>Action</DropdownMenuLabel>
                                                         <DropdownMenuSeparator />
-                                                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                                                        <DropdownMenuItem>
+                                                            <Button 
+                                                                variant="ghost" 
+                                                                className="px-0 block w-full hover:no-underline justify-start cursor-pointer text-left"
+                                                                type="submit">Edit</Button>
+                                                        </DropdownMenuItem>
                                                         <DropdownMenuItem>Delete</DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
