@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Ellipsis } from "lucide-react";
 import { useState } from "react";
 import EditCategoryForm from "./edit-category-form";
+import deleteCategory from "@/actions/delete-category";
 
 import {
     Table,
@@ -30,8 +31,8 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-    DialogClose
   } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 
 
 interface CategoryTableRowProps {
@@ -41,6 +42,21 @@ interface CategoryTableRowProps {
     date: string
 }
 export default function CategoryTableRow({ id, name, slug, date} : CategoryTableRowProps) {
+    const { toast } = useToast();
+    const [isEditFormActive, setIsEditFormActive] = useState(false);
+    const [isDeleteCTAactive, setIsDeleteCTAactive] = useState(false);
+
+    const handleDeleteCategory = async () => {
+
+        await deleteCategory(id);
+
+        setIsDeleteCTAactive(false);
+
+        toast({
+            title: 'Success',
+            description: 'The category has been deleted successfully!'
+        });
+    };
 
     return (
         <TableRow key={id}>
@@ -48,7 +64,7 @@ export default function CategoryTableRow({ id, name, slug, date} : CategoryTable
             <TableCell>{slug}</TableCell>
             <TableCell>{date}</TableCell>
             <TableCell>
-                <Dialog>
+                
 
                     <DropdownMenu modal={false}>
                         <DropdownMenuTrigger asChild>
@@ -59,26 +75,50 @@ export default function CategoryTableRow({ id, name, slug, date} : CategoryTable
                             <DropdownMenuLabel>Action</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem>
-                                <DialogTrigger asChild>
-                                    <Button 
+                                <Button 
+                                    variant="ghost" 
+                                    className="px-0 block w-full hover:no-underline justify-start cursor-pointer text-left"
+                                    type="submit"
+                                    onClick={() => { setIsEditFormActive(true) }}>Edit</Button>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                                <Button 
                                         variant="ghost" 
                                         className="px-0 block w-full hover:no-underline justify-start cursor-pointer text-left"
-                                        type="submit">Edit</Button>
-                                </DialogTrigger>
+                                        type="submit"
+                                        onClick={() => { setIsDeleteCTAactive(true) }}>Delete</Button>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>Delete</DropdownMenuItem>
                         </DropdownMenuContent>
 
-                        <DialogContent>
-                            <DialogHeader>
-                                    <DialogTitle>Edit Category</DialogTitle>
-                                    <EditCategoryForm category={{id, name, slug}}/>
-                            </DialogHeader>
-                            
-                        </DialogContent>
+                        {/* edit form dialog */}
+                        <Dialog open={isEditFormActive} onOpenChange={setIsEditFormActive}>
+                            <DialogContent>
+                                <DialogHeader>
+                                        <DialogTitle>Edit Category</DialogTitle>
+                                        <EditCategoryForm category={{id, name, slug}}/>
+                                </DialogHeader>
+                                
+                            </DialogContent>
+                        </Dialog>
+
+                        {/* delete category dialog */}
+                        <Dialog open={isDeleteCTAactive} onOpenChange={setIsDeleteCTAactive}>
+                            <DialogContent>
+                                <DialogHeader>
+                                        <DialogTitle>Delete Category</DialogTitle>
+                                        <DialogDescription>Are you sure you want to delete this category?</DialogDescription>
+                                        <div className="pt-4 flex justify-end">
+                                            <Button variant="destructive" className="mr-4" onClick={() => { handleDeleteCategory(); }}>Delete</Button>
+                                            <Button variant="outline" onClick={() => { setIsDeleteCTAactive(false) }}>Cancel</Button>
+                                        </div>
+                                </DialogHeader>
+                                
+                            </DialogContent>
+                        </Dialog>
 
                     </DropdownMenu>
-                </Dialog>
+
+               
             </TableCell>
         </TableRow>
     );
