@@ -36,7 +36,7 @@ export default async function BlogCategoryPage() {
 
     return (
         <div>
-            <h1 className="font-bold text-4xl mb-10">Category</h1>
+            <h1 className="font-bold text-4xl mb-10">Categories</h1>
 
             {/* create category form */}
             <Dialog>
