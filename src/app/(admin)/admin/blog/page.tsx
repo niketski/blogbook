@@ -36,7 +36,6 @@ export default async function BlogsPage() {
     return (
         <div>
             <h1 className="font-bold text-4xl mb-10">Blogs</h1>
-            {/* <Button className="mb-5 font-bold"><Plus/> Create Blog</Button> */}
             <Link className={buttonVariants()} href="/admin/blog/create"><Plus/> Create Blog</Link>
             <div className="max-w-[350px] lg:ml-auto mb-7 lg:mb-0">
                 <form>
