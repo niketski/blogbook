@@ -1,5 +1,3 @@
-'use client'
-
 import CategoryModel from "@/models/category-model";
 import { Button } from "@/components/ui/button";
 import { Plus, Ellipsis } from "lucide-react";
@@ -31,9 +29,10 @@ import {
     DialogTitle,
     DialogTrigger,
   } from "@/components/ui/dialog";
+  import CategoryTableRow from "./_components/category-table-row";
 
-export default function BlogCategoryPage() {
-    const categories: any[] = [];
+export default async function BlogCategoryPage() {
+    const categories = await CategoryModel.find({});
 
     return (
         <div>
@@ -60,9 +59,10 @@ export default function BlogCategoryPage() {
             {/* category table */}
             <div className="pt-[60px]">
                 {categories &&
+
                     <div className="w-full overflow-auto">
                         <Table className="min-w-[800px]">
-                            <TableHeader>
+                            <TableHeader> 
                                 <TableRow>
                                     <TableHead>Name</TableHead>
                                     <TableHead>Slug</TableHead>
@@ -79,88 +79,18 @@ export default function BlogCategoryPage() {
                                         month: '2-digit',
                                         year: 'numeric',
                                     })
-                                        .format(new Date(data.createdAt.toISOString()));
+                                        .format(new Date(data.createdAt.toString()));
                                         
                                     return (
-                                        <TableRow key={data._id}>
-                                            <TableCell><span className="font-bold">{data.name}</span></TableCell>
-                                            <TableCell>{data.slug}</TableCell>
-                                            <TableCell>{date}</TableCell>
-                                            <TableCell>
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="link"><Ellipsis/></Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent>
-                                                        <DropdownMenuLabel>Action</DropdownMenuLabel>
-                                                        <DropdownMenuSeparator />
-                                                        <DropdownMenuItem>
-                                                            <Button 
-                                                                variant="ghost" 
-                                                                className="px-0 block w-full hover:no-underline justify-start cursor-pointer text-left"
-                                                                type="submit">Edit</Button>
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem>Delete</DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </TableCell>
-                                        </TableRow>
-                                    );
+                                        
+                                        <CategoryTableRow
+                                            id={data._id.toString()}
+                                            name={data.name}
+                                            slug={data.slug}
+                                            date={date}/>
+
+                                    ); 
                                 })}
-                                {/* <TableRow>
-                                    <TableCell><span className="font-bold">Category 1</span></TableCell>
-                                    <TableCell>category-1</TableCell>
-                                    <TableCell>11/11/2024</TableCell>
-                                    <TableCell>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="link"><Ellipsis/></Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent>
-                                                <DropdownMenuLabel>Action</DropdownMenuLabel>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem>Edit</DropdownMenuItem>
-                                                <DropdownMenuItem>Delete</DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell><span className="font-bold">Category 2</span></TableCell>
-                                    <TableCell>category-2</TableCell>
-                                    <TableCell>11/11/2024</TableCell>
-                                    <TableCell>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="link"><Ellipsis/></Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent>
-                                                <DropdownMenuLabel>Action</DropdownMenuLabel>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem>Edit</DropdownMenuItem>
-                                                <DropdownMenuItem>Delete</DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell><span className="font-bold">Category 3</span></TableCell>
-                                    <TableCell>category-3</TableCell>
-                                    <TableCell>11/11/2024</TableCell>
-                                    <TableCell>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="link"><Ellipsis/></Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent>
-                                                <DropdownMenuLabel>Action</DropdownMenuLabel>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem>Edit</DropdownMenuItem>
-                                                <DropdownMenuItem>Delete</DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </TableCell>
-                                </TableRow> */}
                             </TableBody>
                         </Table>
                     </div>

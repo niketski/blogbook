@@ -1,36 +1,42 @@
-'use client'
-
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useActionState, useEffect } from "react";
-import createCategory from "@/actions/create-category";
-import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, LoaderCircle } from "lucide-react";
+import { useActionState, useEffect } from "react";
+import editCategory from "@/actions/edit-category";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
-export default function AdminCreateCategoryForm() {
+interface EditCategoryFormProps {
+    category: {
+        name: string,
+        slug: string,
+        id: string
+    }
+}
+
+export default function EditCategoryForm({ category } : EditCategoryFormProps) {
     const { toast } = useToast();
-    const [formState, formAction, isPending] = useActionState(createCategory, {
-        status: 'pending',
-        values: {
-            name: '',
-            slug: '',
-        },
+    const [formState, formAction, isPending] = useActionState(editCategory, {
+        status: 'idle',
         message: '',
+        values: {
+            name: category.name,
+            slug: category.slug
+        },
         errors: {}
     });
 
     useEffect(() => {
 
         if(formState.status === 'success') {
-            
+                
             toast({
                 title: 'Success',
                 description: formState.message
             });
         }
 
-    }, [formState.status]);
+    }, [formState.status])
 
     return (
         <form action={formAction}>
@@ -72,12 +78,19 @@ export default function AdminCreateCategoryForm() {
                 }
 
             </div>
+
+            <Input
+                type="hidden"
+                name="categoryId"
+                defaultValue={category.id}/>
+
             <div className="flex justify-end">
                 <Button type="submit" variant="secondary" className={`${isPending ? 'pointer-events-none' : ''}`}>
                     {isPending ? 'Processing...' : 'Save'}
                     {isPending ? <LoaderCircle className="animate-spin"/> : ''}
                 </Button>
             </div>
+
         </form>
     );
 }

@@ -3,6 +3,7 @@ import { model, Document, models, Schema } from 'mongoose';
 interface ICategory extends Document {
     name: string,
     slug: string,
+    createdAt: string
 }
 
 const CategorySchema = new Schema<ICategory>({
