@@ -7,10 +7,10 @@ interface IBlog extends Document {
         url: string,
         id: string
     },
-    // tags: Types.ObjectId[],
-    // category: Types.ObjectId,
-    tags: string,
-    category: string,
+    tags: Types.ObjectId[],
+    category: Types.ObjectId,
+    // tags: string,
+    // category: string,
     status: string,
     metaTitle: string,
     metaDescription: string
@@ -28,21 +28,22 @@ const BlogSchema = new Schema<IBlog>({
     featuredImage: {
         type: Object
     },
-    // category: {
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'Category'
-    // },
-    // tags: [
-    // {
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'Tag' 
-    // }
     category: {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: 'Category'
     },
-    tags: {
-        type: String
-    },
+    tags: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Tag' 
+        }
+    ],
+    // category: {
+    //     type: String,
+    // },
+    // tags: {
+    //     type: String
+    // },
     status: String,
     metaTitle: String,
     metaDescription: String,
