@@ -2,7 +2,8 @@ import CategoryModel from "@/models/category-model";
 import { Button } from "@/components/ui/button";
 import { Plus, Ellipsis } from "lucide-react";
 import AdminCreateCategoryForm from "@/components/admin/admin-create-category-form";
-import { ICategory } from "@/models/category-model";
+import CategoryTableRow from "./_components/category-table-row";
+
 import {
     Table,
     TableBody,
@@ -13,23 +14,15 @@ import {
 } from "@/components/ui/table";
 
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-import {
     Dialog,
     DialogContent,
     DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-  } from "@/components/ui/dialog";
-  import CategoryTableRow from "./_components/category-table-row";
+} from "@/components/ui/dialog";
+
+  
 
 export default async function BlogCategoryPage() {
     const categories = await CategoryModel.find({});
@@ -84,6 +77,7 @@ export default async function BlogCategoryPage() {
                                     return (
                                         
                                         <CategoryTableRow
+                                            key={data._id.toString()}
                                             id={data._id.toString()}
                                             name={data.name}
                                             slug={data.slug}
