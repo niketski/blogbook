@@ -64,6 +64,17 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
             metaDescription: z.string().optional()
         });
 
+        console.log({
+            title,
+            content,
+            status,
+            category,
+            tags,
+            featuredImage,
+            metaTitle,
+            metaDescription
+        });
+
         const result = formSchema.safeParse({
             title,
             content,
@@ -107,7 +118,7 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
             content,
             status,
             category,
-            tags,
+            tags: tags.split(','),
             featuredImage: {
                 url: cloudinaryImage.secure_url,
                 id: cloudinaryImage.public_id

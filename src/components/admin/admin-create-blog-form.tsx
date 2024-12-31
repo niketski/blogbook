@@ -23,8 +23,13 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, LoaderCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { isExceededFileLimit } from "@/lib/utils";
+import { ICategory } from "@/models/category-model";
+import { ITag } from "@/models/tag-model";
 
-
+interface AdminCreateBlogFormProps {
+    categoriesOptions: IComboBoxOption[],
+    tagsOptions: IComboBoxOption[]
+}
 
 const tagsOptions: IComboBoxOption[] = [
 {
@@ -41,9 +46,8 @@ const tagsOptions: IComboBoxOption[] = [
 }
 ];
 
-export default function AdminCreateBlogForm() {
+export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } : AdminCreateBlogFormProps) {
     const { toast } = useToast();
-    
     const [imagePreview, setImagePreview] = useState<string>('');
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [isFileExceeded, setIsFileExceeded] = useState(false);
@@ -134,6 +138,9 @@ export default function AdminCreateBlogForm() {
         }
 
     }, [imagePreview]);
+
+    console.log(categoriesOptions);
+    console.log(tagsOptions);
 
     return (
         <div>
@@ -236,24 +243,27 @@ export default function AdminCreateBlogForm() {
                                 </Select>
                             </div>
 
-                            <div className="mb-5">
-                                <Label className="mb-2 block font-bold">Category</Label>
+                            {categoriesOptions &&
+                                <div className="mb-5">
+                                    <Label className="mb-2 block font-bold">Category</Label>
 
-                                <RadioGroup defaultValue="category-2" name="category">
-                                    <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="uncategorized" id="uncategorized"/>
-                                        <Label htmlFor="uncategorized">Uncategorized</Label>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="category-1" id="category-1"/>
-                                        <Label htmlFor="category-1">Category 1</Label>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="category-2" id="category-2"/>
-                                        <Label htmlFor="category-2">Category 2</Label>
-                                    </div>
-                                </RadioGroup>
-                            </div>
+                                    <RadioGroup defaultValue="category-2" name="category">
+                                        <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="uncategorized" id="uncategorized"/>
+                                            <Label htmlFor="uncategorized">Uncategorized</Label>
+                                        </div>
+
+                                        {categoriesOptions.map(option => {
+                                            return (
+                                                <div className="flex items-center space-x-2" key={option.value}>
+                                                    <RadioGroupItem value={option.value} id={option.value}/>
+                                                    <Label htmlFor={option.value}>{option.label}</Label>
+                                                </div>
+                                            );
+                                        })}
+                                    </RadioGroup>
+                                </div>
+                            }
 
                             <div className="mb-5">
                                 <Label className="mb-2 block font-bold">Tags</Label>
