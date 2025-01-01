@@ -30,8 +30,10 @@ import {
   import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
   import AdminBlogFilters from "@/components/admin/admin-blog-filters";
   import { SlidersHorizontal } from 'lucide-react';
+import BlogModel, { IBlog } from "@/models/blog-model";
 
 export default async function BlogsPage() {
+    const blogs: IBlog[] | null = await BlogModel.find({});
 
     return (
         <div>
@@ -73,78 +75,87 @@ export default async function BlogsPage() {
             </div>
             <div>
                 <div className="w-full overflow-auto">
-                    <Table className="min-w-[800px]">
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Title</TableHead>
-                                <TableHead>Category</TableHead>
-                                <TableHead>Tag</TableHead>
-                                <TableHead>Date</TableHead>
-                                <TableHead>
-                                    <span className="sr-only">Action Column</span>
-                                </TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            <TableRow>
-                                <TableCell><span className="font-bold">Sample Blog</span></TableCell>
-                                <TableCell>Category 1</TableCell>
-                                <TableCell>tag 1</TableCell>
-                                <TableCell>11/11/2024</TableCell>
-                                <TableCell>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="link"><Ellipsis/></Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent>
-                                            <DropdownMenuLabel>Action</DropdownMenuLabel>
-                                            <DropdownMenuSeparator />
-                                            <DropdownMenuItem>Edit</DropdownMenuItem>
-                                            <DropdownMenuItem>Delete</DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell><span className="font-bold">Sample Blog 2</span></TableCell>
-                                <TableCell>Category 2</TableCell>
-                                <TableCell>tag 2</TableCell>
-                                <TableCell>11/11/2024</TableCell>
-                                <TableCell>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="link"><Ellipsis/></Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent>
-                                            <DropdownMenuLabel>Action</DropdownMenuLabel>
-                                            <DropdownMenuSeparator />
-                                            <DropdownMenuItem>Edit</DropdownMenuItem>
-                                            <DropdownMenuItem>Delete</DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell><span className="font-bold">Sample Blog 3</span></TableCell>
-                                <TableCell>Category 3</TableCell>
-                                <TableCell>tag 3</TableCell>
-                                <TableCell>11/11/2024</TableCell>
-                                <TableCell>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="link"><Ellipsis/></Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent>
-                                            <DropdownMenuLabel>Action</DropdownMenuLabel>
-                                            <DropdownMenuSeparator />
-                                            <DropdownMenuItem>Edit</DropdownMenuItem>
-                                            <DropdownMenuItem>Delete</DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
-                            </TableRow>
-                        </TableBody>
-                    </Table>
+                    {blogs &&
+                        <Table className="min-w-[800px]">
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Title</TableHead>
+                                    <TableHead>Category</TableHead>
+                                    <TableHead>Tag</TableHead>
+                                    <TableHead>Date</TableHead>
+                                    <TableHead>
+                                        <span className="sr-only">Action Column</span>
+                                    </TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {blogs.map(item => {
+                                    const id = (item._id as string).toString();
+
+                                    return (
+                                        <TableRow key={id}>
+                                            <TableCell><span className="font-bold">Sample Blog</span></TableCell>
+                                            <TableCell>Category 1</TableCell>
+                                            <TableCell>tag 1</TableCell>
+                                            <TableCell>11/11/2024</TableCell>
+                                            <TableCell>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="link"><Ellipsis/></Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent>
+                                                        <DropdownMenuLabel>Action</DropdownMenuLabel>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                                                        <DropdownMenuItem>Delete</DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })}
+                                
+                                <TableRow>
+                                    <TableCell><span className="font-bold">Sample Blog 2</span></TableCell>
+                                    <TableCell>Category 2</TableCell>
+                                    <TableCell>tag 2</TableCell>
+                                    <TableCell>11/11/2024</TableCell>
+                                    <TableCell>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="link"><Ellipsis/></Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent>
+                                                <DropdownMenuLabel>Action</DropdownMenuLabel>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem>Edit</DropdownMenuItem>
+                                                <DropdownMenuItem>Delete</DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell><span className="font-bold">Sample Blog 3</span></TableCell>
+                                    <TableCell>Category 3</TableCell>
+                                    <TableCell>tag 3</TableCell>
+                                    <TableCell>11/11/2024</TableCell>
+                                    <TableCell>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="link"><Ellipsis/></Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent>
+                                                <DropdownMenuLabel>Action</DropdownMenuLabel>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem>Edit</DropdownMenuItem>
+                                                <DropdownMenuItem>Delete</DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    }
                 </div>
                 <Pagination className="justify-start mt-9">
                     <PaginationContent>

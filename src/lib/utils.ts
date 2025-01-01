@@ -30,3 +30,22 @@ export function isExceededFileLimit({ file, maxMb = 10 } : { file: string, maxMb
   return Math.round(sizeInMB) >= maxMb;
 
 }
+
+
+export function formatSlug(string: string) {
+  let currentText = string;
+
+  // remove special characters
+  currentText = currentText.replace(/[^a-zA-Z0-9&\s]/g, '');
+
+  // replace & to and
+  currentText = currentText.replace(/&/g, 'and');
+
+  // set string to lowercase
+  currentText = currentText.toLowerCase();
+
+  // replace whitespace with dash
+  currentText = currentText.replace(/\s/g, '-');
+
+  return currentText;
+}

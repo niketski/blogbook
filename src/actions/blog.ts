@@ -6,7 +6,7 @@ import { title } from 'process';
 import BlogModel from '@/models/blog-model';
 import z from 'zod';
 import { isExceededTheFileLimit } from '@/lib/cloudinary';
-import { isExceededFileLimit } from '@/lib/utils';
+import { isExceededFileLimit, formatSlug } from '@/lib/utils';
 
 interface CreateBlogFormState {
     message: string,
@@ -111,10 +111,13 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
         // upload image as base64 URI to cloudinary
         const cloudinaryImage = await cloudinary.uploader.upload(featuredImage, { folder: 'blogbook' });
 
+        // create slug 
+        const titleSlug: string = formatSlug(title);
     
         // save blog to the database
         const newBlog = new BlogModel({
             title,
+            slug: titleSlug,
             content,
             status,
             category,
