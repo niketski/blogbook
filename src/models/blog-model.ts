@@ -1,7 +1,8 @@
 import{ Schema, Document, Types, model, models } from "mongoose";
 
-interface IBlog extends Document {
+export interface IBlog extends Document {
     title: string,
+    slug: string,
     content: string,
     featuredImage: {
         url: string,
@@ -9,8 +10,6 @@ interface IBlog extends Document {
     },
     tags: Types.ObjectId[],
     category: Types.ObjectId,
-    // tags: string,
-    // category: string,
     status: string,
     metaTitle: string,
     metaDescription: string
@@ -21,6 +20,11 @@ const BlogSchema = new Schema<IBlog>({
         type: String,
         required: true,
         unique: true,
+    },
+    slug: {
+        type: String,
+        required: true,
+        unique: true
     },
     content: {
         type: String,
@@ -38,12 +42,6 @@ const BlogSchema = new Schema<IBlog>({
             ref: 'Tag' 
         }
     ],
-    // category: {
-    //     type: String,
-    // },
-    // tags: {
-    //     type: String
-    // },
     status: String,
     metaTitle: String,
     metaDescription: String,
