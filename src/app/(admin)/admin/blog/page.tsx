@@ -31,9 +31,84 @@ import {
   import AdminBlogFilters from "@/components/admin/admin-blog-filters";
   import { SlidersHorizontal } from 'lucide-react';
 import BlogModel, { IBlog } from "@/models/blog-model";
+import { ICategory } from "@/models/category-model";
+import { ITag } from "@/models/tag-model";
+import { PipelineStage } from "mongoose";
 
-export default async function BlogsPage() {
-    const blogs: IBlog[] | null = await BlogModel.find({});
+interface BlogsPageProps {
+    searchParams: {
+        [key: string] : string | undefined
+    }
+}
+
+interface QueryParams {
+    [key: string]: string | object | undefined
+}
+
+interface IBlogResult extends IBlog {
+    categoryData: ICategory[],
+    tagsData: ITag[]
+}
+
+export default async function BlogsPage({ searchParams } : BlogsPageProps) {
+    const search = await searchParams;
+    const query: QueryParams = {};
+
+    for(let key in search) {
+        
+
+        if(search[key] !== undefined && search[key] !== '' && search[key] !== 'default') {
+
+            if(key === 'category') {
+
+                query['categoryData'] = {
+                    $elemMatch: { slug: search[key] }
+                }
+            
+            } else if(key === 'tags') {
+
+                query['tagsData'] = {
+                    $elemMatch: { slug: search[key] }
+                }
+            
+            } else {
+
+                query[key] = search[key]
+
+            }
+
+        }
+    }
+
+    const aggregateQuery: PipelineStage[] = [
+        // left join categories data
+        {
+            $lookup: {
+                from: 'categories',
+                localField: 'category',
+                foreignField: '_id',
+                as: 'categoryData'
+            }
+        },
+        // left join tags data
+        {
+            $lookup: {
+                from: 'tags',
+                localField: 'tags',
+                foreignField: '_id',
+                as: 'tagsData'
+            }
+        }
+    ];
+
+    // if it has filters include the filters to the pipeline stage
+    if(Object.keys(query).length) {
+
+        aggregateQuery.push({ $match: query });
+
+    } 
+
+    const blogs: IBlogResult[] | null = await BlogModel.aggregate(aggregateQuery);
 
     return (
         <div>
@@ -54,7 +129,11 @@ export default async function BlogsPage() {
                 </form>
             </div>
             <div className="pt-[30px] mb-[60px] hidden lg:block">
-                <AdminBlogFilters/>
+                <AdminBlogFilters currentFilters={{
+                    status: search['status'],
+                    category: search['category'],
+                    tags: search['tags']
+                }}/>
             </div>
             <div className="lg:hidden mb-7 flex justify-end">
                 <Dialog>
@@ -68,7 +147,11 @@ export default async function BlogsPage() {
                             <DialogTitle>Filters</DialogTitle>
                         </DialogHeader>
                         <div>
-                            <AdminBlogFilters/>
+                            <AdminBlogFilters currentFilters={{
+                                 status: search['status'],
+                                 category: search['category'],
+                                 tags: search['tags']
+                            }}/>
                         </div>
                     </DialogContent>
                 </Dialog>
@@ -83,6 +166,7 @@ export default async function BlogsPage() {
                                     <TableHead>Category</TableHead>
                                     <TableHead>Tag</TableHead>
                                     <TableHead>Date</TableHead>
+                                    <TableHead>Status</TableHead>
                                     <TableHead>
                                         <span className="sr-only">Action Column</span>
                                     </TableHead>
@@ -91,13 +175,26 @@ export default async function BlogsPage() {
                             <TableBody>
                                 {blogs.map(item => {
                                     const id = (item._id as string).toString();
+                                    const category = item.categoryData[0] as unknown as ICategory;
+                                    const tags = item.tagsData as unknown as ITag[];
+                                    const date = new Intl.DateTimeFormat('en-GB', {
+                                        day: '2-digit',
+                                        month: '2-digit',
+                                        year: 'numeric',
+                                    })
+                                        .format(new Date(item.createdAt.toString()));
 
                                     return (
                                         <TableRow key={id}>
-                                            <TableCell><span className="font-bold">Sample Blog</span></TableCell>
-                                            <TableCell>Category 1</TableCell>
-                                            <TableCell>tag 1</TableCell>
-                                            <TableCell>11/11/2024</TableCell>
+                                            <TableCell><span className="font-bold">{item.title}</span></TableCell>
+                                            <TableCell>{category ? category.name : 'Uncategorized'}</TableCell>
+                                            <TableCell>
+                                                {tags && 
+                                                    (tags.map(item => item.name)).join(', ')
+                                                }
+                                            </TableCell>
+                                            <TableCell>{date}</TableCell>
+                                            <TableCell>{item.status}</TableCell>
                                             <TableCell>
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
@@ -115,44 +212,6 @@ export default async function BlogsPage() {
                                     );
                                 })}
                                 
-                                <TableRow>
-                                    <TableCell><span className="font-bold">Sample Blog 2</span></TableCell>
-                                    <TableCell>Category 2</TableCell>
-                                    <TableCell>tag 2</TableCell>
-                                    <TableCell>11/11/2024</TableCell>
-                                    <TableCell>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="link"><Ellipsis/></Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent>
-                                                <DropdownMenuLabel>Action</DropdownMenuLabel>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem>Edit</DropdownMenuItem>
-                                                <DropdownMenuItem>Delete</DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell><span className="font-bold">Sample Blog 3</span></TableCell>
-                                    <TableCell>Category 3</TableCell>
-                                    <TableCell>tag 3</TableCell>
-                                    <TableCell>11/11/2024</TableCell>
-                                    <TableCell>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="link"><Ellipsis/></Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent>
-                                                <DropdownMenuLabel>Action</DropdownMenuLabel>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem>Edit</DropdownMenuItem>
-                                                <DropdownMenuItem>Delete</DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </TableCell>
-                                </TableRow>
                             </TableBody>
                         </Table>
                     }

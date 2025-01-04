@@ -17,7 +17,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 
-import { Dispatch, SetStateAction, useState } from "react";
+import { ChangeEvent, ChangeEventHandler, Dispatch, SetStateAction, useState } from "react";
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -40,7 +40,6 @@ interface IComboBoxProps {
     
 export default function ComboBox({options, selectedOptions, setComboBoxState, placeholder } : IComboBoxProps) {
     const [isOpen, setIsOpen] = useState<boolean>(false);
-
     const handleToggleOption = (value: string, currentOption: IComboBoxOption) => {
 
         setComboBoxState(prevState => { 
@@ -94,34 +93,35 @@ export default function ComboBox({options, selectedOptions, setComboBoxState, pl
                 </PopoverTrigger>
                 <PopoverContent className="w-full p-0">
                     <Command>
-                        <CommandInput placeholder="Search..."/>
+                        <CommandInput 
+                            placeholder="Search..."/>
                         <CommandList>
                             <CommandEmpty>No options found.</CommandEmpty>
-                            <CommandList>
-                                {options.map(item => {
-                                    return (
-                                        <CommandItem
-                                            key={item.value}
-                                            value={item.value}
-                                            onSelect={(currentValue) => {
+                           
+                            {options.map(item => {
+                                return (
+                                    <CommandItem
+                                        key={item.value}
+                                        value={item.value}
+                                        onSelect={(currentValue) => {
 
-                                                handleToggleOption(currentValue, item);
+                                            handleToggleOption(currentValue, item);
 
-                                                setIsOpen(false);
-                                            }}>
+                                            setIsOpen(false);
+                                        }}>
 
-                                            {item.label}
+                                        {item.label}
 
-                                            <Check
-                                                className={cn(
-                                                "ml-auto",  
-                                                `${isSelected(item.value) ? 'opacity-100' : 'opacity-0'}`
-                                                )}
-                                            />
-                                        </CommandItem>
-                                    );
-                                })}
-                            </CommandList>
+                                        <Check
+                                            className={cn(
+                                            "ml-auto",  
+                                            `${isSelected(item.value) ? 'opacity-100' : 'opacity-0'}`
+                                            )}
+                                        />
+                                    </CommandItem>
+                                );
+                            })}
+                            
                         </CommandList>
                     </Command>
                 </PopoverContent>

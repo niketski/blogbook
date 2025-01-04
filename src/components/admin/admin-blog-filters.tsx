@@ -3,20 +3,29 @@ import { Button } from "@/components/ui/button";
 import CategoryModel, { ICategory } from "@/models/category-model";
 import TagModel, { ITag } from "@/models/tag-model";
 
-export default async function AdminBlogFilters() {
+interface AdminBlogFiltersProps {
+    currentFilters: {
+        status: string | undefined,
+        category: string | undefined,
+        tags: string | undefined
+    }
+}
+
+export default async function AdminBlogFilters({ currentFilters } : AdminBlogFiltersProps) {
     const categories: ICategory[] | null = await CategoryModel.find({});
     const tags: ITag[] | null = await TagModel.find({});
 
-
+    
     return (
         <form action="#">
             <div className="lg:flex">
                 <div className="mb-3 w-full lg:mr-3 lg:w-auto">
-                    <Select name="status">
+                    <Select name="status" defaultValue={currentFilters.status ? currentFilters.status : 'default'}>
                         <SelectTrigger className="w-full lg:w-[120px]">
                             <SelectValue placeholder="Status"/>
                         </SelectTrigger>
                         <SelectContent>
+                            <SelectItem value="default">Status</SelectItem>
                             <SelectItem value="published">Published</SelectItem>
                             <SelectItem value="draft">Draft</SelectItem>
                         </SelectContent>
@@ -24,17 +33,17 @@ export default async function AdminBlogFilters() {
                 </div>
                 {categories &&
                     <div className="mb-3 w-full lg:mr-3 lg:w-auto">
-                    <Select name="category">
+                    <Select name="category" defaultValue={currentFilters.category ? currentFilters.category : 'default'}>
                         <SelectTrigger className="w-full lg:w-[120px]">
                             <SelectValue placeholder="Category"/>
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="uncategorized">Uncategorized</SelectItem>
+                            <SelectItem value="default">Category</SelectItem>
                             {categories.map(item => {
                                 return (
                                     <SelectItem 
                                         key={(item._id as string).toString()}
-                                        value={(item._id as string).toString()}>{item.name}</SelectItem>
+                                        value={(item.slug).toString()}>{item.name}</SelectItem>
                                 )
                             })}
                         </SelectContent>
@@ -43,19 +52,19 @@ export default async function AdminBlogFilters() {
                 }
                 {tags &&
                     <div className="mb-3 w-full lg:mr-3 lg:w-auto">
-                        <Select name="tag">
+                        <Select name="tags" defaultValue={currentFilters.tags ? currentFilters.tags : 'default'}>
                             <SelectTrigger className="w-full lg:w-[120px]">
                                 <SelectValue placeholder="Tag" className="text-ellipsis"/>
                             </SelectTrigger>
                             <SelectContent>
-
+                                <SelectItem value="default">Tag</SelectItem>
                                 {tags.map(item => {
                                     const id = item._id as string;
 
                                     return (
                                         <SelectItem 
                                             key={id.toString()} 
-                                            value={id.toString()}>{item.name}</SelectItem>
+                                            value={item.slug}>{item.name}</SelectItem>
                                     );
                                 })}
                             </SelectContent>

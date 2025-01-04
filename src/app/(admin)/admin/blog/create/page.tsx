@@ -10,24 +10,20 @@ export default async function CreateBlogPage() {
 
     // format categories as select options
     const formattedCategories = categories?.map(category => {
-        const id = (category._id as string).toString();
-
         return {
-            value: id,
+            value: category.slug,
             label: category.name as string
         }
     });
 
     // format tags as tag options
     const formattedTags = tags?.map(tag => {
-        const id = (tag._id as string).toString();
-
         return {
-            value: id,
+            value: tag.slug,
             label: tag.name as string
         }
     });
-     
+    
     return (
         <div>
             <h1 className="font-bold text-4xl mb-10">Create Blog</h1>

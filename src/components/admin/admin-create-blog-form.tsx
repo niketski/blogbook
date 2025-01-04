@@ -31,21 +31,6 @@ interface AdminCreateBlogFormProps {
     tagsOptions: IComboBoxOption[]
 }
 
-const tagsOptions: IComboBoxOption[] = [
-{
-    value: "tag-1",
-    label: "Tag 1",
-},
-{
-    value: "tag-2",
-    label: "Tag 2",
-},
-{
-    value: "tag-3",
-    label: "Tag 3",
-}
-];
-
 export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } : AdminCreateBlogFormProps) {
     const { toast } = useToast();
     const [imagePreview, setImagePreview] = useState<string>('');
