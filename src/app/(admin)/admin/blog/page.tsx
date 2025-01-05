@@ -18,6 +18,7 @@ import { PipelineStage } from "mongoose";
 import SearchForm from "./_components/search-form";
 import Filters from "./_components/filters";
 import BlogTable from "./_components/blog-table";
+import NoBlogResult from "./_components/no-blog-result";
 
 interface BlogsPageProps {
     searchParams: {
@@ -101,6 +102,8 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
     
     const blogs: IBlogResult[] | null = await BlogModel.aggregate(aggregateQuery);
 
+    console.log(blogs.length > 0);
+
     return (
         <div>
             <h1 className="font-bold text-4xl mb-10">Blogs</h1>
@@ -143,31 +146,35 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
                 </Dialog>
             </div>
             <div>
-                <div className="w-full overflow-auto">
-                    {blogs &&
 
-                        <BlogTable data={blogs}/>
-                    }
-                </div>
-                <Pagination className="justify-start mt-9">
-                    <PaginationContent>
-                        <PaginationItem>
-                            <PaginationPrevious href="#"/>
-                        </PaginationItem>
-                        <PaginationItem>
-                            <PaginationLink href="#">1</PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
-                            <PaginationLink href="#">2</PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
-                            <PaginationLink href="#">3</PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
-                            <PaginationNext href="#"/>
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
+                {blogs.length > 0  &&
+                    <>
+                        <div className="w-full overflow-auto">
+                            <BlogTable data={blogs}/>
+                        </div>
+                        <Pagination className="justify-start mt-9">
+                            <PaginationContent>
+                                <PaginationItem>
+                                    <PaginationPrevious href="#"/>
+                                </PaginationItem>
+                                <PaginationItem>
+                                    <PaginationLink href="#">1</PaginationLink>
+                                </PaginationItem>
+                                <PaginationItem>
+                                    <PaginationLink href="#">2</PaginationLink>
+                                </PaginationItem>
+                                <PaginationItem>
+                                    <PaginationLink href="#">3</PaginationLink>
+                                </PaginationItem>
+                                <PaginationItem>
+                                    <PaginationNext href="#"/>
+                                </PaginationItem>
+                            </PaginationContent>
+                        </Pagination>
+                    </>
+                }
+
+                {blogs.length === 0 && <NoBlogResult/>}
             </div>
         </div>
     );
