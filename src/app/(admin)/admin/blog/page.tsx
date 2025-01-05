@@ -1,16 +1,6 @@
-import { Input } from "@/components/ui/input";
-import { Label } from "@radix-ui/react-label";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Ellipsis, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import Link from "next/link";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-  } from "@/components/ui/table";
 import { 
     Pagination,
     PaginationContent,
@@ -18,22 +8,16 @@ import {
     PaginationLink,
     PaginationNext,
     PaginationPrevious
- } from "@/components/ui/pagination";
- import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-  } from "@/components/ui/dropdown-menu";
-  import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
-  import AdminBlogFilters from "@/components/admin/admin-blog-filters";
-  import { SlidersHorizontal } from 'lucide-react';
+} from "@/components/ui/pagination";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
+import { SlidersHorizontal } from 'lucide-react';
 import BlogModel, { IBlog } from "@/models/blog-model";
 import { ICategory } from "@/models/category-model";
 import { ITag } from "@/models/tag-model";
 import { PipelineStage } from "mongoose";
+import SearchForm from "./_components/search-form";
+import Filters from "./_components/filters";
+import BlogTable from "./_components/blog-table";
 
 interface BlogsPageProps {
     searchParams: {
@@ -114,8 +98,7 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
         aggregateQuery.push({ $match: query });
 
     } 
-
-    // apply aggragation if there's no search query
+    
     const blogs: IBlogResult[] | null = await BlogModel.aggregate(aggregateQuery);
 
     return (
@@ -123,28 +106,18 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
             <h1 className="font-bold text-4xl mb-10">Blogs</h1>
             <Link className={buttonVariants()} href="/admin/blog/create"><Plus/> Create Blog</Link>
             <div className="max-w-[350px] lg:ml-auto mb-7 lg:mb-0">
-                <form>
-                    <div className="flex items-center"> 
-                        <Input
-                            placeholder="Search by keyword"
-                            name="search"
-                            id="search"
-                            defaultValue={
-                                search['search'] ? search['search'] : ''
-                            }/>
-                        <Button 
-                            variant="outline"
-                            className="ml-3"
-                            type="submit">Search</Button>
-                    </div>
-                </form>
+
+                <SearchForm search={search['search']}/>
+
             </div>
             <div className="pt-[30px] mb-[60px] hidden lg:block">
-                <AdminBlogFilters currentFilters={{
+
+                <Filters currentFilters={{
                     status: search['status'],
                     category: search['category'],
                     tags: search['tags']
                 }}/>
+
             </div>
             <div className="lg:hidden mb-7 flex justify-end">
                 <Dialog>
@@ -158,11 +131,13 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
                             <DialogTitle>Filters</DialogTitle>
                         </DialogHeader>
                         <div>
-                            <AdminBlogFilters currentFilters={{
-                                 status: search['status'],
-                                 category: search['category'],
-                                 tags: search['tags']
+
+                            <Filters currentFilters={{
+                                status: search['status'],
+                                category: search['category'],
+                                tags: search['tags']
                             }}/>
+
                         </div>
                     </DialogContent>
                 </Dialog>
@@ -170,61 +145,8 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
             <div>
                 <div className="w-full overflow-auto">
                     {blogs &&
-                        <Table className="min-w-[800px]">
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Title</TableHead>
-                                    <TableHead>Category</TableHead>
-                                    <TableHead>Tag</TableHead>
-                                    <TableHead>Date</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>
-                                        <span className="sr-only">Action Column</span>
-                                    </TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {blogs.map(item => {
-                                    const id = (item._id as string).toString();
-                                    const category = item.categoryData[0] as unknown as ICategory;
-                                    const tags = item.tagsData as unknown as ITag[];
-                                    const date = new Intl.DateTimeFormat('en-GB', {
-                                        day: '2-digit',
-                                        month: '2-digit',
-                                        year: 'numeric',
-                                    })
-                                        .format(new Date(item.createdAt.toString()));
 
-                                    return (
-                                        <TableRow key={id}>
-                                            <TableCell><span className="font-bold">{item.title}</span></TableCell>
-                                            <TableCell>{category ? category.name : 'Uncategorized'}</TableCell>
-                                            <TableCell>
-                                                {tags && 
-                                                    (tags.map(item => item.name)).join(', ')
-                                                }
-                                            </TableCell>
-                                            <TableCell>{date}</TableCell>
-                                            <TableCell>{item.status}</TableCell>
-                                            <TableCell>
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="link"><Ellipsis/></Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent>
-                                                        <DropdownMenuLabel>Action</DropdownMenuLabel>
-                                                        <DropdownMenuSeparator />
-                                                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                                                        <DropdownMenuItem>Delete</DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </TableCell>
-                                        </TableRow>
-                                    );
-                                })}
-                                
-                            </TableBody>
-                        </Table>
+                        <BlogTable data={blogs}/>
                     }
                 </div>
                 <Pagination className="justify-start mt-9">

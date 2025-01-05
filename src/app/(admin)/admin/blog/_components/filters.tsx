@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import CategoryModel, { ICategory } from "@/models/category-model";
 import TagModel, { ITag } from "@/models/tag-model";
 import Link from "next/link";
+import { X } from "lucide-react";
 
-interface AdminBlogFiltersProps {
+interface FiltersProps {
     currentFilters: {
         status: string | undefined,
         category: string | undefined,
@@ -12,7 +13,7 @@ interface AdminBlogFiltersProps {
     }
 }
 
-export default async function AdminBlogFilters({ currentFilters } : AdminBlogFiltersProps) {
+export default async function Filters({ currentFilters } : FiltersProps) {
     const categories: ICategory[] | null = await CategoryModel.find({});
     const tags: ITag[] | null = await TagModel.find({});
     let hasFilters = false;
@@ -22,8 +23,6 @@ export default async function AdminBlogFilters({ currentFilters } : AdminBlogFil
         if(item[1] !== undefined && item[1] !== 'default') {
             hasFilters = true;
         }
-
-        console.log(item[1]);
 
     });
     
@@ -85,7 +84,7 @@ export default async function AdminBlogFilters({ currentFilters } : AdminBlogFil
                 
                 <div className="flex justify-end pt-5 lg:inline-block lg:pt-0">
                     <Button type="submit" variant="outline">Apply filters</Button>
-                    {hasFilters && <Button variant="outline" className="ml-3" asChild><Link href="/admin/blog">Clear Filters</Link></Button>}
+                    {hasFilters && <Button variant="outline" className="ml-3" asChild><Link href="/admin/blog"><X/> Clear Filters</Link></Button>}
                     
                 </div>
             </div>
