@@ -71,7 +71,14 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
                     $elemMatch: { slug: search[key] }
                 }
             
-            } else {
+            } else if(key === 'search') {
+
+                query['title'] = {
+                    $regex: search[key],
+                    $options: 'i'
+                }
+
+            }else {
 
                 query[key] = search[key]
 
@@ -108,6 +115,7 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
 
     } 
 
+    // apply aggragation if there's no search query
     const blogs: IBlogResult[] | null = await BlogModel.aggregate(aggregateQuery);
 
     return (
@@ -116,11 +124,14 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
             <Link className={buttonVariants()} href="/admin/blog/create"><Plus/> Create Blog</Link>
             <div className="max-w-[350px] lg:ml-auto mb-7 lg:mb-0">
                 <form>
-                    <div className="flex items-center">
-                        <Label htmlFor="search" className="hidden">Seach by keyword</Label>
+                    <div className="flex items-center"> 
                         <Input
                             placeholder="Search by keyword"
-                            id="search"/>
+                            name="search"
+                            id="search"
+                            defaultValue={
+                                search['search'] ? search['search'] : ''
+                            }/>
                         <Button 
                             variant="outline"
                             className="ml-3"
