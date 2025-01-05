@@ -4,7 +4,7 @@ import CategoryModel, { ICategory } from "@/models/category-model";
 import TagModel, { ITag } from "@/models/tag-model";
 import Link from "next/link";
 
-interface AdminBlogFiltersProps {
+interface FiltersProps {
     currentFilters: {
         status: string | undefined,
         category: string | undefined,
@@ -12,7 +12,7 @@ interface AdminBlogFiltersProps {
     }
 }
 
-export default async function AdminBlogFilters({ currentFilters } : AdminBlogFiltersProps) {
+export default async function Filters({ currentFilters } : FiltersProps) {
     const categories: ICategory[] | null = await CategoryModel.find({});
     const tags: ITag[] | null = await TagModel.find({});
     let hasFilters = false;
@@ -22,8 +22,6 @@ export default async function AdminBlogFilters({ currentFilters } : AdminBlogFil
         if(item[1] !== undefined && item[1] !== 'default') {
             hasFilters = true;
         }
-
-        console.log(item[1]);
 
     });
     
