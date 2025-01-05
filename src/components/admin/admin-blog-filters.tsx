@@ -2,6 +2,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import CategoryModel, { ICategory } from "@/models/category-model";
 import TagModel, { ITag } from "@/models/tag-model";
+import Link from "next/link";
 
 interface AdminBlogFiltersProps {
     currentFilters: {
@@ -14,7 +15,17 @@ interface AdminBlogFiltersProps {
 export default async function AdminBlogFilters({ currentFilters } : AdminBlogFiltersProps) {
     const categories: ICategory[] | null = await CategoryModel.find({});
     const tags: ITag[] | null = await TagModel.find({});
+    let hasFilters = false;
 
+    Object.entries(currentFilters).forEach(item => {
+
+        if(item[1] !== undefined && item[1] !== 'default') {
+            hasFilters = true;
+        }
+
+        console.log(item[1]);
+
+    });
     
     return (
         <form action="#">
@@ -74,6 +85,8 @@ export default async function AdminBlogFilters({ currentFilters } : AdminBlogFil
                 
                 <div className="flex justify-end pt-5 lg:inline-block lg:pt-0">
                     <Button type="submit" variant="outline">Apply filters</Button>
+                    {hasFilters && <Button variant="outline" className="ml-3" asChild><Link href="/admin/blog">Clear Filters</Link></Button>}
+                    
                 </div>
             </div>
         </form>
