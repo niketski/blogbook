@@ -1,4 +1,5 @@
 'use client'
+
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,12 +9,13 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import ComboBox from "@/components/ui/combo-box";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useActionState } from "react";
 import { IComboBoxOption } from "@/components/ui/combo-box";
 import Image from "next/image";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { IBlog } from "@/models/blog-model";
+import EditBlog from "@/actions/edit-blog";
 
 interface EditBlogFormProps {
     blog: string,
@@ -39,12 +41,27 @@ export interface BlogDetails {
 }
 
 export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : EditBlogFormProps) {
-    let isPending = false;
     const currentBlog: BlogDetails = JSON.parse(blog);
     const [tags, setTags] = useState<IComboBoxOption[]>(currentBlog.tags);
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [imagePreview, setImagePreview] = useState<string>('');
     const [isFileExceeded, setIsFileExceeded] = useState(false);
+    const [formState, formAction, isPending] = useActionState(EditBlog, {
+        status: 'idle',
+        message: '',
+        values: {
+            title: currentBlog.title,
+            slug: currentBlog.slug,
+            status: currentBlog.status,
+            metaTitle: currentBlog.metaTitle,
+            metaDescription: currentBlog.metaDescription,
+            featuredImage: imagePreview,
+            content: currentBlog.content,
+            category: currentBlog.category,
+            tags: currentBlog.tags
+        },
+        errors: {}
+    });
     
 
     const handleUpdateImageClick = () => {
@@ -98,7 +115,7 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
             reader.onloadend = () => {
                
                 setImagePreview(reader.result as string);
-                
+
             };
 
             reader.readAsDataURL(blob);
@@ -144,6 +161,20 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
                                 id="title"
                                 name="title"
                                 defaultValue={currentBlog.title}/>
+                        </div>
+
+                        <div className="mb-5">
+                            <Label
+                                htmlFor="slug"
+                                className="mb-2 block font-bold">Slug</Label>
+                            <div className="flex items-center">
+                                <span className="text-sm">{`${window.location.origin}/blog/`}</span>
+                                <Input
+                                    className=""
+                                    id="slug"
+                                    name="slug"
+                                    defaultValue={currentBlog.slug}/>
+                            </div>
                         </div>
 
                         <div className="mb-10"> 
