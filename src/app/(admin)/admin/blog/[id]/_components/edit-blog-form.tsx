@@ -1,73 +1,51 @@
 'use client'
-
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea"; 
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-  } from "@/components/ui/select";
+import { LoaderCircle } from "lucide-react";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Checkbox } from '@/components/ui/checkbox';
-import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
-import createBlog from "@/actions/blog";
-import { useActionState } from "react";
 import ComboBox from "@/components/ui/combo-box";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useState, useRef, useEffect } from "react";
 import { IComboBoxOption } from "@/components/ui/combo-box";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, LoaderCircle } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { isExceededFileLimit } from "@/lib/utils";
+import Image from "next/image";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+import { IBlog } from "@/models/blog-model";
 
-interface AdminCreateBlogFormProps {
-    categoriesOptions: IComboBoxOption[],
+interface EditBlogFormProps {
+    blog: string,
+    categoriesOption: IComboBoxOption[],
     tagsOptions: IComboBoxOption[]
 }
 
-export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } : AdminCreateBlogFormProps) {
-    const { toast } = useToast();
-    const [imagePreview, setImagePreview] = useState<string>('');
+export interface BlogDetails {
+    id: string,
+    title: string,
+    slug: string,
+    status: string,
+    metaTitle: string,
+    content: string,
+    metaDescription: string,
+    featuredImage: {
+        id: string,
+        url: string
+    },
+    category: string,
+    tags: IComboBoxOption[]
+    
+}
+
+export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : EditBlogFormProps) {
+    let isPending = false;
+    const currentBlog: BlogDetails = JSON.parse(blog);
+    const [tags, setTags] = useState<IComboBoxOption[]>(currentBlog.tags);
     const inputRef = useRef<HTMLInputElement | null>(null);
+    const [imagePreview, setImagePreview] = useState<string>('');
     const [isFileExceeded, setIsFileExceeded] = useState(false);
-    const [formState, formAction, isPending] = useActionState(createBlog, {
-        message: '',
-        status: 'pending',
-        values: {
-            title: '',
-            content: '',
-            status: '',
-            category: '',
-            tags: '',
-            featuredImage: '',
-            metaTitle: '',
-            metaDescription: '',
-        },
-        errors: {}
-    });
-
-    const [tags, setTags] = useState<IComboBoxOption[]>([]);
-
-    const handleInputFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-
-        const file = e.target.files?.[0];
-
-        if(file) {
-
-            const reader = new FileReader();
-
-            reader.onload = () => {
-                
-                setImagePreview(reader.result as string);
-            }
-
-            reader.readAsDataURL(file);
-        }
-    };
+    
 
     const handleUpdateImageClick = () => {
         inputRef.current?.click();
@@ -86,60 +64,78 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
 
     };
 
-    useEffect(() => {
+    const handleInputFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+        const file = e.target.files?.[0];
+
+        if(file) {
+
+            const reader = new FileReader();
+
+            reader.onload = () => {
+                
+                setImagePreview(reader.result as string);
+            }
+
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const readImageUrl = async (imageUrl: string): Promise<Blob | string> => {
+
+        try {
+            const response = await fetch(imageUrl);
+
+            if(!response.ok) {
+
+                throw new Error(`Failed to fetch: ${imageUrl}`);
+
+            }
+
+            const blob: Blob = await response.blob();
+            const reader = new FileReader;
+
+            reader.onloadend = () => {
+               
+                setImagePreview(reader.result as string);
+                
+            };
+
+            reader.readAsDataURL(blob);
         
-        // clear some of the data after successfull submition
-        if(formState.status === 'success') {
 
-            setImagePreview('');
+            return blob;
+        
+        } catch(error: any) {
 
-            setTags([]);
-
-            toast({
-                title: 'Success',
-                description: 'The blog has been created successfully!'
-            });
+            return 'Error: ' + error;
         }
 
-    }, [formState.status]);
+    };
 
     useEffect(() => {
 
-        const result = isExceededFileLimit({
-            file: imagePreview,
-            maxMb: 10
-        });
+        readImageUrl(currentBlog.featuredImage.url);
 
-        if(result) {
-
-            setIsFileExceeded(true);
-
-        } else {
-            
-            setIsFileExceeded(false);
-
-        }
-
-    }, [imagePreview]);
-
-    console.log(categoriesOptions);
-    console.log(tagsOptions);
+    }, []);
+    
 
     return (
         <div>
-            <form action={formAction}>
-
+            <form>
                 <div className="flex flex-col-reverse xl:flex-row">
                     <div className="xl:w-3/4">
-                    {formState.errors._form && 
-                        <Alert variant="destructive" className="mb-9">
-                            <AlertCircle className="h-4 w-4" />
-                            <AlertTitle>Error</AlertTitle>
+
+                        {/* {formState.errors._form && 
+                            <Alert variant="destructive" className="mb-9">
+                                <AlertCircle className="h-4 w-4" />
+                                <AlertTitle>Error</AlertTitle>
                                 <AlertDescription>
-                                {formState.errors._form}
-                            </AlertDescription>
-                        </Alert>
-                    }
+                                    {formState.errors._form}
+                                </AlertDescription>
+                            </Alert>
+                        } */}
+
                         <div className="mb-5">
                             <Label 
                                 htmlFor="title"
@@ -147,12 +143,7 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
                             <Input
                                 id="title"
                                 name="title"
-                                defaultValue={formState.values.title}
-                                className={`${formState.errors.title ? 'border-red-500' : ''}`}/>
-
-                            {formState.errors.title &&
-                                <p className="text-sm text-red-500 mt-4">{formState.errors.title.join(', ')}</p>
-                            }
+                                defaultValue={currentBlog.title}/>
                         </div>
 
                         <div className="mb-10"> 
@@ -162,12 +153,8 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
                             <Textarea
                                 id="content"
                                 name="content"
-                                className={`min-h-[300px] ${formState.errors.content ? 'border-red-500' : ''}`}
-                                defaultValue={formState.values.content}/>
-
-                            {formState.errors.content &&
-                                <p className="text-sm text-red-500 mt-4">{formState.errors.content[0]}</p>
-                            }
+                                className={`min-h-[300px]`}
+                                defaultValue={currentBlog.content}/>
                         </div>
 
                         <div>
@@ -180,7 +167,7 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
                                 <Input
                                     id="meta-title"
                                     name="metaTitle"
-                                    defaultValue={formState.values.metaTitle}/>
+                                    defaultValue={currentBlog.metaTitle}/>
                             </div>
 
                             <div className="mb-5">
@@ -191,31 +178,32 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
                                     id="meta-description"
                                     name="metaDescription"
                                     className="min-h-[150px]"
-                                    defaultValue={formState.values.metaDescription}/>
+                                    defaultValue={currentBlog.metaDescription}/>
                             </div>
 
                             
                         </div>
-                    </div>
 
+                    </div>
                     <div className="mb-8 lg:mb-0 xl:w-1/4 xl:pl-8">
                         <div className="rounded-[6px] shadow p-5 xl:p-8">
                             <Button 
-                                type="submit"
-                                className={`mb-5 ${isPending ? 'pointer-events-none' : ''}`} 
-                                disabled={isPending ? true : false}>
+                                    type="submit"
+                                    className={`mb-5 ${isPending ? 'pointer-events-none' : ''}`} 
+                                    disabled={isPending ? true : false}>
 
-                                    {isPending ? 'Processing...' : 'Save'}
-                                    
-                                    {isPending ? <LoaderCircle className="animate-spin"/> : ''}
+                                        {isPending ? 'Processing...' : 'Update'}
+                                        
+                                        {isPending ? <LoaderCircle className="animate-spin"/> : ''}
 
                             </Button>
+
 
                             <div className="mb-5">
                                 <Label 
                                     htmlFor="status"
                                     className="mb-2 block font-bold">Status</Label>
-                                <Select name="status" defaultValue="draft">
+                                <Select name="status" defaultValue={currentBlog.status}>
                                     <SelectTrigger>
                                        <SelectValue placeholder="Draft"/>
                                     </SelectTrigger>
@@ -226,27 +214,26 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
                                 </Select>
                             </div>
 
-                            {categoriesOptions &&
-                                <div className="mb-5">
-                                    <Label className="mb-2 block font-bold">Category</Label>
+                            <div className="mb-5">
+                                <Label className="mb-2 block font-bold">Category</Label>
 
-                                    <RadioGroup defaultValue="category-2" name="category">
-                                        <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="uncategorized" id="uncategorized"/>
-                                            <Label htmlFor="uncategorized">Uncategorized</Label>
-                                        </div>
+                                <RadioGroup defaultValue={currentBlog.category} name="category">
+                                    <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="uncategorized" id="uncategorized"/>
+                                        <Label htmlFor="uncategorized">Uncategorized</Label>
+                                    </div>
 
-                                        {categoriesOptions.map(option => {
-                                            return (
-                                                <div className="flex items-center space-x-2" key={option.value}>
-                                                    <RadioGroupItem value={option.value} id={option.value}/>
-                                                    <Label htmlFor={option.value}>{option.label}</Label>
-                                                </div>
-                                            );
-                                        })}
-                                    </RadioGroup>
-                                </div>
-                            }
+                                    {categoriesOption.map(item => {
+                                        return (
+                                            <div className="flex items-center space-x-2" key={item.value}>
+                                                <RadioGroupItem value={item.value} id={item.value}/>
+                                                <Label htmlFor={item.value}>{item.label}</Label>
+                                            </div>
+                                        );
+                                    })}
+
+                                </RadioGroup>
+                            </div>
 
                             <div className="mb-5">
                                 <Label className="mb-2 block font-bold">Tags</Label>
@@ -254,7 +241,7 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
                                     <Input
                                         name="tags"
                                         className="hidden" 
-                                        defaultValue={`${tags && tags.map(item => item.value)}`}/>
+                                        defaultValue={``}/>
 
                                         <ComboBox
                                             options={tagsOptions}
@@ -291,7 +278,7 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
                                 </noscript>
                             </div>
 
-                            <div className="mb-5">
+                             <div className="mb-5">
                                 <Label htmlFor="featured-image" className="mb-2 block font-bold">Featured Image</Label>
                                 <div className="relative max-w-[300px] xl:max-w-full">
                                     <Input
@@ -319,14 +306,15 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
                                                 width="300"     
                                                 height="280" 
                                                 alt="Image Preview"
-                                                className={`rounded h-[180px] object-cover object-center ${(formState.errors.featuredImage || isFileExceeded) ? 'border border-red-500' : ''}`}/> : 
+                                                className={`rounded h-[180px] object-cover object-center`}/> : 
                                             
-                                            <div className={`w-full h-[180px] bg-gray-100 rounded ${(formState.errors.featuredImage || isFileExceeded) ? 'border border-red-500' : ''}`}></div>
+                                            <div className={`w-full h-[180px] bg-gray-100 rounded`}></div>
                                         }
                                 </div>
 
-                                {formState.errors.featuredImage ? <p className="text-sm text-red-500 mt-4">{formState.errors.featuredImage[0]}</p> : ''}
-                                {isFileExceeded ? <p className="text-sm text-red-500 mt-4">Please use image less than 10 MB.</p> : ''}
+                                {/* formState.errors.featuredImage ? <p className="text-sm text-red-500 mt-4">{formState.errors.featuredImage[0]}</p> : ''; */}
+
+                                {/* isFileExceeded ? <p className="text-sm text-red-500 mt-4">Please use image less than 10 MB.</p> : '' */}
 
                                 {imagePreview &&
                                     <div className="pt-4">
@@ -350,7 +338,6 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
                         </div>
                     </div>
                 </div>
-
             </form>
         </div>
     );
