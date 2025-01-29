@@ -58,12 +58,12 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
             featuredImage: imagePreview,
             content: currentBlog.content,
             category: currentBlog.category,
-            tags: currentBlog.tags
+            tags: ''
         },
         errors: {}
     });
+    const [originUrl, setOriginUrl] = useState<null | string>(null);
     
-
     const handleUpdateImageClick = () => {
         inputRef.current?.click();
     };
@@ -134,12 +134,15 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
 
         readImageUrl(currentBlog.featuredImage.url);
 
+        setOriginUrl(window.location.origin);
+
     }, []);
     
-
+    console.log('form state: ', formState);
+    
     return (
         <div>
-            <form>
+            <form action={formAction}>
                 <div className="flex flex-col-reverse xl:flex-row">
                     <div className="xl:w-3/4">
 
@@ -168,12 +171,12 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
                                 htmlFor="slug"
                                 className="mb-2 block font-bold">Slug</Label>
                             <div className="flex items-center">
-                                <span className="text-sm">{`${window.location.origin}/blog/`}</span>
+                                {originUrl && <span className="text-sm">{`${originUrl}/blog/`}</span>}
                                 <Input
                                     className=""
                                     id="slug"
                                     name="slug"
-                                    defaultValue={currentBlog.slug}/>
+                                    defaultValue={currentBlog.slug ? currentBlog.slug : currentBlog.id}/>
                             </div>
                         </div>
 
@@ -272,7 +275,7 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
                                     <Input
                                         name="tags"
                                         className="hidden" 
-                                        defaultValue={``}/>
+                                        defaultValue={`${tags && tags.map(item => item.value)}`}/>
 
                                         <ComboBox
                                             options={tagsOptions}

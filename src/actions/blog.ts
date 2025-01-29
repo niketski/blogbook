@@ -7,6 +7,8 @@ import BlogModel from '@/models/blog-model';
 import z from 'zod';
 import { isExceededTheFileLimit } from '@/lib/cloudinary';
 import { isExceededFileLimit, formatSlug } from '@/lib/utils';
+import CategoryModel, { ICategory } from '@/models/category-model';
+import TagModel, { ITag } from '@/models/tag-model';
 
 interface CreateBlogFormState {
     message: string,
@@ -48,6 +50,16 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
         const featuredImage = formData.get('featuredImage') as string;
         const metaTitle = formData.get('metaTitle') as string;
         const metaDescription = formData.get('metaDescription') as string;
+
+        // get the category based on category slug
+        const currrentCategory = await CategoryModel.findOne<ICategory>({ slug: category});
+
+        // get the tags based on the tags slug
+        const currentTags = await TagModel.find<ITag>({
+            slug: {
+                $in: tags.split(',')
+            }
+        });
 
         const acceptedImages = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         const megabytes = 1;
@@ -107,12 +119,15 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
             }
         }
 
-
-        // upload image as base64 URI to cloudinary
-        const cloudinaryImage = await cloudinary.uploader.upload(featuredImage, { folder: 'blogbook' });
+        let cloudinaryImage = {};
+        
+        if(featuredImage) {
+            // upload image as base64 URI to cloudinary
+            cloudinaryImage = await cloudinary.uploader.upload(featuredImage, { folder: 'blogbook' });
+        }
 
         // create slug 
-        const titleSlug: string = formatSlug(title);
+        const titleSlug = formatSlug(title);
     
         // save blog to the database
         const newBlog = new BlogModel({
@@ -120,8 +135,8 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
             slug: titleSlug,
             content,
             status,
-            category,
-            tags: tags.split(','),
+            category: currrentCategory?._id,
+            tags: currentTags?.map(item => item._id),
             featuredImage: {
                 url: cloudinaryImage.secure_url,
                 id: cloudinaryImage.public_id

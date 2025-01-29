@@ -32,7 +32,7 @@ export function isExceededFileLimit({ file, maxMb = 10 } : { file: string, maxMb
 }
 
 
-export function formatSlug(string: string) {
+export function formatSlug(string: string): string {
   let currentText = string;
 
   // remove special characters

@@ -122,8 +122,9 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
 
     }, [imagePreview]);
 
-    console.log(categoriesOptions);
-    console.log(tagsOptions);
+    // console.log(categoriesOptions);
+    // console.log(tagsOptions);
+    console.log(tags);
 
     return (
         <div>

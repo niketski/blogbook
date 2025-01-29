@@ -1,4 +1,7 @@
 'use server'
+import z from 'zod';
+import cloudinary from '@/lib/cloudinary';
+import { isExceededTheFileLimit } from '@/lib/cloudinary';
 
 export interface EditBlogFormState {
     status: 'error' | 'success' | 'idle',
@@ -41,7 +44,68 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
         const tags = formData.get('tags') as string;
         const category = formData.get('category') as string;
         const featuredImage = formData.get('featuredImage') as string;
+        const megabytes = 1;
+        const MAX_FILE_SIZE = megabytes * 1024 * 1024; 
+
+        const formSchema = z.object({
+            title: z.string().min(1, { message: 'Title is required.' }),
+            content: z.string().min(1, { message: 'Content is required.' }),
+            slug: z.string().min(1, { message: 'Slug is required.' }),
+            status: z.enum(['published', 'draft']),
+            category: z.string(),
+            tags: z.string(),
+            featuredImage: z.string()
+                            .refine(file => isExceededTheFileLimit(file), { message: 'Please use image less than 5 MB.' }),
+            metaTitle: z.string().optional(),
+            metaDescription: z.string().optional()
+        });
+
+        const result = formSchema.safeParse({
+            title,
+            content,
+            status,
+            category,
+            tags,
+            featuredImage,
+            metaTitle,
+            metaDescription
+        });
+
+
+        if(!result.success) {
+
+            const currentErrors = result.error.flatten().fieldErrors;
+            
+            return {
+                status: 'error',
+                values: {
+                    slug,
+                    title,
+                    content,
+                    status,
+                    category,
+                    tags,
+                    featuredImage,
+                    metaTitle,
+                    metaDescription
+                },
+                message: 'Please make sure all of the fields are valid.',
+                errors: currentErrors
+            }
+        }
         
+        console.log('result: ' + result);
+        console.log(result.success);
+        console.log({title,
+            slug,
+            content,
+            metaTitle,
+            metaDescription,
+            status,
+            tags,
+            category,
+            featuredImage});
+
         return {
             status: 'success',
             message: 'Blog has been updated successfully!',
