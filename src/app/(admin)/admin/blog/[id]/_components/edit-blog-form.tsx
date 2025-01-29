@@ -8,14 +8,14 @@ import { LoaderCircle } from "lucide-react";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import ComboBox from "@/components/ui/combo-box";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useState, useRef, useEffect, useActionState } from "react";
 import { IComboBoxOption } from "@/components/ui/combo-box";
 import Image from "next/image";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
-import { IBlog } from "@/models/blog-model";
 import EditBlog from "@/actions/edit-blog";
+import { useToast } from "@/hooks/use-toast";
+import { object } from "zod";
 
 interface EditBlogFormProps {
     blog: string,
@@ -31,7 +31,7 @@ export interface BlogDetails {
     metaTitle: string,
     content: string,
     metaDescription: string,
-    featuredImage: {
+    featuredImage?: {
         id: string,
         url: string
     },
@@ -41,7 +41,9 @@ export interface BlogDetails {
 }
 
 export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : EditBlogFormProps) {
+    const { toast } = useToast();
     const currentBlog: BlogDetails = JSON.parse(blog);
+    console.log('qweqweqw', currentBlog);
     const [tags, setTags] = useState<IComboBoxOption[]>(currentBlog.tags);
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [imagePreview, setImagePreview] = useState<string>('');
@@ -51,11 +53,13 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
         message: '',
         values: {
             title: currentBlog.title,
-            slug: currentBlog.slug,
+            slug: currentBlog.slug ? currentBlog.slug : currentBlog.id,
             status: currentBlog.status,
             metaTitle: currentBlog.metaTitle,
             metaDescription: currentBlog.metaDescription,
-            featuredImage: imagePreview,
+            featuredImage: '',
+            featuredImageId: currentBlog.featuredImage?.id,
+            featuredImageUrl: currentBlog.featuredImage?.url,
             content: currentBlog.content,
             category: currentBlog.category,
             tags: ''
@@ -98,7 +102,7 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
         }
     };
 
-    const readImageUrl = async (imageUrl: string): Promise<Blob | string> => {
+    const readImageUrl = async (imageUrl: string): Promise<Blob | string> => { 
 
         try {
             const response = await fetch(imageUrl);
@@ -132,13 +136,50 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
 
     useEffect(() => {
 
-        readImageUrl(currentBlog.featuredImage.url);
+        // check if has image
+        if(currentBlog.featuredImage && Object.keys(currentBlog.featuredImage).length) {
 
-        setOriginUrl(window.location.origin);
+            readImageUrl(currentBlog.featuredImage.url);
 
-    }, []);
+        }
+            
+        if(window.location.origin) {
+            
+            setOriginUrl(window.location.origin);
+
+        }
+        
+
+    }, [isPending]);
+
+    useEffect(() => {
+        
+        // clear some of the data after successfull submition
+        if(formState.status === 'success') {
+
+            setImagePreview('');
+
+            setTags([]);
+
+            toast({
+                title: 'Success',
+                description: 'The blog has been updated successfully!'
+            });
+        }
+
+        // console.log('form values: ', formState.values);
+
+    }, [formState.status]);
     
-    console.log('form state: ', formState);
+    // console.log('form state: ', formState);
+    // console.log('current blog:', currentBlog);
+    // console.log(imagePreview);
+
+    // console.log(isPending);
+
+    console.log('image id: ', currentBlog);
+    console.log('status: ', formState.status);
+    console.log('values: ', formState);
     
     return (
         <div>
@@ -146,7 +187,7 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
                 <div className="flex flex-col-reverse xl:flex-row">
                     <div className="xl:w-3/4">
 
-                        {/* {formState.errors._form && 
+                        {formState.errors._form && 
                             <Alert variant="destructive" className="mb-9">
                                 <AlertCircle className="h-4 w-4" />
                                 <AlertTitle>Error</AlertTitle>
@@ -154,7 +195,13 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
                                     {formState.errors._form}
                                 </AlertDescription>
                             </Alert>
-                        } */}
+                        }
+
+                        <Input
+                            type="hidden"
+                            name="blogId"
+                            defaultValue={currentBlog.id}
+                            className="hidden"/>
 
                         <div className="mb-5">
                             <Label 
@@ -163,7 +210,12 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
                             <Input
                                 id="title"
                                 name="title"
-                                defaultValue={currentBlog.title}/>
+                                defaultValue={formState.values.title}
+                                className={`${formState.errors.title ? 'border-red-500' : ''}`}/>
+
+                            {formState.errors.title &&
+                                <p className="text-sm text-red-500 mt-4">{formState.errors.title.join(', ')}</p>
+                            }
                         </div>
 
                         <div className="mb-5">
@@ -173,11 +225,15 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
                             <div className="flex items-center">
                                 {originUrl && <span className="text-sm">{`${originUrl}/blog/`}</span>}
                                 <Input
-                                    className=""
+                                    className={`${formState.errors.slug ? 'border-red-500' : ''}`}
                                     id="slug"
                                     name="slug"
-                                    defaultValue={currentBlog.slug ? currentBlog.slug : currentBlog.id}/>
+                                    defaultValue={formState.values.slug}/>
                             </div>
+
+                            {formState.errors.slug &&
+                                <p className="text-sm text-red-500 mt-4">{formState.errors.slug.join(', ')}</p>
+                            }
                         </div>
 
                         <div className="mb-10"> 
@@ -187,8 +243,12 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
                             <Textarea
                                 id="content"
                                 name="content"
-                                className={`min-h-[300px]`}
-                                defaultValue={currentBlog.content}/>
+                                className={`min-h-[300px] ${formState.errors.content ? 'border-red-500' : ''}`}
+                                defaultValue={formState.values.content}/>
+
+                            {formState.errors.content &&
+                                <p className="text-sm text-red-500 mt-4">{formState.errors.content[0]}</p>
+                            }
                         </div>
 
                         <div>
@@ -201,7 +261,7 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
                                 <Input
                                     id="meta-title"
                                     name="metaTitle"
-                                    defaultValue={currentBlog.metaTitle}/>
+                                    defaultValue={formState.values.metaTitle}/>
                             </div>
 
                             <div className="mb-5">
@@ -212,7 +272,7 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
                                     id="meta-description"
                                     name="metaDescription"
                                     className="min-h-[150px]"
-                                    defaultValue={currentBlog.metaDescription}/>
+                                    defaultValue={formState.values.metaDescription}/>
                             </div>
 
                             
@@ -237,7 +297,7 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
                                 <Label 
                                     htmlFor="status"
                                     className="mb-2 block font-bold">Status</Label>
-                                <Select name="status" defaultValue={currentBlog.status}>
+                                <Select name="status" defaultValue={formState.values.status}>
                                     <SelectTrigger>
                                        <SelectValue placeholder="Draft"/>
                                     </SelectTrigger>
@@ -251,7 +311,7 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
                             <div className="mb-5">
                                 <Label className="mb-2 block font-bold">Category</Label>
 
-                                <RadioGroup defaultValue={currentBlog.category} name="category">
+                                <RadioGroup defaultValue={formState.values.category} name="category">
                                     <div className="flex items-center space-x-2">
                                         <RadioGroupItem value="uncategorized" id="uncategorized"/>
                                         <Label htmlFor="uncategorized">Uncategorized</Label>
@@ -284,32 +344,7 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
                                             placeholder="Click to select tags..."/>
                                             
                                 </div>
-                                <noscript>
-                                    <div className="flex items-center mb-2">
-                                        <Checkbox 
-                                            name="tags[]" 
-                                            value="Tag 1"
-                                            id="tag-1"/>
-
-                                        <Label htmlFor="tag-1" className="ml-[10px]">Tag 1</Label>
-                                    </div>
-                                    <div className="flex items-center mb-2">
-                                        <Checkbox 
-                                            name="tags[]" 
-                                            value="Tag 2"
-                                            id="tag-2"/>
-
-                                        <Label htmlFor="tag-2" className="ml-[10px]">Tag 2</Label>
-                                    </div>
-                                    <div className="flex items-center mb-2">
-                                        <Checkbox 
-                                            name="tags[]" 
-                                            value="Tag 3"
-                                            id="tag-3"/>
-
-                                        <Label htmlFor="tag-3" className="ml-[10px]">Tag 3</Label>
-                                    </div>
-                                </noscript>
+                        
                             </div>
 
                              <div className="mb-5">
@@ -329,6 +364,19 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
                                         name="featuredImage"
                                         defaultValue={imagePreview}/>
 
+                                    
+                                    <Input
+                                        type="hidden"
+                                        name="featuredImageUrl"
+                                        defaultValue={formState.values.featuredImageUrl}
+                                        className="hidden"/>
+
+                                    <Input
+                                        type="hidden"
+                                        name="featuredImageId"
+                                        defaultValue={formState.values.featuredImageId}
+                                        className="hidden"/>
+
                                     {
                                         !imagePreview &&
                                         <p className="top-1/2 left-0 w-full text-center -translate-y-1/2 absolute text-[13px] pointer-events-none">Click here to select image.</p>
@@ -340,15 +388,15 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
                                                 width="300"     
                                                 height="280" 
                                                 alt="Image Preview"
-                                                className={`rounded h-[180px] object-cover object-center`}/> : 
+                                                className={`rounded h-[180px] object-cover object-center ${(formState.errors.featuredImage || isFileExceeded) ? 'border border-red-500' : ''}`}/> : 
                                             
-                                            <div className={`w-full h-[180px] bg-gray-100 rounded`}></div>
+                                            <div className={`w-full h-[180px] bg-gray-100 rounded ${(formState.errors.featuredImage || isFileExceeded) ? 'border border-red-500' : ''}`}></div>
                                         }
                                 </div>
 
-                                {/* formState.errors.featuredImage ? <p className="text-sm text-red-500 mt-4">{formState.errors.featuredImage[0]}</p> : ''; */}
+                                {formState.errors.featuredImage ? <p className="text-sm text-red-500 mt-4">{formState.errors.featuredImage[0]}</p> : ''}
 
-                                {/* isFileExceeded ? <p className="text-sm text-red-500 mt-4">Please use image less than 10 MB.</p> : '' */}
+                                {isFileExceeded ? <p className="text-sm text-red-500 mt-4">Please use image less than 10 MB.</p> : ''}
 
                                 {imagePreview &&
                                     <div className="pt-4">

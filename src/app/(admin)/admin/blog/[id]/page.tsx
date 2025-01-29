@@ -69,7 +69,12 @@ export default async function BlogDetailsPage({ params } : BlogDetailsPageProps)
             tags: currentBlog.tags.map((tag) =>  {
                 return { value: tag.slug, label: tag.name }
             }),
-            featuredImage: {
+        }
+
+        // include featured image if exist
+        if(currentBlog.featuredImage !== undefined || typeof currentBlog.featuredImage === 'object' && Object.keys(currentBlog.featuredImage).length !== 0) {
+
+            blogData.featuredImage = {
                 id: currentBlog.featuredImage.id,
                 url: currentBlog.featuredImage.url
             }
@@ -77,8 +82,6 @@ export default async function BlogDetailsPage({ params } : BlogDetailsPageProps)
         }
 
     }
-
-    // console.log('currrent tag: ', currentBlog?.tags);
 
     return (
         <div>

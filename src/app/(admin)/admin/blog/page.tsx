@@ -90,6 +90,9 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
                 foreignField: '_id',
                 as: 'tagsData'
             }
+        },
+        {
+            $sort: { createdAt: -1 } // Sort by createdAt in descending order (latest first)
         }
     ];
 

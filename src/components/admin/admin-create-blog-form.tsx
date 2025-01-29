@@ -15,7 +15,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from '@/components/ui/checkbox';
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import createBlog from "@/actions/blog";
+import createBlog from "@/actions/create-blog";
 import { useActionState } from "react";
 import ComboBox from "@/components/ui/combo-box";
 import { IComboBoxOption } from "@/components/ui/combo-box";
@@ -231,11 +231,11 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
                                 <div className="mb-5">
                                     <Label className="mb-2 block font-bold">Category</Label>
 
-                                    <RadioGroup defaultValue="category-2" name="category">
-                                        <div className="flex items-center space-x-2">
+                                    <RadioGroup defaultValue="uncategorized" name="category">
+                                        {/* <div className="flex items-center space-x-2">
                                             <RadioGroupItem value="uncategorized" id="uncategorized"/>
                                             <Label htmlFor="uncategorized">Uncategorized</Label>
-                                        </div>
+                                        </div> */}
 
                                         {categoriesOptions.map(option => {
                                             return (
@@ -264,32 +264,6 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
                                             placeholder="Click to select tags..."/>
                                             
                                 </div>
-                                <noscript>
-                                    <div className="flex items-center mb-2">
-                                        <Checkbox 
-                                            name="tags[]" 
-                                            value="Tag 1"
-                                            id="tag-1"/>
-
-                                        <Label htmlFor="tag-1" className="ml-[10px]">Tag 1</Label>
-                                    </div>
-                                    <div className="flex items-center mb-2">
-                                        <Checkbox 
-                                            name="tags[]" 
-                                            value="Tag 2"
-                                            id="tag-2"/>
-
-                                        <Label htmlFor="tag-2" className="ml-[10px]">Tag 2</Label>
-                                    </div>
-                                    <div className="flex items-center mb-2">
-                                        <Checkbox 
-                                            name="tags[]" 
-                                            value="Tag 3"
-                                            id="tag-3"/>
-
-                                        <Label htmlFor="tag-3" className="ml-[10px]">Tag 3</Label>
-                                    </div>
-                                </noscript>
                             </div>
 
                             <div className="mb-5">
@@ -306,8 +280,7 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
 
                                     <Input
                                         type="hidden"
-                                        name="featuredImage"
-                                        defaultValue={imagePreview}/>
+                                        name="featuredImage"/>
 
                                     {
                                         !imagePreview &&

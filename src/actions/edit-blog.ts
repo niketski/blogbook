@@ -2,6 +2,12 @@
 import z from 'zod';
 import cloudinary from '@/lib/cloudinary';
 import { isExceededTheFileLimit } from '@/lib/cloudinary';
+import CategoryModel, { ICategory } from '@/models/category-model';
+import TagModel, { ITag } from '@/models/tag-model';
+import BlogModel, { IBlog } from '@/models/blog-model';
+import { BlogDocumentData } from './create-blog';
+import mongoose from 'mongoose';
+import { UploadApiResponse } from 'cloudinary';
 
 export interface EditBlogFormState {
     status: 'error' | 'success' | 'idle',
@@ -15,7 +21,9 @@ export interface EditBlogFormState {
         status: string,
         tags: string,
         category: string,
-        featuredImage: string,
+        featuredImage?: string,
+        featuredImageUrl?: string,
+        featuredImageId?: string
     },
     errors: {
         title?: string[],
@@ -27,6 +35,8 @@ export interface EditBlogFormState {
         tags?: string[],
         category?: string[],
         featuredImage?: string[],
+        featuredImageUrl?: string[],
+        featuredImageId?: string[],
         _form?: string
     }
 }
@@ -44,8 +54,10 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
         const tags = formData.get('tags') as string;
         const category = formData.get('category') as string;
         const featuredImage = formData.get('featuredImage') as string;
-        const megabytes = 1;
-        const MAX_FILE_SIZE = megabytes * 1024 * 1024; 
+        const featuredImageUrl = formData.get('featuredImageUrl') as string;
+        const featuredImageId = formData.get('featuredImageId') as string;
+        const blogId = formData.get('blogId') as string;
+        const existingBlog = await BlogModel.findOne<IBlog>({ _id: blogId });
 
         const formSchema = z.object({
             title: z.string().min(1, { message: 'Title is required.' }),
@@ -54,19 +66,24 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
             status: z.enum(['published', 'draft']),
             category: z.string(),
             tags: z.string(),
-            featuredImage: z.string()
-                            .refine(file => isExceededTheFileLimit(file), { message: 'Please use image less than 5 MB.' }),
+            featuredImage: z.string().refine(file => !isExceededTheFileLimit(file), { message: 'Please use image less than 5 MB.' }),
+            // featuredImageUrl: z.string().optional(),
+            // featuredImageId: z.string().optional(),
             metaTitle: z.string().optional(),
             metaDescription: z.string().optional()
         });
 
+
         const result = formSchema.safeParse({
             title,
+            slug,
             content,
             status,
             category,
             tags,
             featuredImage,
+            // featuredImageUrl,
+            // featuredImageId,
             metaTitle,
             metaDescription
         });
@@ -75,6 +92,8 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
         if(!result.success) {
 
             const currentErrors = result.error.flatten().fieldErrors;
+
+            console.log(currentErrors);
             
             return {
                 status: 'error',
@@ -86,6 +105,8 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
                     category,
                     tags,
                     featuredImage,
+                    featuredImageUrl,
+                    featuredImageId,
                     metaTitle,
                     metaDescription
                 },
@@ -93,38 +114,82 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
                 errors: currentErrors
             }
         }
-        
-        console.log('result: ' + result);
-        console.log(result.success);
-        console.log({title,
+
+        // get the category document to get the id property
+        const selectedCategory = await CategoryModel.findOne<ICategory>({ slug: category});
+
+        // get the selected tags document to get the id properties
+        const selectedTags = await TagModel.find<ITag>({
+            slug: {
+                $in: tags.split(',')
+            }
+        });
+
+        const updatedBlogData: BlogDocumentData = {
             slug,
+            title,
             content,
-            metaTitle,
-            metaDescription,
             status,
-            tags,
-            category,
-            featuredImage});
+            category: selectedCategory?._id as mongoose.Types.ObjectId,
+            tags: selectedTags ? selectedTags.map(item => item._id) as mongoose.Types.ObjectId[] : [],
+            metaTitle,
+            metaDescription
+        }
+
+        // upload the updated image to cloudinary
+         if(featuredImage && featuredImageId) {
+        
+            // upload image as base64 URI to cloudinary
+            // const cloudinaryImage: UploadApiResponse = await cloudinary.uploader.upload(
+            //     featuredImage, 
+            //     { 
+            //         public_id: featuredImageId, 
+            //         folder: 'blogbook' 
+            //     }
+            // ); 
+
+            // updatedBlogData.featuredImage = {
+            //     url: cloudinaryImage.secure_url,
+            //     id: cloudinaryImage.public_id
+            // };
+        }
+
+        console.log('updated data: ', updatedBlogData);
+        console.log('featured image: ', featuredImage);
+        console.log('featured image id: ', featuredImageId);
+        console.log('exiting blog: ', existingBlog);
+
+        // const updatedBlog = await BlogModel.findOneAndUpdate(
+        //     {
+        //        _id: blogId
+        //     },
+        //     {
+        //         $set: updatedBlogData
+        //     },
+        //     { new: true }
+        // );
 
         return {
             status: 'success',
-            message: 'Blog has been updated successfully!',
+            message: 'Blog has been updated successfully!!!',
             values: {
-                title: '',
-                slug: '',
-                content: '',
-                metaTitle: '',
-                metaDescription: '',
-                status: 'draft',
-                tags: '',
-                category: '',
+                slug,
+                title,
+                content,
+                status,
+                category,
+                tags,
                 featuredImage: '',
+                featuredImageUrl,
+                featuredImageId,
+                metaTitle,
+                metaDescription
             },
             errors: {}
         }
 
     } catch(error: any) {
-
+        console.log(error);
         const title = formData.get('title') as string;
         const slug = formData.get('slug') as string;
         const content = formData.get('content') as string;
@@ -134,6 +199,8 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
         const tags = formData.get('tags') as string;
         const category = formData.get('category') as string;
         const featuredImage = formData.get('featuredImage') as string;
+        const featuredImageUrl = formData.get('featuredImageUrl') as string;
+        const featuredImageId = formData.get('featuredImageId') as string;
 
         return  {
             status: 'error',
@@ -147,7 +214,9 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
                 status,
                 tags,
                 category,
-                featuredImage
+                featuredImage,
+                featuredImageUrl,
+                featuredImageId,
             },
             errors: {
                 _form: 'Something went wrong.'
