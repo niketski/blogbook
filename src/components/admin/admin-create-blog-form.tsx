@@ -306,8 +306,7 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
 
                                     <Input
                                         type="hidden"
-                                        name="featuredImage"
-                                        defaultValue={imagePreview}/>
+                                        name="featuredImage"/>
 
                                     {
                                         !imagePreview &&

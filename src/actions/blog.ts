@@ -1,14 +1,14 @@
 'use server'
 
 import cloudinary from '@/lib/cloudinary';
-import { type UploadApiResponse } from 'cloudinary';
-import { title } from 'process';
 import BlogModel from '@/models/blog-model';
 import z from 'zod';
 import { isExceededTheFileLimit } from '@/lib/cloudinary';
-import { isExceededFileLimit, formatSlug } from '@/lib/utils';
+import {formatSlug } from '@/lib/utils';
 import CategoryModel, { ICategory } from '@/models/category-model';
 import TagModel, { ITag } from '@/models/tag-model';
+import { UploadApiResponse } from 'cloudinary';
+import mongoose from 'mongoose';
 
 interface CreateBlogFormState {
     message: string,
@@ -36,6 +36,20 @@ interface CreateBlogFormState {
     }
 }
 
+interface BlogDocumentData {
+    title: string,
+    content: string,
+    status: string,
+    category: mongoose.Types.ObjectId,
+    tags: mongoose.Types.ObjectId[],
+    slug: string,
+    featuredImage?: {
+        url: string,
+        id: string
+    },
+    metaTitle: string,
+    metaDescription: string,
+}
 
 export default async function createBlog(prevState: CreateBlogFormState, formData: FormData): Promise<CreateBlogFormState> {
 
@@ -61,9 +75,9 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
             }
         });
 
-        const acceptedImages = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        const megabytes = 1;
-        const MAX_FILE_SIZE = megabytes * 1024 * 1024; 
+        // const acceptedImages = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        // const megabytes = 1;
+        // const MAX_FILE_SIZE = megabytes * 1024 * 1024; 
         const formSchema = z.object({
             title: z.string().min(1, { message: 'Title is required.' }),
             content: z.string().min(1, { message: 'Content is required.' }),
@@ -97,7 +111,7 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
             metaTitle,
             metaDescription
         });
-        
+
         if(!result.success) {
 
             const currentErrors = result.error.flatten().fieldErrors;
@@ -119,31 +133,33 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
             }
         }
 
-        let cloudinaryImage = {};
-        
-        if(featuredImage) {
-            // upload image as base64 URI to cloudinary
-            cloudinaryImage = await cloudinary.uploader.upload(featuredImage, { folder: 'blogbook' });
-        }
-
         // create slug 
         const titleSlug = formatSlug(title);
-    
-        // save blog to the database
-        const newBlog = new BlogModel({
+
+        const blogDocumentData: BlogDocumentData = {
             title,
             slug: titleSlug,
             content,
             status,
-            category: currrentCategory?._id,
-            tags: currentTags?.map(item => item._id),
-            featuredImage: {
-                url: cloudinaryImage.secure_url,
-                id: cloudinaryImage.public_id
-            },
+            category: currrentCategory?._id as mongoose.Types.ObjectId,
+            tags: currentTags?.map(item => item._id) as mongoose.Types.ObjectId[],
             metaTitle,
             metaDescription
-        });
+        };
+
+        if(featuredImage) {
+
+            // upload image as base64 URI to cloudinary
+            const cloudinaryImage: UploadApiResponse = await cloudinary.uploader.upload(featuredImage, { folder: 'blogbook' }); 
+
+            blogDocumentData.featuredImage = {
+                url: cloudinaryImage.secure_url,
+                id: cloudinaryImage.public_id
+            };
+        }
+    
+        // save blog to the database
+        const newBlog = new BlogModel(blogDocumentData);
 
         await newBlog.save();
 
@@ -165,7 +181,7 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
             errors: {}
         }
 
-    } catch(error: any) {
+    } catch(error) {
 
         console.log(error);
 
