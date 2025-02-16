@@ -39,7 +39,7 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
     const search = await searchParams;
     const query: QueryParams = {};
 
-    for(let key in search) {
+    for(const key in search) {
         
 
         if(search[key] !== undefined && search[key] !== '' && search[key] !== 'default') {
@@ -105,7 +105,6 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
     
     const blogs: IBlogResult[] | null = await BlogModel.aggregate(aggregateQuery);
 
-    console.log(blogs.length > 0);
 
     return (
         <div>

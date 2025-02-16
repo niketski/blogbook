@@ -15,7 +15,6 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import EditBlog from "@/actions/edit-blog";
 import { useToast } from "@/hooks/use-toast";
-import { object } from "zod";
 
 interface EditBlogFormProps {
     blog: string,
@@ -35,7 +34,7 @@ export interface BlogDetails {
         id: string,
         url: string
     },
-    category: string,
+    category?: string,
     tags: IComboBoxOption[]
     
 }
@@ -43,7 +42,6 @@ export interface BlogDetails {
 export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : EditBlogFormProps) {
     const { toast } = useToast();
     const currentBlog: BlogDetails = JSON.parse(blog);
-    console.log('qweqweqw', currentBlog);
     const [tags, setTags] = useState<IComboBoxOption[]>(currentBlog.tags);
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [imagePreview, setImagePreview] = useState<string>('');
@@ -67,6 +65,7 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
         errors: {}
     });
     const [originUrl, setOriginUrl] = useState<null | string>(null);
+    const currentFeaturedImageUrl = formState.values.featuredImageUrl ? formState.values.featuredImageUrl : currentBlog.featuredImage?.url;
     
     const handleUpdateImageClick = () => {
         inputRef.current?.click();
@@ -127,7 +126,7 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
 
             return blob;
         
-        } catch(error: any) {
+        } catch(error) {
 
             return 'Error: ' + error;
         }
@@ -139,7 +138,9 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
         // check if has image
         if(currentBlog.featuredImage && Object.keys(currentBlog.featuredImage).length) {
 
-            readImageUrl(currentBlog.featuredImage.url);
+            const imageUrl = formState.values.featuredImageUrl ? formState.values.featuredImageUrl : currentBlog.featuredImage.url;
+
+            readImageUrl(imageUrl);
 
         }
             
@@ -149,8 +150,9 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
 
         }
         
+        console.log('render featured image')
 
-    }, [isPending]);
+    }, [currentFeaturedImageUrl]);
 
     useEffect(() => {
         
@@ -177,8 +179,8 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
 
     // console.log(isPending);
 
-    console.log('image id: ', currentBlog);
-    console.log('status: ', formState.status);
+    // console.log('image id: ', currentBlog);
+    // console.log('status: ', formState.status);
     console.log('values: ', formState);
     
     return (
@@ -311,7 +313,7 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
                             <div className="mb-5">
                                 <Label className="mb-2 block font-bold">Category</Label>
 
-                                <RadioGroup defaultValue={formState.values.category} name="category">
+                                <RadioGroup defaultValue={formState.values.category ? formState.values.category : 'uncategorized'} name="category">
                                     <div className="flex items-center space-x-2">
                                         <RadioGroupItem value="uncategorized" id="uncategorized"/>
                                         <Label htmlFor="uncategorized">Uncategorized</Label>

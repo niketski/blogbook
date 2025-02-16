@@ -40,8 +40,8 @@ export interface BlogDocumentData {
     title: string,
     content: string,
     status: string,
-    category: mongoose.Types.ObjectId,
-    tags: mongoose.Types.ObjectId[],
+    category?: mongoose.Types.ObjectId,
+    tags?: mongoose.Types.ObjectId[],
     slug: string,
     featuredImage?: {
         url: string,
@@ -65,48 +65,15 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
         const metaTitle = formData.get('metaTitle') as string;
         const metaDescription = formData.get('metaDescription') as string;
 
-        // get the category based on category slug
-        const currrentCategory = await CategoryModel.findOne<ICategory>({ slug: category});
-
-        // get the tags based on the tags slug
-        const currentTags = await TagModel.find<ITag>({
-            slug: {
-                $in: tags.split(',')
-            }
-        });
-
-        console.log( title,
-            content,
-            status,
-            category,
-            tags,
-            featuredImage,
-            metaTitle,
-            metaDescription);
-
-        // const acceptedImages = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        // const megabytes = 1;
-        // const MAX_FILE_SIZE = megabytes * 1024 * 1024; 
         const formSchema = z.object({
             title: z.string().min(1, { message: 'Title is required.' }),
             content: z.string().min(1, { message: 'Content is required.' }),
             status: z.enum(['published', 'draft']),
-            category: z.string(),
-            tags: z.string(),
+            category: z.string().optional(),
+            tags: z.string().optional(),
             featuredImage: z.string().refine(file => !isExceededTheFileLimit(file), { message: 'Please use image less than 5 MB.' }),
             metaTitle: z.string().optional(),
             metaDescription: z.string().optional()
-        });
-
-        console.log({
-            title,
-            content,
-            status,
-            category,
-            tags,
-            featuredImage,
-            metaTitle,
-            metaDescription
         });
 
         const result = formSchema.safeParse({
@@ -141,6 +108,16 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
             }
         }
 
+        // get the category based on category slug
+        const currrentCategory = await CategoryModel.findOne<ICategory>({ slug: category});
+
+        // get the tags based on the tags slug
+        const currentTags = await TagModel.find<ITag>({
+            slug: {
+                $in: tags.split(',')
+            }
+        });
+
         // create slug 
         const titleSlug = formatSlug(title);
 
@@ -149,11 +126,21 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
             slug: titleSlug,
             content,
             status,
-            category: currrentCategory?._id as mongoose.Types.ObjectId,
-            tags: currentTags?.map(item => item._id) as mongoose.Types.ObjectId[],
             metaTitle,
             metaDescription
         };
+
+        if(currrentCategory) {
+
+            blogDocumentData.category = currrentCategory._id as mongoose.Types.ObjectId;
+
+        }
+
+        if(currentTags) {
+
+            blogDocumentData.tags = currentTags.map(item => item._id) as mongoose.Types.ObjectId[];
+
+        }
 
         if(featuredImage.length) {
 

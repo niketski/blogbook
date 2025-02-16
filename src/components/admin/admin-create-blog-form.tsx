@@ -101,6 +101,8 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
             });
         }
 
+        console.log(formState);
+
     }, [formState.status]);
 
     useEffect(() => {
@@ -232,10 +234,10 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
                                     <Label className="mb-2 block font-bold">Category</Label>
 
                                     <RadioGroup defaultValue="uncategorized" name="category">
-                                        {/* <div className="flex items-center space-x-2">
+                                        <div className="flex items-center space-x-2">
                                             <RadioGroupItem value="uncategorized" id="uncategorized"/>
                                             <Label htmlFor="uncategorized">Uncategorized</Label>
-                                        </div> */}
+                                        </div>
 
                                         {categoriesOptions.map(option => {
                                             return (

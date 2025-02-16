@@ -6,7 +6,7 @@ import CategoryModel, { ICategory } from '@/models/category-model';
 import TagModel, { ITag } from '@/models/tag-model';
 import BlogModel, { IBlog } from '@/models/blog-model';
 import { BlogDocumentData } from './create-blog';
-import mongoose from 'mongoose';
+import mongoose, { UpdateQuery } from 'mongoose';
 import { UploadApiResponse } from 'cloudinary';
 
 export interface EditBlogFormState {
@@ -20,7 +20,7 @@ export interface EditBlogFormState {
         metaDescription: string,
         status: string,
         tags: string,
-        category: string,
+        category?: string,
         featuredImage?: string,
         featuredImageUrl?: string,
         featuredImageId?: string
@@ -67,8 +67,6 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
             category: z.string(),
             tags: z.string(),
             featuredImage: z.string().refine(file => !isExceededTheFileLimit(file), { message: 'Please use image less than 5 MB.' }),
-            // featuredImageUrl: z.string().optional(),
-            // featuredImageId: z.string().optional(),
             metaTitle: z.string().optional(),
             metaDescription: z.string().optional()
         });
@@ -82,8 +80,6 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
             category,
             tags,
             featuredImage,
-            // featuredImageUrl,
-            // featuredImageId,
             metaTitle,
             metaDescription
         });
@@ -136,59 +132,92 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
             metaDescription
         }
 
-        // upload the updated image to cloudinary
-         if(featuredImage && featuredImageId) {
-        
-            // upload image as base64 URI to cloudinary
-            // const cloudinaryImage: UploadApiResponse = await cloudinary.uploader.upload(
-            //     featuredImage, 
-            //     { 
-            //         public_id: featuredImageId, 
-            //         folder: 'blogbook' 
-            //     }
-            // ); 
+        let isImageRemoved = false;
 
-            // updatedBlogData.featuredImage = {
-            //     url: cloudinaryImage.secure_url,
-            //     id: cloudinaryImage.public_id
-            // };
+        if(existingBlog && existingBlog.featuredImage) {
+
+            // update image if there's existing image and the user uploaded a new image
+            if(featuredImage) {
+
+                const updatedImage: UploadApiResponse = await cloudinary.uploader.upload(
+                    featuredImage, 
+                    {
+                        public_id: featuredImageId,
+                        overwrite: true,
+                        invalidate: true
+                    }
+                );
+
+                updatedBlogData.featuredImage = {
+                    id: updatedImage.public_id,
+                    url: updatedImage.secure_url
+                };
+
+            } else {
+
+                // remove image if the user doesn't upload a new image and there's an existing image on the database
+                const deletedImage = await cloudinary.uploader.destroy(featuredImageId, { invalidate: true });
+
+                isImageRemoved = true;
+
+                console.log('deleted: ', deletedImage);
+
+                updatedBlogData.featuredImage = undefined;
+                console.log('deleted image', featuredImageId);
+
+            }
+
+        } else if(featuredImage) {
+
+            // add and upload image if there's no existing image
+            const uploadedImage: UploadApiResponse = await cloudinary.uploader.upload(featuredImage, { folder: 'blogbook', invalidate: true });
+
+            updatedBlogData.featuredImage = {
+                id: uploadedImage.public_id,
+                url: uploadedImage.secure_url
+            };
+            
         }
 
-        console.log('updated data: ', updatedBlogData);
-        console.log('featured image: ', featuredImage);
-        console.log('featured image id: ', featuredImageId);
-        console.log('exiting blog: ', existingBlog);
+        const query: UpdateQuery<IBlog> = {
+            $set: updatedBlogData
+        };
+        
+        if(isImageRemoved) {
 
-        // const updatedBlog = await BlogModel.findOneAndUpdate(
-        //     {
-        //        _id: blogId
-        //     },
-        //     {
-        //         $set: updatedBlogData
-        //     },
-        //     { new: true }
-        // );
+            query['$unset'] = {
+                featuredImage: 1
+            };
+        }
+
+        await BlogModel.findOneAndUpdate(
+            {
+               _id: blogId
+            },
+            query,
+            { new: true }
+        );
 
         return {
             status: 'success',
             message: 'Blog has been updated successfully!!!',
             values: {
-                slug,
-                title,
-                content,
-                status,
-                category,
-                tags,
+                slug: updatedBlogData.slug,
+                title: updatedBlogData.title,
+                content: updatedBlogData.content,
+                status: updatedBlogData.status,
+                category: category,
+                tags: tags,
                 featuredImage: '',
-                featuredImageUrl,
-                featuredImageId,
+                featuredImageUrl: updatedBlogData.featuredImage ? updatedBlogData.featuredImage.url : '',
+                featuredImageId: updatedBlogData.featuredImage ? updatedBlogData.featuredImage.id : '',
                 metaTitle,
                 metaDescription
             },
             errors: {}
         }
 
-    } catch(error: any) {
+    } catch(error) {
         console.log(error);
         const title = formData.get('title') as string;
         const slug = formData.get('slug') as string;

@@ -36,7 +36,8 @@ const BlogSchema = new Schema<IBlog>({
     },
     category: {
         type: Schema.Types.ObjectId,
-        ref: 'Category'
+        ref: 'Category',
+        // default: ''
     },
     tags: [
         {

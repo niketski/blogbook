@@ -1,4 +1,4 @@
-import { v2 as cloudinary, ConfigOptions, ResourceApiResponse } from 'cloudinary';
+import { v2 as cloudinary, ConfigOptions } from 'cloudinary';
 
 const clodinaryConfig: ConfigOptions = {
     cloud_name: 'dndtvwfvg',

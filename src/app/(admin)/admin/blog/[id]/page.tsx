@@ -1,11 +1,11 @@
-import BlogModel, { IBlog } from "@/models/blog-model";
+import BlogModel from "@/models/blog-model";
 import EditBlogForm, { BlogDetails } from "./_components/edit-blog-form";
 import CategoryModel from "@/models/category-model";
 import TagModel, { ITag } from "@/models/tag-model";
 import { ICategory } from "@/models/category-model";
-import mongoose, { Types } from "mongoose";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import mongoose from "mongoose";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +16,7 @@ interface BlogDetailsPageProps {
 }
 
 interface CurrentBlogResult {
-    _id: Types.ObjectId,
+    _id: mongoose.Types.ObjectId,
     title: string,
     content: string,
     featuredImage: {
@@ -65,7 +65,7 @@ export default async function BlogDetailsPage({ params } : BlogDetailsPageProps)
             metaTitle: currentBlog.metaTitle,
             metaDescription: currentBlog.metaDescription,
             status: currentBlog.status,
-            category: currentBlog.category.slug as string,
+            // category: currentBlog.category.slug as string,
             tags: currentBlog.tags.map((tag) =>  {
                 return { value: tag.slug, label: tag.name }
             }),
@@ -79,6 +79,10 @@ export default async function BlogDetailsPage({ params } : BlogDetailsPageProps)
                 url: currentBlog.featuredImage.url
             }
 
+        }
+
+        if(currentBlog.category){
+            blogData.category = currentBlog.category.slug;
         }
 
     }
