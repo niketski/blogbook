@@ -39,7 +39,7 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
     const search = await searchParams;
     const query: QueryParams = {};
 
-    for(let key in search) {
+    for(const key in search) {
         
 
         if(search[key] !== undefined && search[key] !== '' && search[key] !== 'default') {
@@ -90,6 +90,9 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
                 foreignField: '_id',
                 as: 'tagsData'
             }
+        },
+        {
+            $sort: { createdAt: -1 } // Sort by createdAt in descending order (latest first)
         }
     ];
 
@@ -102,7 +105,6 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
     
     const blogs: IBlogResult[] | null = await BlogModel.aggregate(aggregateQuery);
 
-    console.log(blogs.length > 0);
 
     return (
         <div>

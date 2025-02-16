@@ -19,6 +19,7 @@ import { Ellipsis } from "lucide-react";
 import { ICategory } from "@/models/category-model";
 import { ITag } from "@/models/tag-model";
 import { IBlog } from "@/models/blog-model";
+import Link from "next/link";
 
 interface BlogTableProps {
     data: BlogResult[]
@@ -67,7 +68,11 @@ export default async function BlogTable({ data } : BlogTableProps) {
 
                     return (
                         <TableRow key={id}>
-                            <TableCell><span className="font-bold">{item.title}</span></TableCell>
+                            <TableCell>
+                                <span className="font-bold">
+                                    <Link href={`/admin/blog/${item._id}`}>{item.title}</Link>
+                                </span>
+                            </TableCell>
                             <TableCell>{category ? category.name : 'Uncategorized'}</TableCell>
                             <TableCell>
                                 {tags && 

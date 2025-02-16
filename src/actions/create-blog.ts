@@ -1,12 +1,14 @@
 'use server'
 
 import cloudinary from '@/lib/cloudinary';
-import { type UploadApiResponse } from 'cloudinary';
-import { title } from 'process';
 import BlogModel from '@/models/blog-model';
 import z from 'zod';
 import { isExceededTheFileLimit } from '@/lib/cloudinary';
-import { isExceededFileLimit, formatSlug } from '@/lib/utils';
+import {formatSlug } from '@/lib/utils';
+import CategoryModel, { ICategory } from '@/models/category-model';
+import TagModel, { ITag } from '@/models/tag-model';
+import { UploadApiResponse } from 'cloudinary';
+import mongoose from 'mongoose';
 
 interface CreateBlogFormState {
     message: string,
@@ -34,6 +36,20 @@ interface CreateBlogFormState {
     }
 }
 
+export interface BlogDocumentData {
+    title: string,
+    content: string,
+    status: string,
+    category?: mongoose.Types.ObjectId,
+    tags?: mongoose.Types.ObjectId[],
+    slug: string,
+    featuredImage?: {
+        url: string,
+        id: string
+    },
+    metaTitle: string,
+    metaDescription: string,
+}
 
 export default async function createBlog(prevState: CreateBlogFormState, formData: FormData): Promise<CreateBlogFormState> {
 
@@ -49,30 +65,15 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
         const metaTitle = formData.get('metaTitle') as string;
         const metaDescription = formData.get('metaDescription') as string;
 
-        const acceptedImages = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        const megabytes = 1;
-        const MAX_FILE_SIZE = megabytes * 1024 * 1024; 
         const formSchema = z.object({
             title: z.string().min(1, { message: 'Title is required.' }),
             content: z.string().min(1, { message: 'Content is required.' }),
             status: z.enum(['published', 'draft']),
-            category: z.string(),
-            tags: z.string(),
-            featuredImage: z.string()
-                .refine(file => isExceededTheFileLimit(file), { message: 'Please use image less than 5 MB.' }),
+            category: z.string().optional(),
+            tags: z.string().optional(),
+            featuredImage: z.string().refine(file => !isExceededTheFileLimit(file), { message: 'Please use image less than 5 MB.' }),
             metaTitle: z.string().optional(),
             metaDescription: z.string().optional()
-        });
-
-        console.log({
-            title,
-            content,
-            status,
-            category,
-            tags,
-            featuredImage,
-            metaTitle,
-            metaDescription
         });
 
         const result = formSchema.safeParse({
@@ -85,7 +86,7 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
             metaTitle,
             metaDescription
         });
-        
+
         if(!result.success) {
 
             const currentErrors = result.error.flatten().fieldErrors;
@@ -107,28 +108,54 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
             }
         }
 
+        // get the category based on category slug
+        const currrentCategory = await CategoryModel.findOne<ICategory>({ slug: category});
 
-        // upload image as base64 URI to cloudinary
-        const cloudinaryImage = await cloudinary.uploader.upload(featuredImage, { folder: 'blogbook' });
+        // get the tags based on the tags slug
+        const currentTags = await TagModel.find<ITag>({
+            slug: {
+                $in: tags.split(',')
+            }
+        });
 
         // create slug 
-        const titleSlug: string = formatSlug(title);
-    
-        // save blog to the database
-        const newBlog = new BlogModel({
+        const titleSlug = formatSlug(title);
+
+        const blogDocumentData: BlogDocumentData = {
             title,
             slug: titleSlug,
             content,
             status,
-            category,
-            tags: tags.split(','),
-            featuredImage: {
-                url: cloudinaryImage.secure_url,
-                id: cloudinaryImage.public_id
-            },
             metaTitle,
             metaDescription
-        });
+        };
+
+        if(currrentCategory) {
+
+            blogDocumentData.category = currrentCategory._id as mongoose.Types.ObjectId;
+
+        }
+
+        if(currentTags) {
+
+            blogDocumentData.tags = currentTags.map(item => item._id) as mongoose.Types.ObjectId[];
+
+        }
+
+        if(featuredImage.length) {
+
+            // upload image as base64 URI to cloudinary
+            const cloudinaryImage: UploadApiResponse = await cloudinary.uploader.upload(featuredImage, { folder: 'blogbook' }); 
+
+            blogDocumentData.featuredImage = {
+                url: cloudinaryImage.secure_url,
+                id: cloudinaryImage.public_id
+            };
+        
+        }
+    
+        // save blog to the database
+        const newBlog = new BlogModel(blogDocumentData);
 
         await newBlog.save();
 
@@ -150,7 +177,7 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
             errors: {}
         }
 
-    } catch(error: any) {
+    } catch(error) {
 
         console.log(error);
 

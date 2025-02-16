@@ -31,11 +31,13 @@ const BlogSchema = new Schema<IBlog>({
         type: String,
     },
     featuredImage: {
-        type: Object
+        type: Object,
+        default: undefined
     },
     category: {
         type: Schema.Types.ObjectId,
-        ref: 'Category'
+        ref: 'Category',
+        // default: ''
     },
     tags: [
         {
