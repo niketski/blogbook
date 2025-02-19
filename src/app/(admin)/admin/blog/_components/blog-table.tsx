@@ -89,8 +89,12 @@ export default async function BlogTable({ data } : BlogTableProps) {
                                     <DropdownMenuContent>
                                         <DropdownMenuLabel>Action</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
-                                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                                        <DropdownMenuItem>Delete</DropdownMenuItem>
+                                        <DropdownMenuItem asChild>
+                                            <Link href={`/admin/blog/${id}`} className="cursor-pointer">Edit</Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem asChild>
+                                            <Link href="/admin/profile">Delete</Link>
+                                        </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </TableCell>

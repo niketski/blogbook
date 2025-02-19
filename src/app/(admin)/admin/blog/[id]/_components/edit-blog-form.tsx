@@ -139,7 +139,7 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
         if(currentBlog.featuredImage && Object.keys(currentBlog.featuredImage).length) {
 
             const imageUrl = formState.values.featuredImageUrl ? formState.values.featuredImageUrl : currentBlog.featuredImage.url;
-
+            console.log('image to use: ', imageUrl);
             readImageUrl(imageUrl);
 
         }
@@ -169,19 +169,8 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
             });
         }
 
-        // console.log('form values: ', formState.values);
+    }, [formState.status, toast]);
 
-    }, [formState.status]);
-    
-    // console.log('form state: ', formState);
-    // console.log('current blog:', currentBlog);
-    // console.log(imagePreview);
-
-    // console.log(isPending);
-
-    // console.log('image id: ', currentBlog);
-    // console.log('status: ', formState.status);
-    console.log('values: ', formState);
     
     return (
         <div>

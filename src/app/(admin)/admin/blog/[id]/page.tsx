@@ -65,7 +65,6 @@ export default async function BlogDetailsPage({ params } : BlogDetailsPageProps)
             metaTitle: currentBlog.metaTitle,
             metaDescription: currentBlog.metaDescription,
             status: currentBlog.status,
-            // category: currentBlog.category.slug as string,
             tags: currentBlog.tags.map((tag) =>  {
                 return { value: tag.slug, label: tag.name }
             }),
