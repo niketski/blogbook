@@ -23,6 +23,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html lang="en" className="admin">
       <body
@@ -32,6 +33,7 @@ export default function RootLayout({
             {children}
           </AdminContainer>
           <Toaster/>
+          <div id="modal-root" />
       </body>
     </html>
   );

@@ -20,6 +20,7 @@ import { ICategory } from "@/models/category-model";
 import { ITag } from "@/models/tag-model";
 import { IBlog } from "@/models/blog-model";
 import Link from "next/link";
+import DeleteBlogModal from "./delete-blog-modal";
 
 interface BlogTableProps {
     data: BlogResult[]
@@ -40,6 +41,7 @@ const TableHeading = [
 ];
 
 export default async function BlogTable({ data } : BlogTableProps) {
+
     return (
         <Table className="min-w-[800px]">
             <TableHeader>
@@ -92,9 +94,12 @@ export default async function BlogTable({ data } : BlogTableProps) {
                                         <DropdownMenuItem asChild>
                                             <Link href={`/admin/blog/${id}`} className="cursor-pointer">Edit</Link>
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem asChild>
-                                            <Link href="/admin/profile">Delete</Link>
-                                        </DropdownMenuItem>
+                                        {/* <DropdownMenuItem asChild>
+                                            <Link href={`/admin/blog/${id}/remove`}>Delete</Link>
+                                        </DropdownMenuItem> */}
+                                        <DeleteBlogModal 
+                                            blogId={id}
+                                            blogTitle={item.title}/>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </TableCell>
