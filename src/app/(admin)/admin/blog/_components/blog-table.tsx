@@ -1,26 +1,13 @@
 import {
     Table,
     TableBody,
-    TableCell,
     TableHead,
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Ellipsis } from "lucide-react";
 import { ICategory } from "@/models/category-model";
 import { ITag } from "@/models/tag-model";
 import { IBlog } from "@/models/blog-model";
-import Link from "next/link";
-import DeleteBlogModal from "./delete-blog-modal";
 import BlogTableRow from "./blog-table-row";
 
 interface BlogTableProps {
@@ -30,7 +17,6 @@ interface BlogTableProps {
 export interface BlogResult extends IBlog {
     categoryData: ICategory[],
     tagsData: ITag[]
-
 }
 
 const TableHeading = [
@@ -78,41 +64,6 @@ export default async function BlogTable({ data } : BlogTableProps) {
                             tags={ tags ? (tags.map(item => item.name)).join(', ') : '' }
                             date={date}
                             status={item.status}/>
-                        // <TableRow key={id}>
-                        //     <TableCell>
-                        //         <span className="font-bold">
-                        //             <Link href={`/admin/blog/${item._id}`}>{item.title}</Link>
-                        //         </span>
-                        //     </TableCell>
-                        //     <TableCell>{category ? category.name : 'Uncategorized'}</TableCell>
-                        //     <TableCell>
-                        //         {tags && 
-                        //             (tags.map(item => item.name)).join(', ')
-                        //         }
-                        //     </TableCell>
-                        //     <TableCell>{date}</TableCell>
-                        //     <TableCell>{item.status}</TableCell>
-                        //     <TableCell>
-                        //         <DropdownMenu modal={false}>
-                        //             <DropdownMenuTrigger asChild>
-                        //                 <Button variant="link"><Ellipsis/></Button>
-                        //             </DropdownMenuTrigger>
-                        //             <DropdownMenuContent>
-                        //                 <DropdownMenuLabel>Action</DropdownMenuLabel>
-                        //                 <DropdownMenuSeparator />
-                        //                 <DropdownMenuItem asChild>
-                        //                     <Link href={`/admin/blog/${id}`} className="cursor-pointer">Edit</Link>
-                        //                 </DropdownMenuItem>
-                        //                 {/* <DropdownMenuItem asChild>
-                        //                     <Link href={`/admin/blog/${id}/remove`}>Delete</Link>
-                        //                 </DropdownMenuItem> */}
-                        //                 {/* <DeleteBlogModal 
-                        //                     blogId={id}
-                        //                     blogTitle={item.title}/> */}
-                        //             </DropdownMenuContent>
-                        //         </DropdownMenu>
-                        //     </TableCell>
-                        // </TableRow>
                     );
                 })}
                 

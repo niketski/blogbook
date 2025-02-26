@@ -19,17 +19,7 @@ interface DeleteBlogModalProps {
 
 export default function DeleteBlogModal({ blogId, blogTitle } : DeleteBlogModalProps) {
     const [open, setOpen] = useState(false);
-
-    const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-
-        const formData = new FormData(e.currentTarget);
-        const currentId = formData.get('blogId') as string;
-
-        // console.log('')
-
-    };
-
+    
     return (
         <>
             <DropdownMenuItem asChild>

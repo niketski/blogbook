@@ -9,9 +9,19 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription
+  } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Ellipsis } from "lucide-react";
+import { useState } from "react";
+import DeleteBlog from "@/actions/delete-blog";
+import { useToast } from "@/hooks/use-toast";
 
 interface BlogTableRowProps {
     id: string,
@@ -30,8 +40,24 @@ export default function BlogTableRow({
     date,
     status
  } : BlogTableRowProps) {
+    const [isDeleteModalActive, setIsDeleteModalActive] = useState(false);
+    const { toast } = useToast();
+
+    const handleDeleteBlog = async () => {
+
+        await DeleteBlog(id);
+
+        setIsDeleteModalActive(false);
+
+        toast({
+            title: 'Success',
+            description: 'The blog has been deleted successfully!'
+        });
+
+    };
+
     return (
-        <TableRow key={id}>
+        <TableRow>
             <TableCell>
                 <span className="font-bold">
                     <Link href={`/admin/blog/${id}`}>{title}</Link>
@@ -54,14 +80,27 @@ export default function BlogTableRow({
                         <DropdownMenuItem asChild>
                             <Link href={`/admin/blog/${id}`} className="cursor-pointer">Edit</Link>
                         </DropdownMenuItem>
-                        {/* <DropdownMenuItem asChild>
-                            <Link href={`/admin/blog/${id}/remove`}>Delete</Link>
-                        </DropdownMenuItem> */}
-                        {/* <DeleteBlogModal 
-                            blogId={id}
-                            blogTitle={item.title}/> */}
+                        <DropdownMenuItem asChild>
+                            <Link href="#" className="cursor-pointer" onClick={(e) => { e.preventDefault(); setIsDeleteModalActive(true)  }}>Delete</Link>
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
+
+                    {/* Delete form modal */}
+                    <Dialog open={isDeleteModalActive} onOpenChange={setIsDeleteModalActive}>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle className="mb-5 leading-6">Delete &quot;{title}&quot;?</DialogTitle>
+                                <DialogDescription>Are you sure you want to delete this blog?</DialogDescription>
+                            </DialogHeader>
+                            <div className="flex justify-end">
+                                <Button type="button" variant="destructive" onClick={() => { handleDeleteBlog(); }} className="mr-3">Yes</Button>
+                                <Button variant={'outline'} onClick={() => { setIsDeleteModalActive(false) }}>No</Button>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+
                 </DropdownMenu>
+
             </TableCell>
         </TableRow>
     );

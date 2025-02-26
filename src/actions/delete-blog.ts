@@ -1,7 +1,25 @@
 'use server'
 
-export default async function DeleteBlog(formData: FormData){
-    const blogId = formData.get('blogId');
+import BlogModel from "@/models/blog-model";
+import { revalidatePath } from "next/cache";
 
-    console.log('deleted: ', blogId);
+export default async function DeleteBlog(id: string){
+    
+    try {
+
+        // delete blog
+        await BlogModel.findByIdAndDelete(id);
+
+        // refresh blogs data on front end
+        revalidatePath('/admin/blog');
+
+        
+    } catch(error: unknown) {
+
+        if(error instanceof Error) {
+
+            console.log(error.message);
+
+        }
+    }
 }
