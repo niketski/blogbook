@@ -7,9 +7,10 @@ import {
     DialogTitle,
     DialogTrigger,
   } from "@/components/ui/dialog"
-  import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-  import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { FormEvent, useState } from "react";
+import DeleteBlogForm from "./delete-blog-form";
 
 interface DeleteBlogModalProps {
     blogId: string,
@@ -18,6 +19,16 @@ interface DeleteBlogModalProps {
 
 export default function DeleteBlogModal({ blogId, blogTitle } : DeleteBlogModalProps) {
     const [open, setOpen] = useState(false);
+
+    const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.currentTarget);
+        const currentId = formData.get('blogId') as string;
+
+        // console.log('')
+
+    };
 
     return (
         <>
@@ -35,7 +46,11 @@ export default function DeleteBlogModal({ blogId, blogTitle } : DeleteBlogModalP
                             <DialogTitle className="mb-5 leading-6">Are you sure you want to delete &quot;{blogTitle}&quot;?</DialogTitle>
                         </DialogHeader>
                         <div className="flex justify-end">
-                            <Button variant="destructive" className="mr-3">Yes</Button>
+                            {/* <Button variant="destructive" className="mr-3">Yes</Button> */}
+                            <form className="mr-3" onSubmit={}>
+                                <input type="text" name="blogId" defaultValue={blogId} className="hidden"/>
+                                <Button type="submit" variant="destructive">Yes</Button>
+                            </form>
                             <Button variant={'outline'} onClick={() => { setOpen(false) }}>No</Button>
                         </div>
                     </DialogContent>

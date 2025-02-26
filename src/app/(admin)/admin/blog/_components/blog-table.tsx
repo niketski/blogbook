@@ -21,6 +21,7 @@ import { ITag } from "@/models/tag-model";
 import { IBlog } from "@/models/blog-model";
 import Link from "next/link";
 import DeleteBlogModal from "./delete-blog-modal";
+import BlogTableRow from "./blog-table-row";
 
 interface BlogTableProps {
     data: BlogResult[]
@@ -69,41 +70,49 @@ export default async function BlogTable({ data } : BlogTableProps) {
                         .format(new Date(item.createdAt.toString()));
 
                     return (
-                        <TableRow key={id}>
-                            <TableCell>
-                                <span className="font-bold">
-                                    <Link href={`/admin/blog/${item._id}`}>{item.title}</Link>
-                                </span>
-                            </TableCell>
-                            <TableCell>{category ? category.name : 'Uncategorized'}</TableCell>
-                            <TableCell>
-                                {tags && 
-                                    (tags.map(item => item.name)).join(', ')
-                                }
-                            </TableCell>
-                            <TableCell>{date}</TableCell>
-                            <TableCell>{item.status}</TableCell>
-                            <TableCell>
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="link"><Ellipsis/></Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent>
-                                        <DropdownMenuLabel>Action</DropdownMenuLabel>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem asChild>
-                                            <Link href={`/admin/blog/${id}`} className="cursor-pointer">Edit</Link>
-                                        </DropdownMenuItem>
-                                        {/* <DropdownMenuItem asChild>
-                                            <Link href={`/admin/blog/${id}/remove`}>Delete</Link>
-                                        </DropdownMenuItem> */}
-                                        <DeleteBlogModal 
-                                            blogId={id}
-                                            blogTitle={item.title}/>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </TableCell>
-                        </TableRow>
+                        <BlogTableRow
+                            key={id}
+                            id={id}
+                            title={item.title}
+                            category={category ? category.name : 'Uncategorized'}
+                            tags={ tags ? (tags.map(item => item.name)).join(', ') : '' }
+                            date={date}
+                            status={item.status}/>
+                        // <TableRow key={id}>
+                        //     <TableCell>
+                        //         <span className="font-bold">
+                        //             <Link href={`/admin/blog/${item._id}`}>{item.title}</Link>
+                        //         </span>
+                        //     </TableCell>
+                        //     <TableCell>{category ? category.name : 'Uncategorized'}</TableCell>
+                        //     <TableCell>
+                        //         {tags && 
+                        //             (tags.map(item => item.name)).join(', ')
+                        //         }
+                        //     </TableCell>
+                        //     <TableCell>{date}</TableCell>
+                        //     <TableCell>{item.status}</TableCell>
+                        //     <TableCell>
+                        //         <DropdownMenu modal={false}>
+                        //             <DropdownMenuTrigger asChild>
+                        //                 <Button variant="link"><Ellipsis/></Button>
+                        //             </DropdownMenuTrigger>
+                        //             <DropdownMenuContent>
+                        //                 <DropdownMenuLabel>Action</DropdownMenuLabel>
+                        //                 <DropdownMenuSeparator />
+                        //                 <DropdownMenuItem asChild>
+                        //                     <Link href={`/admin/blog/${id}`} className="cursor-pointer">Edit</Link>
+                        //                 </DropdownMenuItem>
+                        //                 {/* <DropdownMenuItem asChild>
+                        //                     <Link href={`/admin/blog/${id}/remove`}>Delete</Link>
+                        //                 </DropdownMenuItem> */}
+                        //                 {/* <DeleteBlogModal 
+                        //                     blogId={id}
+                        //                     blogTitle={item.title}/> */}
+                        //             </DropdownMenuContent>
+                        //         </DropdownMenu>
+                        //     </TableCell>
+                        // </TableRow>
                     );
                 })}
                 
