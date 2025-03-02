@@ -1,25 +1,14 @@
 import {
     Table,
     TableBody,
-    TableCell,
     TableHead,
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Ellipsis } from "lucide-react";
 import { ICategory } from "@/models/category-model";
 import { ITag } from "@/models/tag-model";
 import { IBlog } from "@/models/blog-model";
-import Link from "next/link";
+import BlogTableRow from "./blog-table-row";
 
 interface BlogTableProps {
     data: BlogResult[]
@@ -28,7 +17,6 @@ interface BlogTableProps {
 export interface BlogResult extends IBlog {
     categoryData: ICategory[],
     tagsData: ITag[]
-
 }
 
 const TableHeading = [
@@ -40,6 +28,7 @@ const TableHeading = [
 ];
 
 export default async function BlogTable({ data } : BlogTableProps) {
+
     return (
         <Table className="min-w-[800px]">
             <TableHeader>
@@ -67,34 +56,14 @@ export default async function BlogTable({ data } : BlogTableProps) {
                         .format(new Date(item.createdAt.toString()));
 
                     return (
-                        <TableRow key={id}>
-                            <TableCell>
-                                <span className="font-bold">
-                                    <Link href={`/admin/blog/${item._id}`}>{item.title}</Link>
-                                </span>
-                            </TableCell>
-                            <TableCell>{category ? category.name : 'Uncategorized'}</TableCell>
-                            <TableCell>
-                                {tags && 
-                                    (tags.map(item => item.name)).join(', ')
-                                }
-                            </TableCell>
-                            <TableCell>{date}</TableCell>
-                            <TableCell>{item.status}</TableCell>
-                            <TableCell>
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="link"><Ellipsis/></Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent>
-                                        <DropdownMenuLabel>Action</DropdownMenuLabel>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                                        <DropdownMenuItem>Delete</DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </TableCell>
-                        </TableRow>
+                        <BlogTableRow
+                            key={id}
+                            id={id}
+                            title={item.title}
+                            category={category ? category.name : 'Uncategorized'}
+                            tags={ tags ? (tags.map(item => item.name)).join(', ') : '' }
+                            date={date}
+                            status={item.status}/>
                     );
                 })}
                 
