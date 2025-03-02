@@ -1,9 +1,8 @@
 'use server'
 
-import cloudinary from '@/lib/cloudinary';
 import BlogModel from '@/models/blog-model';
 import z from 'zod';
-import { isExceededTheFileLimit } from '@/lib/cloudinary';
+import cloudinaryHelper from '@/classes/cloudinary-helper';
 import {formatSlug } from '@/lib/utils';
 import CategoryModel, { ICategory } from '@/models/category-model';
 import TagModel, { ITag } from '@/models/tag-model';
@@ -71,7 +70,7 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
             status: z.enum(['published', 'draft']),
             category: z.string().optional(),
             tags: z.string().optional(),
-            featuredImage: z.string().refine(file => !isExceededTheFileLimit(file), { message: 'Please use image less than 5 MB.' }),
+            featuredImage: z.string().refine(file => !cloudinaryHelper.isExceededTheFileLimit(file), { message: 'Please use image less than 5 MB.' }),
             metaTitle: z.string().optional(),
             metaDescription: z.string().optional()
         });
@@ -145,7 +144,7 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
         if(featuredImage.length) {
 
             // upload image as base64 URI to cloudinary
-            const cloudinaryImage: UploadApiResponse = await cloudinary.uploader.upload(featuredImage, { folder: 'blogbook' }); 
+            const cloudinaryImage: UploadApiResponse = await cloudinaryHelper.add(featuredImage);
 
             blogDocumentData.featuredImage = {
                 url: cloudinaryImage.secure_url,

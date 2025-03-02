@@ -1,7 +1,7 @@
 'use server'
 import z from 'zod';
-import cloudinary from '@/lib/cloudinary';
-import { isExceededTheFileLimit } from '@/lib/cloudinary';
+// import cloudinary from '@/lib/cloudinary';
+import cloudinaryHelper from '@/classes/cloudinary-helper';
 import CategoryModel, { ICategory } from '@/models/category-model';
 import TagModel, { ITag } from '@/models/tag-model';
 import BlogModel, { IBlog } from '@/models/blog-model';
@@ -66,7 +66,7 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
             status: z.enum(['published', 'draft']),
             category: z.string(),
             tags: z.string(),
-            featuredImage: z.string().refine(file => !isExceededTheFileLimit(file), { message: 'Please use image less than 5 MB.' }),
+            featuredImage: z.string().refine(file => !cloudinaryHelper.isExceededTheFileLimit(file), { message: 'Please use image less than 5 MB.' }),
             metaTitle: z.string().optional(),
             metaDescription: z.string().optional()
         });
@@ -139,14 +139,7 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
             // update image if there's existing image and the user uploaded a new image
             if(featuredImage) {
 
-                const updatedImage: UploadApiResponse = await cloudinary.uploader.upload(
-                    featuredImage, 
-                    {
-                        public_id: featuredImageId,
-                        overwrite: true,
-                        invalidate: true
-                    }
-                );
+                const updatedImage: UploadApiResponse = await cloudinaryHelper.update(featuredImage, featuredImageId);
 
                 updatedBlogData.featuredImage = {
                     id: updatedImage.public_id,
@@ -156,21 +149,18 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
             } else {
 
                 // remove image if the user doesn't upload a new image and there's an existing image on the database
-                const deletedImage = await cloudinary.uploader.destroy(featuredImageId, { invalidate: true });
+                await cloudinaryHelper.remove(featuredImageId);
 
                 isImageRemoved = true;
 
-                console.log('deleted: ', deletedImage);
-
                 updatedBlogData.featuredImage = undefined;
-                console.log('deleted image', featuredImageId);
 
             }
 
         } else if(featuredImage) {
 
             // add and upload image if there's no existing image
-            const uploadedImage: UploadApiResponse = await cloudinary.uploader.upload(featuredImage, { folder: 'blogbook', invalidate: true });
+            const uploadedImage: UploadApiResponse = await cloudinaryHelper.add(featuredImage);
 
             updatedBlogData.featuredImage = {
                 id: uploadedImage.public_id,
