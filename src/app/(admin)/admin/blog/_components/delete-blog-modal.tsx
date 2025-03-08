@@ -9,8 +9,7 @@ import {
   } from "@/components/ui/dialog"
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { FormEvent, useState } from "react";
-import DeleteBlogForm from "./delete-blog-form";
+import {useState } from "react";
 
 interface DeleteBlogModalProps {
     blogId: string,
@@ -37,7 +36,7 @@ export default function DeleteBlogModal({ blogId, blogTitle } : DeleteBlogModalP
                         </DialogHeader>
                         <div className="flex justify-end">
                             {/* <Button variant="destructive" className="mr-3">Yes</Button> */}
-                            <form className="mr-3" onSubmit={}>
+                            <form className="mr-3">
                                 <input type="text" name="blogId" defaultValue={blogId} className="hidden"/>
                                 <Button type="submit" variant="destructive">Yes</Button>
                             </form>

@@ -12,11 +12,11 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
 import { SlidersHorizontal } from 'lucide-react';
 import BlogModel, { IBlog } from "@/models/blog-model";
-import { ICategory } from "@/models/category-model";
-import { ITag } from "@/models/tag-model";
+import CategoryModel, { ICategory } from "@/models/category-model";
+import TagModel, { ITag } from "@/models/tag-model";
 import { PipelineStage } from "mongoose";
 import SearchForm from "./_components/search-form";
-import Filters from "./_components/filters";
+import Filters, { FilterField, FilterOption } from "./_components/filters";
 import BlogTable from "./_components/blog-table";
 import NoBlogResult from "./_components/no-blog-result";
 
@@ -38,26 +38,80 @@ interface IBlogResult extends IBlog {
 export default async function BlogsPage({ searchParams } : BlogsPageProps) {
     const search = await searchParams;
     const query: QueryParams = {};
+    const categories = await CategoryModel.find<ICategory>({});
+    const categoryOptions = categories.map<FilterOption>(item => { return { label: item.name, value: item.slug } });
+    const categoryField: FilterField = {
+        name: 'category',
+        placeholder: 'Category',
+        options: [
+            {
+                label: 'Category',
+                value: 'default'
+            },
+            ...categoryOptions
+        ]
+    }
+    const tags = await TagModel.find<ITag>({});
+    const tagsOptions = tags.map<FilterOption>(item => { return { label: item.name, value: item.slug } });
+    const tagField: FilterField =  {
+        name: 'tag',
+        placeholder: 'Tag',
+        options: [
+            {
+                label: 'Tag',
+                value: 'default'
+            },
+            ...tagsOptions
+        ]
+    };
+    const statusField: FilterField = {
+        name: 'status',
+        placeholder: 'Status',
+        options: [
+            {
+                label: 'Status',
+                value: 'default'
+            },
+            {
+                label: 'Published',
+                value: 'published'
+            },
+            {
+                label: 'Draft',
+                value: 'draft'
+            }
+        ]
+    };
+
+    const filterFields: FilterField[] = [
+        statusField,
+        categoryField,
+        tagField
+    ];
+
 
     for(const key in search) {
         
 
         if(search[key] !== undefined && search[key] !== '' && search[key] !== 'default') {
 
-            if(key === 'category') {
+            if(key === 'category') { // checks if there's category filter
 
+                // filter documents that has the same category slug on the given filter
                 query['categoryData'] = {
                     $elemMatch: { slug: search[key] }
                 }
             
-            } else if(key === 'tags') {
+            } else if(key === 'tag') { // checks if there's tag filter
 
+                // filter document by tags and checks if the document contains the given filter tag
                 query['tagsData'] = {
                     $elemMatch: { slug: search[key] }
                 }
             
             } else if(key === 'search') {
 
+                // filter document by title
                 query['title'] = {
                     $regex: search[key],
                     $options: 'i'
@@ -105,6 +159,7 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
     
     const blogs: IBlogResult[] | null = await BlogModel.aggregate(aggregateQuery);
 
+    console.log(search);
 
     return (
         <div>
@@ -117,11 +172,13 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
             </div>
             <div className="pt-[30px] mb-[60px] hidden lg:block">
 
-                <Filters currentFilters={{
-                    status: search['status'],
-                    category: search['category'],
-                    tags: search['tags']
-                }}/>
+                <Filters 
+                    fields={filterFields}
+                    currentFilters={{
+                        status: search['status'],
+                        category: search['category'],
+                        tag: search['tag']
+                    }}/>
 
             </div>
             <div className="lg:hidden mb-7 flex justify-end">
@@ -137,10 +194,12 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
                         </DialogHeader>
                         <div>
 
-                            <Filters currentFilters={{
+                            <Filters
+                                fields={filterFields}
+                                currentFilters={{
                                 status: search['status'],
                                 category: search['category'],
-                                tags: search['tags']
+                                tag: search['tag']
                             }}/>
 
                         </div>

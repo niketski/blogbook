@@ -5,12 +5,27 @@ import TagModel, { ITag } from "@/models/tag-model";
 import Link from "next/link";
 import { X } from "lucide-react";
 
-interface FiltersProps {
+export interface FiltersProps {
+    fields: FilterField[],
+    filters?: {
+        [key: string] : string
+    }
     currentFilters: {
         status: string | undefined,
         category: string | undefined,
-        tags: string | undefined
+        tag: string | undefined
     }
+}
+
+export interface FilterField {
+    name: string,
+    placeholder: string,
+    options: FilterOption[]
+}
+
+export interface FilterOption {
+    value: string,
+    label: string,
 }
 
 export default async function Filters({ currentFilters } : FiltersProps) {
@@ -18,6 +33,7 @@ export default async function Filters({ currentFilters } : FiltersProps) {
     const tags: ITag[] | null = await TagModel.find({});
     let hasFilters = false;
 
+    // checks if there's available filter
     Object.entries(currentFilters).forEach(item => {
 
         if(item[1] !== undefined && item[1] !== 'default') {
@@ -25,6 +41,8 @@ export default async function Filters({ currentFilters } : FiltersProps) {
         }
 
     });
+
+    console.log(currentFilters);
     
     return (
         <form action="#">
@@ -62,7 +80,7 @@ export default async function Filters({ currentFilters } : FiltersProps) {
                 }
                 {tags &&
                     <div className="mb-3 w-full lg:mr-3 lg:w-auto">
-                        <Select name="tags" defaultValue={currentFilters.tags ? currentFilters.tags : 'default'}>
+                        <Select name="tag" defaultValue={currentFilters.tag ? currentFilters.tag : 'default'}>
                             <SelectTrigger className="w-full lg:w-[120px]">
                                 <SelectValue placeholder="Tag" className="text-ellipsis"/>
                             </SelectTrigger>
