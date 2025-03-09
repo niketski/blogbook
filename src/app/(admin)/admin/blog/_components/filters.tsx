@@ -1,20 +1,17 @@
+'use client'
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import CategoryModel, { ICategory } from "@/models/category-model";
-import TagModel, { ITag } from "@/models/tag-model";
-import Link from "next/link";
 import { X } from "lucide-react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { ChangeEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export interface FiltersProps {
     fields: FilterField[],
-    filters?: {
-        [key: string] : string
-    }
     currentFilters: {
-        status: string | undefined,
-        category: string | undefined,
-        tag: string | undefined
-    }
+        [key: string]: string | undefined
+    }  
 }
 
 export interface FilterField {
@@ -28,84 +25,92 @@ export interface FilterOption {
     label: string,
 }
 
-export default async function Filters({ currentFilters } : FiltersProps) {
-    const categories: ICategory[] | null = await CategoryModel.find({});
-    const tags: ITag[] | null = await TagModel.find({});
-    let hasFilters = false;
+export default function Filters({ currentFilters, fields } : FiltersProps) {
+    const [filters, setFilters] = useState<{[key: string]: string | undefined}>(currentFilters);
+    const searchParams = useSearchParams();
+    const path = usePathname();
+    const router = useRouter();
+    const handleSelectChange = (value: string, name: string) => {
 
-    // checks if there's available filter
-    Object.entries(currentFilters).forEach(item => {
+        setFilters(prevState => {
+            return {
+                ...prevState,
+                [name]: value
+            }
+        });
+       
+    };
 
-        if(item[1] !== undefined && item[1] !== 'default') {
-            hasFilters = true;
+    const createSearchParameter = (): string => {
+        const params = new URLSearchParams(searchParams.toString());
+
+        for(const key in filters) {
+
+            if(filters[key]) {
+                params.set(key, filters[key]);
+            }
+            
         }
 
-    });
+        return params.toString();
 
-    console.log(currentFilters);
+    };
+
+    const handleSubmit = (e: ChangeEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        const queryString = createSearchParameter();
+
+        router.push(`${path}?${queryString}`);
+    };
+
+    const handleClearFilters = () => { router.push(path) };
+
     
     return (
-        <form action="#">
-            <div className="lg:flex">
-                <div className="mb-3 w-full lg:mr-3 lg:w-auto">
-                    <Select name="status" defaultValue={currentFilters.status ? currentFilters.status : 'default'}>
-                        <SelectTrigger className="w-full lg:w-[120px]">
-                            <SelectValue placeholder="Status"/>
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="default">Status</SelectItem>
-                            <SelectItem value="published">Published</SelectItem>
-                            <SelectItem value="draft">Draft</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-                {categories &&
-                    <div className="mb-3 w-full lg:mr-3 lg:w-auto">
-                    <Select name="category" defaultValue={currentFilters.category ? currentFilters.category : 'default'}>
-                        <SelectTrigger className="w-full lg:w-[120px]">
-                            <SelectValue placeholder="Category"/>
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="default">Category</SelectItem>
-                            {categories.map(item => {
-                                return (
-                                    <SelectItem 
-                                        key={(item._id as string).toString()}
-                                        value={(item.slug).toString()}>{item.name}</SelectItem>
-                                )
-                            })}
-                        </SelectContent>
-                    </Select>
-                </div>
-                }
-                {tags &&
-                    <div className="mb-3 w-full lg:mr-3 lg:w-auto">
-                        <Select name="tag" defaultValue={currentFilters.tag ? currentFilters.tag : 'default'}>
-                            <SelectTrigger className="w-full lg:w-[120px]">
-                                <SelectValue placeholder="Tag" className="text-ellipsis"/>
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="default">Tag</SelectItem>
-                                {tags.map(item => {
-                                    const id = item._id as string;
+       <div className="flex items-center">
+            <form onSubmit={handleSubmit}>
+                <div className="lg:flex md:items-center">
+                    {fields && 
+                        fields.map(item => {
+                            const selectedValue = item.options.find(optionItem => currentFilters[item.name] === optionItem.value);
+                            const defaultValue = currentFilters[item.name] === selectedValue?.value ? selectedValue?.value : 'default';
 
-                                    return (
-                                        <SelectItem 
-                                            key={id.toString()} 
-                                            value={item.slug}>{item.name}</SelectItem>
-                                    );
-                                })}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                }
-                
-                <div className="flex justify-end pt-5 lg:inline-block lg:pt-0">
-                    <Button type="submit" variant="outline">Apply filters</Button>
-                    {hasFilters && <Button variant="outline" className="ml-3" asChild><Link href="/admin/blog"><X/> Clear Filters</Link></Button>}
+                            console.log(defaultValue);
+
+                            return (
+                                <div className="mb-3 md:mb-0 w-full lg:mr-3 lg:w-auto" key={item.name}>
+                                    <Select name={item.name} defaultValue={defaultValue} onValueChange={(value) => { handleSelectChange(value, item.name) }}>
+                                        <SelectTrigger className="w-full lg:w-[120px]">
+                                            <SelectValue placeholder={item.placeholder}/>
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {item.options.map(option => { 
+                                                return <SelectItem key ={option.value} value={option.value}>{option.label}</SelectItem>
+                                            })}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            ) 
+                        })
+                    }
                     
+                    <div className="inline-flex items-center justify-end pt-5 lg:inline-block lg:pt-0">
+
+                        <Button type="submit" variant="outline">Apply filters</Button>
+                        
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
+
+            {Object.keys(currentFilters).length > 0 &&
+                <Button 
+                    variant="outline" 
+                    className="ml-3"
+                    onClick={() => { handleClearFilters() }}>
+                    <X/> Clear Filters
+                </Button>
+            }
+       </div>
     );
 }
