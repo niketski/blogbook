@@ -19,6 +19,7 @@ import SearchForm from "./_components/search-form";
 import Filters, { FilterField, FilterOption } from "./_components/filters";
 import BlogTable from "./_components/blog-table";
 import NoBlogResult from "./_components/no-blog-result";
+import { Suspense } from "react";
 
 interface BlogsPageProps {
     searchParams: {
@@ -117,7 +118,7 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
                     $options: 'i'
                 }
 
-            }else {
+            } else {
 
                 query[key] = search[key]
 
@@ -211,7 +212,9 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
                 {blogs.length > 0  &&
                     <>
                         <div className="w-full overflow-auto">
-                            <BlogTable data={blogs}/>
+                            <Suspense fallback={<p>Loading ...</p>}>
+                                <BlogTable data={blogs}/>
+                            </Suspense>
                         </div>
                         <Pagination className="justify-start mt-9">
                             <PaginationContent>

@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { ChangeEvent, useState } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export interface FiltersProps {
@@ -56,7 +56,7 @@ export default function Filters({ currentFilters, fields } : FiltersProps) {
 
     };
 
-    const handleSubmit = (e: ChangeEvent<HTMLFormElement>) => {
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const queryString = createSearchParameter();
