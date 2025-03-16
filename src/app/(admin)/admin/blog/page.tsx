@@ -1,14 +1,6 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Plus } from 'lucide-react';
 import Link from "next/link";
-import { 
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious
-} from "@/components/ui/pagination";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
 import { SlidersHorizontal } from 'lucide-react';
 import BlogModel, { IBlog } from "@/models/blog-model";
@@ -20,6 +12,7 @@ import Filters, { FilterField, FilterOption } from "./_components/filters";
 import BlogTable from "./_components/blog-table";
 import NoBlogResult from "./_components/no-blog-result";
 import { Suspense } from "react";
+import BlogPagination from "./_components/blog-pagination";
 
 interface BlogsPageProps {
     searchParams: {
@@ -89,6 +82,8 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
         categoryField,
         tagField
     ];
+    const page = search['page'] ? parseInt(search['page']) : 1;
+    const blogsPerPage = 5;
 
 
     for(const key in search) {
@@ -120,12 +115,30 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
 
             } else {
 
-                query[key] = search[key]
+                // don't include to the match query if the key params is equal to page
+                if(key !== 'page') {
+
+                    query[key] = search[key];
+
+                }
 
             }
 
         }
     }
+
+    let queryKeys = Object.keys(query);
+    let matchPipeline: object = {};
+
+    // remove page from the query 
+    queryKeys = queryKeys.filter(key => key !== 'page');
+    
+    // if it has filters include the filters to the pipeline stage
+    if(queryKeys.length) {
+
+        matchPipeline = query;
+
+    } 
 
     const aggregateQuery: PipelineStage[] = [
         // left join categories data
@@ -147,20 +160,22 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
             }
         },
         {
+            $match: matchPipeline
+        },
+        {
             $sort: { createdAt: -1 } // Sort by createdAt in descending order (latest first)
+        },
+        {
+            $skip: (page - 1) * blogsPerPage
+        },
+        {
+            $limit: blogsPerPage
         }
     ];
 
-    // if it has filters include the filters to the pipeline stage
-    if(Object.keys(query).length) {
+    console.log('query: ', aggregateQuery);
 
-        aggregateQuery.push({ $match: query });
-
-    } 
-    
     const blogs: IBlogResult[] | null = await BlogModel.aggregate(aggregateQuery);
-
-    console.log(search);
 
     return (
         <div>
@@ -216,25 +231,9 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
                                 <BlogTable data={blogs}/>
                             </Suspense>
                         </div>
-                        <Pagination className="justify-start mt-9">
-                            <PaginationContent>
-                                <PaginationItem>
-                                    <PaginationPrevious href="#"/>
-                                </PaginationItem>
-                                <PaginationItem>
-                                    <PaginationLink href="#">1</PaginationLink>
-                                </PaginationItem>
-                                <PaginationItem>
-                                    <PaginationLink href="#">2</PaginationLink>
-                                </PaginationItem>
-                                <PaginationItem>
-                                    <PaginationLink href="#">3</PaginationLink>
-                                </PaginationItem>
-                                <PaginationItem>
-                                    <PaginationNext href="#"/>
-                                </PaginationItem>
-                            </PaginationContent>
-                        </Pagination>
+                        <BlogPagination
+                            totalPages={3}
+                            currentPage={page}/>
                     </>
                 }
 
