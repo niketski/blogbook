@@ -11,7 +11,7 @@ import SearchForm from "./_components/search-form";
 import Filters, { FilterField, FilterOption } from "./_components/filters";
 import BlogTable from "./_components/blog-table";
 import NoBlogResult from "./_components/no-blog-result";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import BlogPagination from "./_components/blog-pagination";
 
 interface BlogsPageProps {
@@ -27,6 +27,11 @@ interface QueryParams {
 interface IBlogResult extends IBlog {
     categoryData: ICategory[],
     tagsData: ITag[]
+}
+
+interface AggregationResult {
+    data: IBlogResult[],
+    metaData: [{ page: number, pages: number, total: number }]
 }
 
 export default async function BlogsPage({ searchParams } : BlogsPageProps) {
@@ -83,8 +88,8 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
         tagField
     ];
     const page = search['page'] ? parseInt(search['page']) : 1;
-    const blogsPerPage = 5;
-
+    const documentLimit = 5;
+    const skip = (page - 1) * documentLimit;
 
     for(const key in search) {
         
@@ -163,20 +168,29 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
             $match: matchPipeline
         },
         {
-            $sort: { createdAt: -1 } // Sort by createdAt in descending order (latest first)
-        },
-        {
-            $skip: (page - 1) * blogsPerPage
-        },
-        {
-            $limit: blogsPerPage
+            $facet: {
+                metaData: [
+                    { $count: 'total' },
+                    { 
+                        $addFields: {
+                            page: page,
+                            pages: {
+                                $ceil: { $divide: ['$total', documentLimit] }
+                            }
+                        }
+                    }
+                ],
+                data: [
+                    { $sort: { createdAt: -1 } },
+                    { $skip: skip },
+                    { $limit: documentLimit },
+                ]
+            }
         }
     ];
 
-    console.log('query: ', aggregateQuery);
-
-    const blogs: IBlogResult[] | null = await BlogModel.aggregate(aggregateQuery);
-
+    const blogs: AggregationResult[] | null = await BlogModel.aggregate(aggregateQuery);
+    
     return (
         <div>
             <h1 className="font-bold text-4xl mb-10">Blogs</h1>
@@ -224,20 +238,20 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
             </div>
             <div>
 
-                {blogs.length > 0  &&
+                {blogs[0]?.data  &&
                     <>
                         <div className="w-full overflow-auto">
                             <Suspense fallback={<p>Loading ...</p>}>
-                                <BlogTable data={blogs}/>
+                                <BlogTable data={blogs[0].data}/>
                             </Suspense>
                         </div>
                         <BlogPagination
-                            totalPages={3}
-                            currentPage={page}/>
+                            totalPages={blogs[0].metaData[0].pages}
+                            currentPage={blogs[0].metaData[0].page}/>
                     </>
                 }
 
-                {blogs.length === 0 && <NoBlogResult/>}
+                {blogs[0]?.data.length === 0 && <NoBlogResult/>}
             </div>
         </div>
     );

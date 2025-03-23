@@ -6,6 +6,7 @@ import { X } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export interface FiltersProps {
     fields: FilterField[],
@@ -71,6 +72,23 @@ export default function Filters({ currentFilters, fields } : FiltersProps) {
         setFilters({});
 
      };
+
+         useEffect(() => {
+
+            const fetchData = async () => {
+                const response = await fetch('/api/blogs');
+                const data = await response.json();
+
+                console.log(data);
+                
+                // console.log(response);
+                // console.log(document.cookie);
+
+            };
+             
+            fetchData();
+         }, []);
+     
 
     return (
        <div className="flex items-center">

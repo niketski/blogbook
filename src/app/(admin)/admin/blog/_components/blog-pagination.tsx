@@ -36,7 +36,7 @@ export default function BlogPagination({ totalPages, currentPage = 1 } : BlogPag
                 <PaginationItem>
                     <PaginationPrevious href="#" onClick={(e) => { e.preventDefault(); handlePageSelect(currentPage - 1)}}/>
                 </PaginationItem>
-                    {/* {pages.map((val, index) => {
+                    {pages.map((val, index) => {
                         return (
                             <PaginationItem key={index}>
                                 <PaginationLink 
@@ -46,7 +46,7 @@ export default function BlogPagination({ totalPages, currentPage = 1 } : BlogPag
                                 </PaginationLink>
                             </PaginationItem>
                         )
-                    })} */}
+                    })}
                 <PaginationItem>
                     <PaginationNext href="#" onClick={(e) => { e.preventDefault(); handlePageSelect(currentPage + 1)}}/>
                 </PaginationItem>
