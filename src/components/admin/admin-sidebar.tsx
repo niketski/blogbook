@@ -20,12 +20,15 @@ import { Collapsible, CollapsibleTrigger } from "@radix-ui/react-collapsible";
 import { Newspaper, User, ChevronRight, LayoutDashboard, LogOut } from "lucide-react";
 import Link from "next/link";
 import { CollapsibleContent } from "../ui/collapsible";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
-const menuData = [
+const initialMenu: Menudata[] = [
     {
         url: '/admin',
         title: 'Dashboard',
-        icon: LayoutDashboard
+        icon: LayoutDashboard,
+        isActive: false,
     },
     {
         url: '/admin/blog',
@@ -35,30 +38,83 @@ const menuData = [
         items: [
             {
                 url: '/admin/blog/create',
-                title: 'Create'
+                title: 'Create',
+                isActive: false
             },
             {
                 url: '/admin/blog',
-                title: 'All blogs'
+                title: 'All blogs',
+                isActive: false
             },
             {
                 url: '/admin/blog/category',
-                title: 'Categories'
+                title: 'Categories',
+                isActive: false
             },
             {
                 url: '/admin/blog/tag',
-                title: 'Tags'
+                title: 'Tags',
+                isActive: false
             }
         ]
     },
     {
         url: '/admin/profile',
         title: 'Profile',
-        icon: User
+        icon: User,
+        isActive: false,
     }
 ];
 
+interface Menudata {
+    url: string,
+    title: string,
+    icon?: any,
+    isActive?: boolean,
+    items?: Menudata[]
+}
 export default function AdminSidebar() {
+    const path = usePathname();
+    const [menus, setMenus] = useState<Menudata[]>(initialMenu);
+    const isMatchedUrlPath = (menuUrl: string): boolean => {
+        
+        if(path.indexOf(menuUrl) > -1) {
+
+            return true;
+
+        }
+
+        return false;
+    };
+
+    useEffect(() => {
+        
+        setMenus(prevState => {
+
+            return prevState.map(item => {
+                const updatedItem = {
+                    ...item,
+                    isActive: isMatchedUrlPath(item.url.toLowerCase()),
+                }
+
+                if(item.items){
+                    updatedItem.items = item.items.map(subItem => {
+                        return {
+                            ...subItem,
+                            isActive: isMatchedUrlPath(subItem.url.toLowerCase())
+                        }
+                    })
+                }
+
+                return updatedItem;
+            });
+
+        });
+
+    }, [path]);
+
+    console.log(menus);
+
     return (
        <Sidebar>
         <SidebarContent>
@@ -66,12 +122,12 @@ export default function AdminSidebar() {
                 <SidebarGroupLabel>Admin</SidebarGroupLabel>
                 <SidebarGroupContent>
                     <SidebarMenu>
-                        {menuData.map(item => {
+                        {menus.map(item => {
                             return (
                                 <Collapsible
                                     className="group/collapsible" 
                                     key={item.title}
-                                    defaultOpen={item.isActive}
+                                    open={item.isActive}
                                     asChild>
 
                                         <SidebarMenuItem>
@@ -79,8 +135,10 @@ export default function AdminSidebar() {
                                             {item.items?.length ?
 
                                                 <CollapsibleTrigger asChild>
-                                                    <SidebarMenuButton asChild>
-                                                        <Link href={item.url} className="relative">
+                                                    <SidebarMenuButton 
+                                                        asChild 
+                                                        className={`group-data-[state=open]/collapsible:bg-primary group-data-[state=open]/collapsible:text-white hover:bg-[#e3e3e3] transition-colors`}>
+                                                        <Link href={item.url}>
                                                             <item.icon/>
                                                             <span>{item.title}</span>
                                                             <ChevronRight className="absolute top-1/2 -translate-y-1/2 right-3 transition-transform group-data-[state=open]/collapsible:rotate-90"/>
@@ -88,8 +146,8 @@ export default function AdminSidebar() {
                                                     </SidebarMenuButton>
                                                 </CollapsibleTrigger> :
 
-                                                <SidebarMenuButton asChild>
-                                                    <Link href={item.url}>
+                                                <SidebarMenuButton asChild className="hover:bg-[#e3e3e3] transition-colors">
+                                                    <Link href={item.url} >
                                                         <item.icon/>
                                                         <span>{item.title}</span>
                                                     </Link>
@@ -103,7 +161,7 @@ export default function AdminSidebar() {
                                                         {item.items.map(sub => {
                                                             return (
                                                                 <SidebarMenuSubItem key={sub.title}>
-                                                                    <SidebarMenuSubButton asChild>
+                                                                    <SidebarMenuSubButton asChild className="hover:bg-[#e3e3e3] transition-colors">
                                                                         <Link href={sub.url}>
                                                                             <span>{sub.title}</span>
                                                                         </Link>
