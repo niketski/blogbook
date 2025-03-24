@@ -3,8 +3,16 @@ import { NextResponse, NextRequest } from "next/server";
 import { PipelineStage } from "mongoose";
 import BlogModel from "@/models/blog-model";
 import dbConnect from "@/lib/db-connect";
+import { BlogResult } from "@/app/(admin)/admin/blog/_components/blog-table";
 
-export async function GET(request: NextRequest) {
+export interface BlogGetResponse {
+    data?: BlogResult[],
+    metaData?: { page: number, pages: number, total: number },
+    status: 'success' | 'error' | 'idle',
+    message: string
+}
+
+export async function GET(request: NextRequest): Promise<NextResponse<BlogGetResponse>> {
     const searchParams = request.nextUrl.searchParams;
     const limit = 5;
     const page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
@@ -29,6 +37,12 @@ export async function GET(request: NextRequest) {
                     case 'tag':
 
                         query['tagsData'] = { $elemMatch: { slug: value } };
+
+                    break;
+
+                    case 'status':
+
+                        query['status'] = value;
 
                     break;
 
@@ -82,18 +96,19 @@ export async function GET(request: NextRequest) {
         
 
         const blogs = await BlogModel.aggregate(piplineStages);
+        const metaData = blogs[0].metaData.length ? blogs[0].metaData[0] : undefined;
+        const data = blogs[0].data.length ? blogs[0].data : [];
 
-        console.clear();
-        console.log('query:', blogs[0].data.length);
-        // console.log('asdadsas')
-        // console.log('blogsasdasd:', blogs);
-        
-        const response = NextResponse.json({
-            data: blogs,
-            message: 'success',
-        });
+        const responseData: BlogGetResponse = {
+            data,
+            metaData,
+            status: 'success',
+            message: 'Blogs fetched successfully!'
+        };
 
-        response.cookies.set('banner', 'true');
+        const response = NextResponse.json(responseData);
+
+        response.headers.set('status', '200');
 
         return response;
 
@@ -101,12 +116,21 @@ export async function GET(request: NextRequest) {
 
         if(error instanceof Error) {
 
-            return NextResponse.json({
+            const errorResponse: BlogGetResponse = {
                 status: 'error',
                 message: error.message
-            });
+            };
+
+            return NextResponse.json(errorResponse);
 
         }
+
+        const errorResponse: BlogGetResponse = {
+            status: 'error',
+            message: 'An unexpected error occurred!'
+        };
+
+        return NextResponse.json(errorResponse);
         
     }
     
