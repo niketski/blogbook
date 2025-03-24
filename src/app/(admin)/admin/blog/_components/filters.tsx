@@ -6,6 +6,7 @@ import { X } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export interface FiltersProps {
     fields: FilterField[],
@@ -64,23 +65,43 @@ export default function Filters({ currentFilters, fields } : FiltersProps) {
         router.push(`${path}?${queryString}`);
     };
 
-    const handleClearFilters = () => { router.push(path) };
+    const handleClearFilters = () => { 
+        router.push(path);
 
-    
+        // clear filters
+        setFilters({});
+
+     };
+
+         useEffect(() => {
+
+            const fetchData = async () => {
+                const response = await fetch('/api/blogs');
+                const data = await response.json();
+
+                console.log(data);
+                
+                // console.log(response);
+                // console.log(document.cookie);
+
+            };
+             
+            fetchData();
+         }, []);
+     
+
     return (
        <div className="flex items-center">
             <form onSubmit={handleSubmit}>
                 <div className="lg:flex md:items-center">
                     {fields && 
                         fields.map(item => {
-                            const selectedValue = item.options.find(optionItem => currentFilters[item.name] === optionItem.value);
-                            const defaultValue = currentFilters[item.name] === selectedValue?.value ? selectedValue?.value : 'default';
-
-                            console.log(defaultValue);
-
+                            const selectedValue = item.options.find(optionItem => filters[item.name] === optionItem.value);
+                            const defaultValue =  (filters[item.name] === selectedValue?.value) && (selectedValue?.value !== undefined)  ? selectedValue?.value : 'default';
+                        
                             return (
                                 <div className="mb-3 md:mb-0 w-full lg:mr-3 lg:w-auto" key={item.name}>
-                                    <Select name={item.name} defaultValue={defaultValue} onValueChange={(value) => { handleSelectChange(value, item.name) }}>
+                                    <Select name={item.name} value={defaultValue} onValueChange={(value) => { handleSelectChange(value, item.name) }}>
                                         <SelectTrigger className="w-full lg:w-[120px]">
                                             <SelectValue placeholder={item.placeholder}/>
                                         </SelectTrigger>

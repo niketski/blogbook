@@ -1,14 +1,6 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Plus } from 'lucide-react';
 import Link from "next/link";
-import { 
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious
-} from "@/components/ui/pagination";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
 import { SlidersHorizontal } from 'lucide-react';
 import BlogModel, { IBlog } from "@/models/blog-model";
@@ -19,7 +11,9 @@ import SearchForm from "./_components/search-form";
 import Filters, { FilterField, FilterOption } from "./_components/filters";
 import BlogTable from "./_components/blog-table";
 import NoBlogResult from "./_components/no-blog-result";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
+import BlogPagination from "./_components/blog-pagination";
+import { BlogGetResponse } from "@/app/api/blogs/route";
 
 interface BlogsPageProps {
     searchParams: {
@@ -36,9 +30,14 @@ interface IBlogResult extends IBlog {
     tagsData: ITag[]
 }
 
+interface AggregationResult {
+    data: IBlogResult[],
+    metaData: [{ page: number, pages: number, total: number }]
+}
+
 export default async function BlogsPage({ searchParams } : BlogsPageProps) {
     const search = await searchParams;
-    const query: QueryParams = {};
+    const queryString = new URLSearchParams(search as Record<string, string>).toString();
     const categories = await CategoryModel.find<ICategory>({});
     const categoryOptions = categories.map<FilterOption>(item => { return { label: item.name, value: item.slug } });
     const categoryField: FilterField = {
@@ -83,84 +82,14 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
             }
         ]
     };
-
     const filterFields: FilterField[] = [
         statusField,
         categoryField,
         tagField
     ];
 
-
-    for(const key in search) {
-        
-
-        if(search[key] !== undefined && search[key] !== '' && search[key] !== 'default') {
-
-            if(key === 'category') { // checks if there's category filter
-
-                // filter documents that has the same category slug on the given filter
-                query['categoryData'] = {
-                    $elemMatch: { slug: search[key] }
-                }
-            
-            } else if(key === 'tag') { // checks if there's tag filter
-
-                // filter document by tags and checks if the document contains the given filter tag
-                query['tagsData'] = {
-                    $elemMatch: { slug: search[key] }
-                }
-            
-            } else if(key === 'search') {
-
-                // filter document by title
-                query['title'] = {
-                    $regex: search[key],
-                    $options: 'i'
-                }
-
-            } else {
-
-                query[key] = search[key]
-
-            }
-
-        }
-    }
-
-    const aggregateQuery: PipelineStage[] = [
-        // left join categories data
-        {
-            $lookup: {
-                from: 'categories',
-                localField: 'category',
-                foreignField: '_id',
-                as: 'categoryData'
-            }
-        },
-        // left join tags data
-        {
-            $lookup: {
-                from: 'tags',
-                localField: 'tags',
-                foreignField: '_id',
-                as: 'tagsData'
-            }
-        },
-        {
-            $sort: { createdAt: -1 } // Sort by createdAt in descending order (latest first)
-        }
-    ];
-
-    // if it has filters include the filters to the pipeline stage
-    if(Object.keys(query).length) {
-
-        aggregateQuery.push({ $match: query });
-
-    } 
-    
-    const blogs: IBlogResult[] | null = await BlogModel.aggregate(aggregateQuery);
-
-    console.log(search);
+    const result = await fetch(`http://localhost:8000/api/blogs?${queryString}`);
+    const response: BlogGetResponse = await result.json();
 
     return (
         <div>
@@ -209,36 +138,23 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
             </div>
             <div>
 
-                {blogs.length > 0  &&
-                    <>
-                        <div className="w-full overflow-auto">
-                            <Suspense fallback={<p>Loading ...</p>}>
-                                <BlogTable data={blogs}/>
-                            </Suspense>
-                        </div>
-                        <Pagination className="justify-start mt-9">
-                            <PaginationContent>
-                                <PaginationItem>
-                                    <PaginationPrevious href="#"/>
-                                </PaginationItem>
-                                <PaginationItem>
-                                    <PaginationLink href="#">1</PaginationLink>
-                                </PaginationItem>
-                                <PaginationItem>
-                                    <PaginationLink href="#">2</PaginationLink>
-                                </PaginationItem>
-                                <PaginationItem>
-                                    <PaginationLink href="#">3</PaginationLink>
-                                </PaginationItem>
-                                <PaginationItem>
-                                    <PaginationNext href="#"/>
-                                </PaginationItem>
-                            </PaginationContent>
-                        </Pagination>
-                    </>
+                {response.data  &&
+                   <div className="w-full overflow-auto">
+                        <Suspense fallback={<p>Loading ...</p>}>
+                            <BlogTable data={response.data}/>
+                        </Suspense>
+                    </div>
                 }
 
-                {blogs.length === 0 && <NoBlogResult/>}
+                {
+                    (response.metaData && response.metaData.pages > 1) &&
+
+                        <BlogPagination
+                                totalPages={response.metaData?.pages}
+                                currentPage={response.metaData?.page}/>
+                }
+
+                {response.data?.length === 0 && <NoBlogResult/>}
             </div>
         </div>
     );
