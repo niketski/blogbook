@@ -113,8 +113,6 @@ export default function AdminSidebar() {
 
     }, [path]);
 
-    console.log(menus);
-
     return (
        <Sidebar>
         <SidebarContent>
@@ -135,9 +133,7 @@ export default function AdminSidebar() {
                                             {item.items?.length ?
 
                                                 <CollapsibleTrigger asChild>
-                                                    <SidebarMenuButton 
-                                                        asChild 
-                                                        className={`group-data-[state=open]/collapsible:bg-primary group-data-[state=open]/collapsible:text-white hover:bg-[#e3e3e3] transition-colors`}>
+                                                    <SidebarMenuButton asChild isActive={item.isActive} className={`group-data-[state=open]/collapsible:bg-primary group-data-[state=open]/collapsible:text-white`}>
                                                         <Link href={item.url}>
                                                             <item.icon/>
                                                             <span>{item.title}</span>
@@ -146,8 +142,8 @@ export default function AdminSidebar() {
                                                     </SidebarMenuButton>
                                                 </CollapsibleTrigger> :
 
-                                                <SidebarMenuButton asChild className="hover:bg-[#e3e3e3] transition-colors">
-                                                    <Link href={item.url} >
+                                                <SidebarMenuButton asChild >
+                                                    <Link href={item.url}>
                                                         <item.icon/>
                                                         <span>{item.title}</span>
                                                     </Link>
