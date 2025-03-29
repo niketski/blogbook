@@ -22,6 +22,7 @@ import Link from "next/link";
 import { CollapsibleContent } from "../ui/collapsible";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { isMatchedUrlPath } from "@/lib/utils";
 
 const initialMenu: Menudata[] = [
     {
@@ -76,16 +77,6 @@ interface Menudata {
 export default function AdminSidebar() {
     const path = usePathname();
     const [menus, setMenus] = useState<Menudata[]>(initialMenu);
-    const isMatchedUrlPath = (menuUrl: string): boolean => {
-        
-        if(path.indexOf(menuUrl) > -1) {
-
-            return true;
-
-        }
-
-        return false;
-    };
 
     useEffect(() => {
         
@@ -94,14 +85,14 @@ export default function AdminSidebar() {
             return prevState.map(item => {
                 const updatedItem = {
                     ...item,
-                    isActive: isMatchedUrlPath(item.url.toLowerCase()),
+                    isActive: isMatchedUrlPath(path, item.url.toLowerCase()),
                 }
 
                 if(item.items){
                     updatedItem.items = item.items.map(subItem => {
                         return {
                             ...subItem,
-                            isActive: isMatchedUrlPath(subItem.url.toLowerCase())
+                            isActive: isMatchedUrlPath(path, subItem.url.toLowerCase())
                         }
                     })
                 }
@@ -121,11 +112,13 @@ export default function AdminSidebar() {
                 <SidebarGroupContent>
                     <SidebarMenu>
                         {menus.map(item => {
+                            const isParentMenuActive = item.isActive || item.items?.some(subItem => subItem.isActive) || false;
+
                             return (
                                 <Collapsible
                                     className="group/collapsible" 
                                     key={item.title}
-                                    open={item.isActive}
+                                    open={isParentMenuActive}
                                     asChild>
 
                                         <SidebarMenuItem>
@@ -133,7 +126,10 @@ export default function AdminSidebar() {
                                             {item.items?.length ?
 
                                                 <CollapsibleTrigger asChild>
-                                                    <SidebarMenuButton asChild isActive={item.isActive} className={`group-data-[state=open]/collapsible:bg-primary group-data-[state=open]/collapsible:text-white`}>
+                                                    <SidebarMenuButton 
+                                                        asChild 
+                                                        isActive={isParentMenuActive}
+                                                        className={`group-data-[state=open]/collapsible:bg-primary group-data-[state=open]/collapsible:text-white test`}>
                                                         <Link href={item.url}>
                                                             <item.icon/>
                                                             <span>{item.title}</span>
@@ -142,7 +138,9 @@ export default function AdminSidebar() {
                                                     </SidebarMenuButton>
                                                 </CollapsibleTrigger> :
 
-                                                <SidebarMenuButton asChild >
+                                                <SidebarMenuButton 
+                                                    isActive={item.isActive}
+                                                    asChild>
                                                     <Link href={item.url}>
                                                         <item.icon/>
                                                         <span>{item.title}</span>
@@ -157,7 +155,10 @@ export default function AdminSidebar() {
                                                         {item.items.map(sub => {
                                                             return (
                                                                 <SidebarMenuSubItem key={sub.title}>
-                                                                    <SidebarMenuSubButton asChild className="hover:bg-[#e3e3e3] transition-colors">
+                                                                    <SidebarMenuSubButton 
+                                                                        asChild 
+                                                                        isActive={sub.isActive}
+                                                                        className={`hover:bg-[#e3e3e3] transition-colors`}>
                                                                         <Link href={sub.url}>
                                                                             <span>{sub.title}</span>
                                                                         </Link>

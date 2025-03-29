@@ -25,8 +25,6 @@ export function isExceededFileLimit({ file, maxMb = 10 } : { file: string, maxMb
   // Convert bytes to MB
   const sizeInMB = byteLength / (1024 * 1024);
 
-  console.log(sizeInMB);
-
   return Math.round(sizeInMB) >= maxMb;
 
 }
@@ -49,3 +47,12 @@ export function formatSlug(string: string): string {
 
   return currentText;
 }
+
+export const isMatchedUrlPath = (currentPath: string, menuUrl: string): boolean => {
+  
+  if(currentPath === menuUrl){
+      return true;
+  }
+
+  return false;
+};
