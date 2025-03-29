@@ -129,7 +129,11 @@ export default function AdminSidebar() {
                                                     <SidebarMenuButton 
                                                         asChild 
                                                         isActive={isParentMenuActive}
+<<<<<<< HEAD
                                                         className={`group-data-[state=open]/collapsible:bg-primary group-data-[state=open]/collapsible:text-white test`}>
+=======
+                                                        className={`group-data-[state=open]/collapsible:bg-primary group-data-[state=open]/collapsible:text-white`}>
+>>>>>>> 19429618e48ace928da5549076c71fff9dc10e5f
                                                         <Link href={item.url}>
                                                             <item.icon/>
                                                             <span>{item.title}</span>
