@@ -140,6 +140,7 @@ export default function AdminSidebar() {
 
                                                 <SidebarMenuButton 
                                                     isActive={item.isActive}
+                                                    className="group-data-[state=open]/collapsible:bg-primary group-data-[state=open]/collapsible:text-white"
                                                     asChild>
                                                     <Link href={item.url}>
                                                         <item.icon/>
