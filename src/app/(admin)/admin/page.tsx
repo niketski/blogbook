@@ -1,52 +1,19 @@
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-  } from "@/components/ui/card"
+
   import Link from "next/link";
+  import StatsContainer from "./_components/stats-container";
+  import { Suspense } from "react";
 
 export default async function UserAdminPage() {
 
     return (
         <div className="flex flex-col gap-10">
             <h1 className="font-bold text-4xl">Dashboard</h1>
-            <div className="lg:flex flex-wrap -m-2">
-                <div className="w-full xl:w-[calc(100%/3)] lg:w-1/2 p-2">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Total Blogs</CardTitle>
-                            <CardDescription>Total number of blog published.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <h3 className="font-bold text-[42px]">45</h3>
-                        </CardContent>
-                    </Card>
-                </div>
-                <div className="w-full xl:w-[calc(100%/3)] lg:w-1/2 p-2">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Total Categories</CardTitle>
-                            <CardDescription>Total number of blog category.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <h3 className="font-bold text-[42px]">10</h3>
-                        </CardContent>
-                    </Card>
-                </div>
-                <div className="w-full xl:w-[calc(100%/3)] lg:w-1/2 p-2">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Total Tags</CardTitle>
-                            <CardDescription>Total number of blog tag.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <h3 className="font-bold text-[42px]">23</h3>
-                        </CardContent>
-                    </Card>
-                </div>
-            </div>
+
+            {/* dashboard stats */}
+            <Suspense fallback={<p>Loading stats...</p>}>
+                <StatsContainer/>
+            </Suspense>
+
             <div>
                 <h2 className="font-bold text-2xl mb-8">Recent Posts</h2>
                 <div>
