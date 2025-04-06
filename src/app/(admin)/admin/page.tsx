@@ -2,7 +2,6 @@ import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
   } from "@/components/ui/card"
@@ -13,8 +12,8 @@ export default async function UserAdminPage() {
     return (
         <div className="flex flex-col gap-10">
             <h1 className="font-bold text-4xl">Dashboard</h1>
-            <div className="flex flex-col md:flex-row md:gap-5 gap-y-4 md:gap-y-0">
-                <div className="flex-1">
+            <div className="lg:flex flex-wrap -m-2">
+                <div className="w-full xl:w-[calc(100%/3)] lg:w-1/2 p-2">
                     <Card>
                         <CardHeader>
                             <CardTitle>Total Blogs</CardTitle>
@@ -25,7 +24,7 @@ export default async function UserAdminPage() {
                         </CardContent>
                     </Card>
                 </div>
-                <div className="flex-1">
+                <div className="w-full xl:w-[calc(100%/3)] lg:w-1/2 p-2">
                     <Card>
                         <CardHeader>
                             <CardTitle>Total Categories</CardTitle>
@@ -36,7 +35,7 @@ export default async function UserAdminPage() {
                         </CardContent>
                     </Card>
                 </div>
-                <div className="flex-1">
+                <div className="w-full xl:w-[calc(100%/3)] lg:w-1/2 p-2">
                     <Card>
                         <CardHeader>
                             <CardTitle>Total Tags</CardTitle>
@@ -50,17 +49,28 @@ export default async function UserAdminPage() {
             </div>
             <div>
                 <h2 className="font-bold text-2xl mb-8">Recent Posts</h2>
-                <div className="w-1/2">
-                    <article>
-                        <h3 className="font-bold">Sample Blog</h3>
-                        <p className="text-gray-500 text-sm">March 3, 2025</p>
-                        <Link href="#">View</Link>
+                <div>
+                    <article className="flex items-start justify-between border-b py-3">
+                        <div>
+                            <h3 className="font-bold text-xl mb-1">Sample Blog</h3>
+                            <p className="text-gray-500 text-sm">March 3, 2025</p>
+                        </div>
+                        <Link href="#" className="bg-primary text-white rounded-lg px-5 py-2 leading-none hover:bg-gray-800">View</Link>
                     </article>
-                    {/* <ul>
-                        <li className="flex justify-between mb-2 font-semibold">Sample Blog <span>March 3, 2025</span>  <Link href="#" className="font-normal hover:underline">View</Link></li>
-                        <li className="flex justify-between mb-2 font-semibold">Lorem ipsum <span>March 3, 2025</span> <Link href="#" className="font-normal hover:underline">View</Link></li>
-                        <li className="flex justify-between mb-2 font-semibold">Lorem ipsum <span>March 3, 2025</span> <Link href="#" className="font-normal hover:underline">View</Link></li>
-                    </ul> */}
+                    <article className="flex items-start justify-between border-b py-3">
+                        <div>
+                            <h3 className="font-bold text-xl mb-1">Sample Blog</h3>
+                            <p className="text-gray-500 text-sm">March 3, 2025</p>
+                        </div>
+                        <Link href="#" className="bg-primary text-white rounded-lg px-5 py-2 leading-none hover:bg-gray-800">View</Link>
+                    </article>
+                    <article className="flex items-start justify-between border-b py-3">
+                        <div>
+                            <h3 className="font-bold text-xl mb-1">Sample Blog</h3>
+                            <p className="text-gray-500 text-sm">March 3, 2025</p>
+                        </div>
+                        <Link href="#" className="bg-primary text-white rounded-lg px-5 py-2 leading-none hover:bg-gray-800">View</Link>
+                    </article>
                 </div>
             </div>
         </div>
