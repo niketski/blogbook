@@ -13,7 +13,7 @@ export interface IBlog extends Document {
     status: string,
     metaTitle: string,
     metaDescription: string
-    createdAt: string
+    createdAt: Date
 }
 
 const BlogSchema = new Schema<IBlog>({

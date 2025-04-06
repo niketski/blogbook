@@ -7,11 +7,7 @@ import EditCategoryForm from "./edit-category-form";
 import deleteCategory from "@/actions/delete-category";
 
 import {
-    Table,
-    TableBody,
     TableCell,
-    TableHead,
-    TableHeader,
     TableRow,
 } from "@/components/ui/table";
 
@@ -30,7 +26,6 @@ import {
     DialogDescription,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
   } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 
@@ -74,17 +69,17 @@ export default function CategoryTableRow({ id, name, slug, date} : CategoryTable
                         <DropdownMenuContent>
                             <DropdownMenuLabel>Action</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem>
+                            <DropdownMenuItem asChild>
                                 <Button 
                                     variant="ghost" 
-                                    className="px-0 block w-full hover:no-underline justify-start cursor-pointer text-left"
+                                    className="block w-full hover:no-underline justify-start cursor-pointer text-left"
                                     type="submit"
                                     onClick={() => { setIsEditFormActive(true) }}>Edit</Button>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem asChild>
                                 <Button 
                                         variant="ghost" 
-                                        className="px-0 block w-full hover:no-underline justify-start cursor-pointer text-left"
+                                        className="block w-full hover:no-underline justify-start cursor-pointer text-left"
                                         type="submit"
                                         onClick={() => { setIsDeleteCTAactive(true) }}>Delete</Button>
                             </DropdownMenuItem>
