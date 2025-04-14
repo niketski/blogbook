@@ -38,13 +38,13 @@ const initialMenu: Menudata[] = [
         isActive: false,
         items: [
             {
-                url: '/admin/blog/create',
-                title: 'Create',
+                url: '/admin/blog',
+                title: 'All blogs',
                 isActive: false
             },
             {
-                url: '/admin/blog',
-                title: 'All blogs',
+                url: '/admin/blog/create',
+                title: 'Create',
                 isActive: false
             },
             {
