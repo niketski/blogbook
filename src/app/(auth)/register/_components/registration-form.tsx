@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import register from "@/actions/register";
 import { useActionState, useEffect } from "react";
 import { LoaderCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function RegistrationForm() {
     const [formState, formAction, isPending] = useActionState(register, {
@@ -22,15 +23,25 @@ export default function RegistrationForm() {
         errors: {}
     });
     const status = formState.status;
+    const { toast } = useToast();
 
 
    useEffect(() => {
 
+        console.log(status);
+        console.log(status === 'success');
+        
         if(status === 'success') {
-            console.log('registered success fully.')
+            
+            toast({
+                title: 'Success!',
+                description: formState.message
+            });
         }
 
    }, [status]);
+
+   console.log(formState);
 
     return (
         <form action={formAction}>
@@ -94,7 +105,7 @@ export default function RegistrationForm() {
             <div className="grid w-full items-center gap-1.5 mb-4">
                 <Label htmlFor="confirmPassword" className="font-bold">Confirm password</Label>
                 <Input 
-                    className={`${formState.errors.name ? 'border-red-500' : ''}`}
+                    className={`${formState.errors.confirmPassword ? 'border-red-500' : ''}`}
                     type="password" 
                     id="confirmPassword" 
                     name="confirmPassword" 
