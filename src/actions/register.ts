@@ -1,6 +1,8 @@
 'use server'
 
 import z from 'zod';
+import UserModel from '@/models/user-model';
+import bcrypt from 'bcrypt';
 
 export interface registerState {
     status: 'success' | 'error' | 'idle',
@@ -70,6 +72,19 @@ export default async function register(prevState: registerState, formData: FormD
                 errors: currentErrors
             }
         }
+
+        // hash password before saving to database
+        const hashPassword = await bcrypt.hash(password, 10);
+
+        const newUser = new UserModel({
+            name,
+            username,
+            email,
+            address,
+            password: hashPassword
+        });
+
+        await newUser.save();
 
         return {
             status: 'success',
