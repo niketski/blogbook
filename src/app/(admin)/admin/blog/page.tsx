@@ -3,15 +3,13 @@ import { Plus } from 'lucide-react';
 import Link from "next/link";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
 import { SlidersHorizontal } from 'lucide-react';
-import BlogModel, { IBlog } from "@/models/blog-model";
 import CategoryModel, { ICategory } from "@/models/category-model";
 import TagModel, { ITag } from "@/models/tag-model";
-import { PipelineStage } from "mongoose";
 import SearchForm from "./_components/search-form";
 import Filters, { FilterField, FilterOption } from "./_components/filters";
 import BlogTable from "./_components/blog-table";
 import NoBlogResult from "./_components/no-blog-result";
-import { Suspense, useEffect } from "react";
+import { Suspense } from "react";
 import BlogPagination from "./_components/blog-pagination";
 import { BlogGetResponse } from "@/app/api/blogs/route";
 
@@ -19,20 +17,6 @@ interface BlogsPageProps {
     searchParams: {
         [key: string] : string | undefined
     }
-}
-
-interface QueryParams {
-    [key: string]: string | object | undefined
-}
-
-interface IBlogResult extends IBlog {
-    categoryData: ICategory[],
-    tagsData: ITag[]
-}
-
-interface AggregationResult {
-    data: IBlogResult[],
-    metaData: [{ page: number, pages: number, total: number }]
 }
 
 export default async function BlogsPage({ searchParams } : BlogsPageProps) {
