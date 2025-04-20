@@ -12,7 +12,6 @@ import {
     SelectValue,
   } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Checkbox } from '@/components/ui/checkbox';
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import createBlog from "@/actions/create-blog";

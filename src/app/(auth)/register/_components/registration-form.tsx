@@ -2,11 +2,13 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import register from "@/actions/register";
 import { useActionState, useEffect } from "react";
-import { LoaderCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle, LoaderCircle, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 export default function RegistrationForm() {
     const [formState, formAction, isPending] = useActionState(register, {
@@ -25,12 +27,8 @@ export default function RegistrationForm() {
     const status = formState.status;
     const { toast } = useToast();
 
-
    useEffect(() => {
 
-        console.log(status);
-        console.log(status === 'success');
-        
         if(status === 'success') {
             
             toast({
@@ -39,12 +37,22 @@ export default function RegistrationForm() {
             });
         }
 
-   }, [status]);
-
-   console.log(formState);
+   }, [status, formState.message, toast]);
 
     return (
         <form action={formAction}>
+            {formState.errors._form && 
+                <div className="mb-9">
+                    <Alert variant="destructive" className="mb-4">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Error</AlertTitle>
+                            <AlertDescription>
+                            {formState.errors._form}
+                        </AlertDescription>
+                    </Alert>
+                    <Link href="/login" className={`${buttonVariants({ variant: 'secondary' })} inline-block`}>Go to login page <ChevronRight/></Link>
+                </div>
+            }
             <div className="grid w-full items-center gap-1.5 mb-4">
                 <Label htmlFor="name" className="font-bold">Name</Label>
                 <Input 

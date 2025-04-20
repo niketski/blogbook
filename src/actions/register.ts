@@ -55,6 +55,29 @@ export default async function register(prevState: registerState, formData: FormD
             confirmPassword
         });
 
+        //check if there's an exiting user and throw an error to prevent creating new user
+        const existingUser = await UserModel.find({});
+
+        if(existingUser.length) {
+
+            return {
+                status: 'error',
+                values: {
+                    name,
+                    username,
+                    email,
+                    address,
+                    password,
+                    confirmPassword
+                },
+                message: '',
+                errors: {
+                    _form: 'There\'s already existing user, please go to login page.'
+                }
+            }
+
+        }
+
         if(!result.success) {
             const currentErrors = result.error.flatten().fieldErrors;
 
