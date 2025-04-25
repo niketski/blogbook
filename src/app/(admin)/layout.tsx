@@ -3,6 +3,8 @@ import "@/app/globals.css";
 import '@/app/admin.css';
 import { Poppins } from 'next/font/google';
 import { Toaster } from "@/components/ui/toaster";
+import { auth } from "@/lib/auth";
+import SessionContainer from "@/components/session-container";
 
 // components
 import AdminContainer from "@/components/admin/admin-container";
@@ -18,22 +20,27 @@ export const metadata: Metadata = {
   description: "Manage your blogs.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
+  
+  console.log('session: ', session);
 
   return (
     <html lang="en" className="admin">
       <body
         className={`${fontPoppins.variable} antialiased bg-white`}
       >
+        <SessionContainer session={session}>
           <AdminContainer>
             {children}
           </AdminContainer>
           <Toaster/>
           <div id="modal-root" />
+        </SessionContainer>
       </body>
     </html>
   );

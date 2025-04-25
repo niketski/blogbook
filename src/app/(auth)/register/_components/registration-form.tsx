@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, LoaderCircle, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function RegistrationForm() {
     const [formState, formAction, isPending] = useActionState(register, {
@@ -26,6 +27,7 @@ export default function RegistrationForm() {
     });
     const status = formState.status;
     const { toast } = useToast();
+    const router = useRouter();
 
    useEffect(() => {
 
@@ -35,10 +37,15 @@ export default function RegistrationForm() {
                 title: 'Success!',
                 description: formState.message
             });
+
+            // redirect to login page
+            setTimeout(() => {
+                router.push('/login');
+            }, 2000)
         }
 
    }, [status, formState.message, toast]);
-
+   
     return (
         <form action={formAction}>
             {formState.errors._form && 
