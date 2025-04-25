@@ -23,6 +23,7 @@ import { CollapsibleContent } from "../ui/collapsible";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { isMatchedUrlPath } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 const initialMenu: Menudata[] = [
     {
@@ -77,6 +78,7 @@ interface Menudata {
 export default function AdminSidebar() {
     const path = usePathname();
     const [menus, setMenus] = useState<Menudata[]>(initialMenu);
+    const router = useRouter();
 
     useEffect(() => {
         
@@ -182,7 +184,11 @@ export default function AdminSidebar() {
         </SidebarContent>
         <SidebarFooter>
             <div>
-                <Button variant="ghost">
+                <Button 
+                    onClick={() => {
+                        console.log('log out')
+                    }}
+                    variant="ghost">
                     <LogOut/> Signout
                 </Button>
             </div>

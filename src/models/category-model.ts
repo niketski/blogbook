@@ -17,7 +17,7 @@ const CategorySchema = new Schema<ICategory>({
     }
 }, { timestamps: true });
 
-const CategoryModel = models.Category || model<typeof CategorySchema>('Category', CategorySchema);
+const CategoryModel = models?.Category || model<typeof CategorySchema>('Category', CategorySchema);
 
 export { type ICategory };
 

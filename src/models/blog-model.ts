@@ -51,6 +51,6 @@ const BlogSchema = new Schema<IBlog>({
     
 }, { timestamps: true });
 
-const BlogModel = models.Blog || model<typeof BlogSchema>('Blog', BlogSchema);
+const BlogModel = models?.Blog || model<typeof BlogSchema>('Blog', BlogSchema);
 
 export default BlogModel;
