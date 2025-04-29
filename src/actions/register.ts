@@ -2,7 +2,7 @@
 
 import z from 'zod';
 import UserModel from '@/models/user-model';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 export interface registerState {
     status: 'success' | 'error' | 'idle',

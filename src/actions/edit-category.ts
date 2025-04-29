@@ -2,7 +2,6 @@
 
 import CategoryModel from '@/models/category-model';
 import z from 'zod';
-import { ICategory } from '@/models/category-model';
 import { revalidatePath } from 'next/cache';
 
 interface EditCategoryFormState {
@@ -53,7 +52,7 @@ export default async function editCategory(prevState: EditCategoryFormState, for
             }
         }
 
-        const currentCategory = await CategoryModel.findByIdAndUpdate(id, {
+        await CategoryModel.findByIdAndUpdate(id, {
             $set: {
                 name,
                 slug

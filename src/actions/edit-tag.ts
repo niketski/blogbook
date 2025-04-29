@@ -2,7 +2,6 @@
 
 import TagModel from '@/models/tag-model';
 import z from 'zod';
-import { ITag } from '@/models/tag-model';
 import { revalidatePath } from 'next/cache';
 
 interface EditTagFormState {
@@ -53,7 +52,7 @@ export default async function editTag(prevState: EditTagFormState, formData: For
             }
         }
 
-        const currentTag = await TagModel.findByIdAndUpdate(id, {
+        await TagModel.findByIdAndUpdate(id, {
             $set: {
                 name,
                 slug

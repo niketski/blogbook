@@ -7,7 +7,7 @@ import { signIn } from 'next-auth/react';
 import z from 'zod';
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, LoaderCircle, ChevronRight } from "lucide-react";
+import { AlertCircle, LoaderCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function LoginForm() {
@@ -15,7 +15,7 @@ export default function LoginForm() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [errors, setErrors] = useState<{[key: string] : string | string[] | undefined}>({
+    const [errors, setErrors] = useState<{[key: string] : string[] | undefined}>({
         username: [],
         password: [],
         _form: undefined
@@ -52,7 +52,7 @@ export default function LoginForm() {
         if(response.error) {
 
             setErrors({
-                _form: 'Invalid username or password, please try again.'
+                _form: ['Invalid username or password, please try again.']
             });
 
             setIsLoading(false);
@@ -73,7 +73,7 @@ export default function LoginForm() {
                         <AlertCircle className="h-4 w-4" />
                         <AlertTitle>Error</AlertTitle>
                             <AlertDescription>
-                            {errors._form}
+                            {errors._form[0]}
                         </AlertDescription>
                     </Alert>
                 </div>

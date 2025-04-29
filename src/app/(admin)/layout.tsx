@@ -8,6 +8,7 @@ import SessionContainer from "@/components/session-container";
 
 // components
 import AdminContainer from "@/components/admin/admin-container";
+import { redirect } from "next/navigation";
 
 const fontPoppins = Poppins({
   subsets: ['latin'],
@@ -26,8 +27,10 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await auth();
-  
-  console.log('session: ', session);
+
+  if(!session) {
+    redirect('/login');
+  }
 
   return (
     <html lang="en" className="admin">

@@ -1,6 +1,7 @@
 import UserModel, { IUser } from "@/models/user-model";
 import { NextAuthConfig } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from 'bcryptjs';
 
 const nextAuthConfig: NextAuthConfig = {
     providers: [
@@ -10,25 +11,54 @@ const nextAuthConfig: NextAuthConfig = {
                 password: { label: 'Password',  type: 'password' }
             },
             async authorize(credentials) {
-
-                const existingUser = await UserModel.find<IUser>({ username: credentials?.username });
-                // console.log(credentials);
-                // console.log(existingUser);
                 console.log('authorize');
-                // return existingUser[0];
 
-                if (existingUser[0]) {
-                // Any object returned will be saved in `user` property of the JWT
-                return existingUser[0]
+                const result = await UserModel.find<IUser>({ username: credentials?.username });
+                const existingUser = result[0];
+
+
+                if (existingUser) {
+                    const hashedPassword = existingUser.password;
+                    const currentPassword = credentials.password as string;
+                    const isValidPassword = await bcrypt.compare(currentPassword, hashedPassword);
+
+                    if(isValidPassword) {
+
+                        return existingUser;
+                    
+                    }
+
+                    return null;
+                    
                 } else {
-                // If you return null then an error will be displayed advising the user to check their details.
-                return null
+                
+                    return null
         
-                // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
                 }
             }
         })
     ],
+    callbacks: {
+        async jwt({ token, user }) {
+
+            if (user) {
+
+              token.id = user.id; // Add id to the token
+            
+            }
+            return token;
+        },
+        async session({ session, token}) {
+            
+            console.log('session callback: ');
+
+            if (session.user && token.sub) {
+                session.user.id = token.sub; // <-- ADD user id to session.user
+              }
+
+            return session;
+        }
+    }
 };
 
 export default nextAuthConfig;

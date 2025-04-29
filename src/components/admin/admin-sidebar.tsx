@@ -23,7 +23,8 @@ import { CollapsibleContent } from "../ui/collapsible";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { isMatchedUrlPath } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
+import { LucideIcon } from "lucide-react";
 
 const initialMenu: Menudata[] = [
     {
@@ -71,14 +72,13 @@ const initialMenu: Menudata[] = [
 interface Menudata {
     url: string,
     title: string,
-    icon?: any,
+    icon?: LucideIcon,
     isActive?: boolean,
     items?: Menudata[]
 }
 export default function AdminSidebar() {
     const path = usePathname();
     const [menus, setMenus] = useState<Menudata[]>(initialMenu);
-    const router = useRouter();
 
     useEffect(() => {
         
@@ -105,6 +105,10 @@ export default function AdminSidebar() {
         });
 
     }, [path]);
+
+    const handleSignOut = () => {
+        signOut({ redirectTo: '/login' });
+    };
 
     return (
        <Sidebar>
@@ -133,7 +137,7 @@ export default function AdminSidebar() {
                                                         isActive={isParentMenuActive}
                                                         className={`group-data-[state=open]/collapsible:bg-primary group-data-[state=open]/collapsible:text-white`}>
                                                         <Link href={item.url}>
-                                                            <item.icon/>
+                                                            {item.icon ? <item.icon/> : null}
                                                             <span>{item.title}</span>
                                                             <ChevronRight className="absolute top-1/2 -translate-y-1/2 right-3 transition-transform group-data-[state=open]/collapsible:rotate-90"/>
                                                         </Link>
@@ -145,7 +149,7 @@ export default function AdminSidebar() {
                                                     className="group-data-[state=open]/collapsible:bg-primary group-data-[state=open]/collapsible:text-white"
                                                     asChild>
                                                     <Link href={item.url}>
-                                                        <item.icon/>
+                                                        {item.icon ? <item.icon/> : null}
                                                         <span>{item.title}</span>
                                                     </Link>
                                                 </SidebarMenuButton>
@@ -185,9 +189,7 @@ export default function AdminSidebar() {
         <SidebarFooter>
             <div>
                 <Button 
-                    onClick={() => {
-                        console.log('log out')
-                    }}
+                    onClick={handleSignOut}
                     variant="ghost">
                     <LogOut/> Signout
                 </Button>
