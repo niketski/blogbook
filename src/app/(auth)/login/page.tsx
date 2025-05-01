@@ -1,6 +1,14 @@
 import LoginForm from "./_components/login-form";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-export default function LoginPage() {
+export default async function LoginPage() {
+    const session = await auth();
+
+    if(session) {
+        redirect('/admin');
+    }
+
     return (
         <section className="pt-16">
             <div className="min-h-[80vh]">

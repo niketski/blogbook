@@ -26,24 +26,17 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
-
-  if(!session) {
-    redirect('/login');
-  }
 
   return (
     <html lang="en" className="admin">
       <body
         className={`${fontPoppins.variable} antialiased bg-white`}
       >
-        <SessionContainer session={session}>
-          <AdminContainer>
-            {children}
-          </AdminContainer>
-          <Toaster/>
-          <div id="modal-root" />
-        </SessionContainer>
+        <AdminContainer>
+          {children}
+        </AdminContainer>
+        <Toaster/>
+        <div id="modal-root" />
       </body>
     </html>
   );

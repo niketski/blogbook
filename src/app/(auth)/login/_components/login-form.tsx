@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { signIn } from 'next-auth/react';
 import z from 'zod';
 import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AlertCircle, LoaderCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
@@ -20,6 +20,8 @@ export default function LoginForm() {
         password: [],
         _form: undefined
     });
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get('callbackUrl') || '/admin';
 
     const loginFormSchema = z.object({
         username: z.string().min(1, { message: 'Username is required.' }),
@@ -62,7 +64,7 @@ export default function LoginForm() {
 
         setIsLoading(false);
         setErrors({});
-        router.push('/admin');
+        router.push(callbackUrl);
     };
 
     return (
