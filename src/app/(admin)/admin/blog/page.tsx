@@ -79,7 +79,7 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
         <div>
             <h1 className="font-bold text-4xl mb-10">Blogs</h1>
             <Link className={buttonVariants()} href="/admin/blog/create"><Plus/> Create Blog</Link>
-            <div className="max-w-[350px] lg:ml-auto mb-7 lg:mb-0">
+            <div className="max-w-[350px] mt-7 lg:ml-auto mb-7 lg:mb-0">
 
                 <SearchForm search={search['search']}/>
 

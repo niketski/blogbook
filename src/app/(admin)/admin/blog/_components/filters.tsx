@@ -91,7 +91,7 @@ export default function Filters({ currentFilters, fields } : FiltersProps) {
      
 
     return (
-       <div className="flex items-center">
+       <div className="lg:flex lg:items-center">
             <form onSubmit={handleSubmit}>
                 <div className="lg:flex md:items-center">
                     {fields && 
@@ -116,18 +116,17 @@ export default function Filters({ currentFilters, fields } : FiltersProps) {
                         })
                     }
                     
-                    <div className="inline-flex items-center justify-end pt-5 lg:inline-block lg:pt-0">
+                    <div className="flex pt-5 lg:pt-0">
 
                         <Button type="submit" variant="outline">Apply filters</Button>
                         
                     </div>
                 </div>
             </form>
-
             {Object.keys(currentFilters).length > 0 &&
                 <Button 
                     variant="outline" 
-                    className="ml-3"
+                    className="mt-7 lg:mt-0 lg:ml-3"
                     onClick={() => { handleClearFilters() }}>
                     <X/> Clear Filters
                 </Button>
