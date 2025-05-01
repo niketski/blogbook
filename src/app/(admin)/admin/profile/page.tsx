@@ -22,18 +22,18 @@ export default async function ProfilePage() {
                     <CardDescription>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex mb-3">
+                    <div className="md:flex mb-3">
                         <div>
                             <strong>Name:</strong>
                             <p>{user?.name}</p>
                         </div>
                     </div>
-                    <div className="flex mb-3">
-                        <div className="md:w-1/2">
+                    <div className="md:flex">
+                        <div className="md:w-1/2 mb-3">
                             <strong>Username:</strong>
                             <p>{user?.username}</p>
                         </div>
-                        <div>
+                        <div className="md:w-1/2 mb-3">
                             <strong>Email:</strong>
                             <p>{user?.email}</p>
                         </div>
