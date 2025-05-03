@@ -38,6 +38,13 @@ const nextAuthConfig: NextAuthConfig = {
             }
         })
     ],
+    session: {
+        strategy: 'jwt',
+        maxAge: 24 * 60 * 60 // 1 day
+    },
+    jwt: {
+        maxAge: 24 * 60 * 60, // 1 day
+    },
     callbacks: {
         async jwt({ token, user }) {
 
@@ -46,12 +53,11 @@ const nextAuthConfig: NextAuthConfig = {
               token.id = user.id; // Add id to the token
             
             }
+
             return token;
         },
         async session({ session, token}) {
             
-            console.log('session callback: ');
-
             if (session.user && token.sub) {
                 session.user.id = token.sub; // <-- ADD user id to session.user
               }
