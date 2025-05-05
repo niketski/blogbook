@@ -14,7 +14,8 @@ export interface BlogGetResponse {
 
 export async function GET(request: NextRequest): Promise<NextResponse<BlogGetResponse>> {
     const searchParams = request.nextUrl.searchParams;
-    const limit = 5;
+    const limitParam = searchParams.get('limit');
+    const limit = limitParam ? parseInt(limitParam) :  5;
     const page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
     const skip = (page - 1) * limit;
     const url = request.url;
