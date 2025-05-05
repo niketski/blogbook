@@ -21,14 +21,14 @@ export default function BlogCard({
  }: BlogCardProps) {
     
     return (
-        <div className="border-gray-300 rounded-lg overflow-hidden">
+        <div className="border-gray-300 border rounded-lg overflow-hidden">
           <div className="w-full">
             <Link href="#" className="block  relative">
               <canvas width="549" height="300" className="w-full"></canvas>
               <img src={imageUrl} alt={title} className="absolute top-0 left-0 w-full h-full object-cover object-center grayscale transition duration-300 ease-in-out hover:grayscale-0"/>
             </Link>
           </div>
-          <div className="w-full p-10">
+          <div className="w-full p-6 lg:p-10">
             <Badge className="mb-3">{category}</Badge>
             <h2 className="font-bold text-2xl mb-2">{title}</h2>
             <span className="text-gray-500 text-sm mb-5 block">{date}</span>
