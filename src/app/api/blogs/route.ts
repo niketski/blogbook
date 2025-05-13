@@ -17,7 +17,8 @@ export async function GET(request: NextRequest): Promise<NextResponse<BlogGetRes
     const limitParam = searchParams.get('limit');
     const limit = limitParam ? parseInt(limitParam) :  5;
     const page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
-    const skip = (page - 1) * limit;
+    const skip = searchParams.get('skip') ? parseInt(searchParams.get('skip') as string) : (page - 1) * limit;
+    console.log(skip);
     const url = request.url;
     const query: { [key: string]: string | object } = {};
 
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<BlogGetRes
         for(const [key, value] of searchParams) {
 
             if(value && value !== 'default') {
-                switch (key) {
+                switch (key) { 
 
                     case 'category':
 
