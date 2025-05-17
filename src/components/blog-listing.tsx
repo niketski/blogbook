@@ -5,7 +5,7 @@ import BlogCard from "@/components/blog-card";
 import { Button } from "@/components/ui/button";
 import { BlogResult } from "@/app/(admin)/admin/blog/_components/blog-table";
 import { LoaderCircle } from "lucide-react";
-import { set } from "mongoose";
+import SkeletonFeaturedBlog from "./skeleton/skeleton-featured-blog";
 
 export default function BlogListing() {
     const [featuredBlog, setFeaturedBlog] = useState<BlogResult | null>(null);
@@ -49,7 +49,9 @@ export default function BlogListing() {
             setTotalPages(metaData.pages);
 
         } catch (error) {
+            
             console.log(error);
+
         }
        
 
@@ -67,17 +69,17 @@ export default function BlogListing() {
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve(true);
-            }, 2000);
+            }, 4000);
         });
     };
 
     useEffect(() => {
         
+        fakeLoading();
         fetchBlogs();   
         console.log('Fetching blogs...');
 
     }, [page]);
-
 
     return (
         <div>
