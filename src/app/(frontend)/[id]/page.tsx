@@ -2,9 +2,26 @@ import BackButton from "@/components/back-button";
 import { ChevronLeft } from "lucide-react";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
+import { ITag } from "@/models/tag-model";
+import BlogModel, { IBlog } from "@/models/blog-model";
+import TagModel from "@/models/tag-model";
+import CategoryModel from "@/models/category-model";
+import { ICategory } from "@/models/category-model";
 
-export default async function BlogDetailsPage() {
+interface BlogDetailsPageProps {
+    params: {
+        id: string
+    }
+}
+
+export default async function BlogDetailsPage({ params }: BlogDetailsPageProps) {
+    const { id } = await params;
     const defaultImage = 'https://res.cloudinary.com/dndtvwfvg/image/upload/v1738577422/blogbook/download_iszr5d.jpg';
+    const currentBlog = await BlogModel.findById<IBlog>(id);
+    const featuredImage = currentBlog?.featuredImage ? currentBlog.featuredImage.url : defaultImage;
+    const category = currentBlog?.category ? await CategoryModel.findById<ICategory>(currentBlog.category) : null;
+    const date = currentBlog ? new Intl.DateTimeFormat('en-us').format(new Date(currentBlog.createdAt.toString())) : null;
+    const tags: ITag[] = currentBlog?.tags ? await TagModel.find<ITag>({_id: currentBlog.tags}) : [];
 
     return (
         <div className="py-[80px]">
@@ -16,27 +33,36 @@ export default async function BlogDetailsPage() {
                     <div className="mb-10">
                         <Image
                             className="rounded-lg h-[430px] w-full object-cover"
-                            src="https://res.cloudinary.com/dndtvwfvg/image/upload/v1738577422/blogbook/download_iszr5d.jpg"
+                            src={featuredImage}
                             width={1170}
                             height={430}
                             alt={'Featured Image'}/>
                     </div>
                     <div className="mb-5">
-                        <span className="border border-primary rounded-full font-bold px-3 py-2 bg-primary text-white text-sm">Uncategorized</span>
+                        <span className="border border-primary rounded-full font-bold px-3 py-2 bg-primary text-white text-sm">{category ? category.name : 'Uncategorized'}</span>
                     </div>
-                    <h1 className="font-bold text-7xl mb-5">Sample Blog</h1>
-                    <span className="mb-10 block text-lg">3/5/2025</span>
+                    <h1 className="font-bold text-7xl mb-5">{currentBlog?.title}</h1>
+                    <span className="mb-10 block text-lg">{date}</span>
                     <div>
-                        <p className="mb-4">orem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                        <p>orem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                        {currentBlog?.content && (
+                            <p>{currentBlog.content}</p>
+                        )}
                     </div>
-                    <div className="mb-10">
-                        <ul className="flex items-center gap-2 mt-5">
-                            <li><Badge className="bg-transparent border border-primary text-primary hover:bg-transparent">Tag 1</Badge></li>
-                            <li><Badge className="bg-transparent border border-primary text-primary hover:bg-transparent">Tag 2</Badge></li>
-                            <li><Badge className="bg-transparent border border-primary text-primary hover:bg-transparent">Tag 3</Badge></li>
-                        </ul>
-                    </div>
+                    {tags.length > 0 && (
+                        <div className="mb-10">
+                            <ul className="flex items-center gap-2 mt-5">
+                                {tags.map(tag => {
+                                    return (
+                                        <li key={tag._id as string}>
+                                            <Badge className="bg-transparent border border-primary text-primary hover:bg-transparent">
+                                                {tag.name}
+                                            </Badge>
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
