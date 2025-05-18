@@ -3,6 +3,7 @@
 import StatsContainer from "./_components/stats-container";
 import RecentBlogsList from "./_components/recent-blogs-list";
 import { Suspense } from "react";
+import SkeletonStatsContainer from "@/components/skeleton/skeleton-stats";
 
 export default async function UserAdminPage() {
 
@@ -11,7 +12,7 @@ export default async function UserAdminPage() {
             <h1 className="font-bold text-4xl">Dashboard</h1>
 
             {/* dashboard stats */}
-            <Suspense fallback={<p>Loading stats...</p>}>
+            <Suspense fallback={<SkeletonStatsContainer/>}>
                 <StatsContainer/>
             </Suspense>
 

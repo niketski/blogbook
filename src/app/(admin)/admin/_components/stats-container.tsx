@@ -38,7 +38,6 @@ export default async function StatsContainer() {
         }
     ];
 
-
     return (
         <div className="lg:flex flex-wrap -m-2">
             {results &&
