@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { BlogResult } from "@/app/(admin)/admin/blog/_components/blog-table";
 import { LoaderCircle } from "lucide-react";
 import SkeletonFeaturedBlog from "./skeleton/skeleton-featured-blog";
+import SkeletonBlogCard from "./skeleton/skeleton-blog-card";
 
 export default function BlogListing() {
     const [featuredBlog, setFeaturedBlog] = useState<BlogResult | null>(null);
@@ -65,40 +66,60 @@ export default function BlogListing() {
 
     };
 
-    const fakeLoading = () => {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve(true);
-            }, 4000);
-        });
+    const SkeletonBlogList = () => {
+        return (
+            <div className="mx-auto xl:max-w-[1170px] lg:max-w-[950px]">
+                <div className="lg:flex md:flex-wrap">
+                    <div className="lg:w-1/2 pb-5 lg:p-2 max-w-[475px] mx-auto lg:max-w-full lg:mx-0">
+                        <SkeletonBlogCard/>
+                    </div>
+                    <div className="lg:w-1/2 pb-5 lg:p-2 max-w-[475px] mx-auto lg:max-w-full lg:mx-0">
+                        <SkeletonBlogCard/>
+                    </div>
+                    <div className="lg:w-1/2 pb-5 lg:p-2 max-w-[475px] mx-auto lg:max-w-full lg:mx-0">
+                        <SkeletonBlogCard/>
+                    </div>
+                    <div className="lg:w-1/2 pb-5 lg:p-2 max-w-[475px] mx-auto lg:max-w-full lg:mx-0">
+                        <SkeletonBlogCard/>
+                    </div>
+                </div>
+            </div>
+        );
     };
 
     useEffect(() => {
-        
-        fakeLoading();
+
         fetchBlogs();   
-        console.log('Fetching blogs...');
 
     }, [page]);
 
+    console.log(blogs.length, loading);
     return (
         <div>
             {/* Featured Blog */}
-            {featuredBlog && (
+            {(!featuredBlog && loading) ? 
+
                 <div className="mb-5 lg:mb-10 mx-auto max-w-[475px] lg:max-w-[1640px]">
-                    <FeaturedBlog
-                        title={featuredBlog.title}
-                        date={new Intl.DateTimeFormat('en-US').format(new Date(featuredBlog.createdAt))}
-                        category={featuredBlog.categoryData[0] ? featuredBlog.categoryData[0].name : 'Uncategorized'}
-                        imageUrl={featuredBlog.featuredImage ? featuredBlog.featuredImage.url : defaultImage}
-                        link={`/${featuredBlog._id}`}
-                        excerpt={featuredBlog.content}/>
-                </div>
-            )}
+                    <SkeletonFeaturedBlog/>
+                </div> : 
+                
+                featuredBlog ? 
+                    (
+                        <div className="mb-5 lg:mb-10 mx-auto max-w-[475px] lg:max-w-[1640px]">
+                            <FeaturedBlog
+                                title={featuredBlog.title}
+                                date={new Intl.DateTimeFormat('en-US').format(new Date(featuredBlog.createdAt))}
+                                category={featuredBlog.categoryData[0] ? featuredBlog.categoryData[0].name : 'Uncategorized'}
+                                imageUrl={featuredBlog.featuredImage ? featuredBlog.featuredImage.url : defaultImage}
+                                link={`/${featuredBlog._id}`}
+                                excerpt={featuredBlog.content}/>
+                        </div>
+                    ) : null
+                }
             
 
             {/* Blog List */}
-            {blogs && blogs.length > 0 && (
+            {!blogs.length && loading ? <SkeletonBlogList/> : (
                 <div className="mx-auto xl:max-w-[1170px] lg:max-w-[950px]">
                     <div className="lg:flex md:flex-wrap">
                         {blogs.map(blog => {
