@@ -1,7 +1,6 @@
-import FeaturedBlog from "@/components/featured-blog";
-import BlogCard from "@/components/blog-card";
-import { Button } from "@/components/ui/button";
 import BlogListing from "@/components/blog-listing";
+import { Suspense } from "react";
+import SkeletonBlogListing from "@/components/skeleton/skeleton-blog-listing";
 
 export default function Home() {
   return (
