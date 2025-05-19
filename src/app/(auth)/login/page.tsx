@@ -7,7 +7,7 @@ export default async function LoginPage() {
     try {
         const session = await auth();
 
-        if(session) {
+        if(session) { 
             redirect('/admin');
         }
 

@@ -12,6 +12,7 @@ import NoBlogResult from "./_components/no-blog-result";
 import { Suspense } from "react";
 import BlogPagination from "./_components/blog-pagination";
 import { BlogGetResponse } from "@/app/api/blogs/route";
+import SkeletonTable from "@/components/skeleton/skeleton-table";
 
 interface BlogsPageProps {
     searchParams: {
@@ -124,7 +125,7 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
 
                 {response.data  &&
                    <div className="w-full overflow-auto">
-                        <Suspense fallback={<p>Loading ...</p>}>
+                        <Suspense fallback={<SkeletonTable/>}>
                             <BlogTable data={response.data}/>
                         </Suspense>
                     </div>

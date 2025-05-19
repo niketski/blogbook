@@ -29,8 +29,6 @@ const TableHeading = [
 
 export default async function BlogTable({ data } : BlogTableProps) {
 
-    await new Promise((res) => { setTimeout(() => { res('asdad'); },  3000) });
-
     return (
         <Table className="min-w-[800px]">
             <TableHeader>

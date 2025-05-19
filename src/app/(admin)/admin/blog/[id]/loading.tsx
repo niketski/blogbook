@@ -1,6 +1,6 @@
+import SkeletonPageLoader from "@/components/skeleton/skeleton-page-loader";
+
 export default function BlogDetailsLoadingPage() {
 
-    return (
-        <h1>Blog details is loading.</h1>
-    );
+    return <SkeletonPageLoader/>;
 }
