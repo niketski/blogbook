@@ -56,3 +56,15 @@ export const isMatchedUrlPath = (currentPath: string, menuUrl: string): boolean 
 
   return false;
 };
+
+export const generateExcerpt = (content: string, limit: number = 50) => {
+
+  if(content.length < limit) {
+
+    return content;
+
+  }
+
+  return content.slice(0, limit) + '...';
+
+};

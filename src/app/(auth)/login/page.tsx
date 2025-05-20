@@ -6,7 +6,7 @@ export default async function LoginPage() {
 
     try {
         const session = await auth();
-
+        console.log('login session: ', session);
         if(session) { 
             redirect('/admin');
         }

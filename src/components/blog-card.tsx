@@ -32,7 +32,7 @@ export default function BlogCard({
             {category && <Badge className="mb-3">{category}</Badge>}
             <h2 className="font-bold text-2xl mb-2">{title}</h2>
             <span className="text-gray-500 text-sm mb-5 block">{date}</span>
-            <div>
+            <div className="min-h-[75px]">
               <p>{excerpt}</p>
             </div>
             <Button asChild className="mt-5">
