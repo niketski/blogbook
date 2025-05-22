@@ -14,6 +14,17 @@ interface BlogDetailsPageProps {
     }
 }
 
+// blog meta data
+export async function generateMetadata({ params }: BlogDetailsPageProps) {
+    const { id } = await params;
+    const currentBlog = await BlogModel.findById<IBlog>(id);
+
+    return {
+        title: currentBlog?.metaTitle || currentBlog?.title,
+        description: currentBlog?.metaDescription || currentBlog?.content
+    }
+}
+
 export default async function BlogDetailsPage({ params }: BlogDetailsPageProps) {
     const { id } = await params;
     const defaultImage = 'https://res.cloudinary.com/dndtvwfvg/image/upload/v1738577422/blogbook/download_iszr5d.jpg';
