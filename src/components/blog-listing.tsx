@@ -145,7 +145,7 @@ export default function BlogListing() {
             
 
             {/* Load more button */}
-            {(blogs.length > 0 && page < totalPages) && 
+            {(blogs.length > 0 && page < totalPages || loading) && 
                 <div className="text-center mt-10">
                     <Button 
                         onClick={handleLoadMore}
