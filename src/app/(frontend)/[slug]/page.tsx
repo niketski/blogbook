@@ -10,25 +10,27 @@ import { ICategory } from "@/models/category-model";
 
 interface BlogDetailsPageProps {
     params: {
-        id: string
+        slug: string
     }
 }
 
 // blog meta data
 export async function generateMetadata({ params }: BlogDetailsPageProps) {
-    const { id } = await params;
-    const currentBlog = await BlogModel.findById<IBlog>(id);
+    const { slug } = await params;
+    const result = await BlogModel.find<IBlog>({ slug });
+    const blog = result[0];
 
     return {
-        title: currentBlog?.metaTitle || currentBlog?.title,
-        description: currentBlog?.metaDescription || currentBlog?.content
+        title: blog?.metaTitle || blog?.title,
+        description: blog?.metaDescription || blog?.content
     }
 }
 
 export default async function BlogDetailsPage({ params }: BlogDetailsPageProps) {
-    const { id } = await params;
+    const { slug } = await params;
     const defaultImage = 'https://res.cloudinary.com/dndtvwfvg/image/upload/v1738577422/blogbook/download_iszr5d.jpg';
-    const currentBlog = await BlogModel.findById<IBlog>(id);
+    const result = await BlogModel.find<IBlog>({ slug });
+    const currentBlog = result[0];
     const featuredImage = currentBlog?.featuredImage ? currentBlog.featuredImage.url : defaultImage;
     const category = currentBlog?.category ? await CategoryModel.findById<ICategory>(currentBlog.category) : null;
     const date = currentBlog ? new Intl.DateTimeFormat('en-us').format(new Date(currentBlog.createdAt.toString())) : null;
