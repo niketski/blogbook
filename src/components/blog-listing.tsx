@@ -115,7 +115,7 @@ export default function BlogListing() {
                                 date={new Intl.DateTimeFormat('en-US').format(new Date(featuredBlog.createdAt))}
                                 category={featuredBlog.categoryData[0] ? featuredBlog.categoryData[0].name : 'Uncategorized'}
                                 imageUrl={featuredBlog.featuredImage ? featuredBlog.featuredImage.url : defaultImage}
-                                link={`/${featuredBlog._id}`}
+                                link={`/${featuredBlog.slug}`}
                                 excerpt={generateExcerpt(featuredBlog.content, 300)}/>
                         </div>
                     ) : null
@@ -134,7 +134,7 @@ export default function BlogListing() {
                                         date={new Intl.DateTimeFormat('en-US').format(new Date(blog.createdAt))}
                                         category={blog.categoryData.length ? blog.categoryData[0].name : 'Uncategorized'}
                                         imageUrl={blog.featuredImage ? blog.featuredImage.url : defaultImage}
-                                        link={`/${blog._id}`}
+                                        link={`/${blog.slug}`}
                                         excerpt={generateExcerpt(blog.content, 150)}/>
                                 </div>
                             )
