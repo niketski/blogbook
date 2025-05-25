@@ -19,7 +19,7 @@ export default async function RecentBlogsList() {
                             key={item._id as string}
                             title={item.title}
                             date={blogDate}
-                            link={`/admin/blog/${item._id}`}/>
+                            link={`/${item.slug}`}/>
                     );
                 })
             }

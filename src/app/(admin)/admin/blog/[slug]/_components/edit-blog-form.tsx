@@ -216,7 +216,7 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
                                 htmlFor="slug"
                                 className="mb-2 block font-bold">Slug</Label>
                             <div className="flex items-center">
-                                {originUrl && <span className="text-sm">{`${originUrl}/blog/`}</span>}
+                                {originUrl && <span className="text-sm">{`${originUrl}/`}</span>}
                                 <Input
                                     className={`${formState.errors.slug ? 'border-red-500' : ''}`}
                                     id="slug"
