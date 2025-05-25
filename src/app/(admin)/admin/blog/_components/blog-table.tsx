@@ -63,7 +63,8 @@ export default async function BlogTable({ data } : BlogTableProps) {
                             category={category ? category.name : 'Uncategorized'}
                             tags={ tags ? (tags.map(item => item.name)).join(', ') : '' }
                             date={date}
-                            status={item.status}/>
+                            status={item.status}
+                            slug={item.slug}/>
                     );
                 })}
                 

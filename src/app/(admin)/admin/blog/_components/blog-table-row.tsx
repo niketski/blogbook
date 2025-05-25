@@ -30,6 +30,7 @@ interface BlogTableRowProps {
     tags: string,
     date: string,
     status: string,
+    slug: string
 }
 
 export default function BlogTableRow({ 
@@ -38,7 +39,8 @@ export default function BlogTableRow({
     category,
     tags,
     date,
-    status
+    status,
+    slug
  } : BlogTableRowProps) {
     const [isDeleteModalActive, setIsDeleteModalActive] = useState(false);
     const { toast } = useToast();
@@ -60,7 +62,7 @@ export default function BlogTableRow({
         <TableRow>
             <TableCell>
                 <span className="font-bold">
-                    <Link href={`/admin/blog/${id}`}>{title}</Link>
+                    <Link href={`/admin/blog/${slug}`}>{title}</Link>
                 </span>
             </TableCell>
             <TableCell>{category}</TableCell>
@@ -77,6 +79,9 @@ export default function BlogTableRow({
                     <DropdownMenuContent>
                         <DropdownMenuLabel>Action</DropdownMenuLabel>
                         <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                            <Link href={`/${slug}`} className="cursor-pointer" target="_blank">View</Link>
+                        </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                             <Link href={`/admin/blog/${id}`} className="cursor-pointer">Edit</Link>
                         </DropdownMenuItem>

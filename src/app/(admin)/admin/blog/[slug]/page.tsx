@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 interface BlogDetailsPageProps {
     params: {
-        id: string
+        slug: string
     }
 }
 
@@ -33,8 +33,8 @@ interface CurrentBlogResult {
 
 export default async function BlogDetailsPage({ params } : BlogDetailsPageProps) {
     const currentParams = await params;
-    const blogId = currentParams.id;
-    const currentBlog: CurrentBlogResult | null = await BlogModel.findById(blogId).populate(['tags', 'category']);
+    const slug = currentParams.slug;
+    const currentBlog = await BlogModel.findOne<CurrentBlogResult>({ slug: slug }).populate(['tags', 'category']);
     const categories: null | ICategory[] = await CategoryModel.find({});
     const tags = await TagModel.find({});
     let blogData: BlogDetails | null = null;

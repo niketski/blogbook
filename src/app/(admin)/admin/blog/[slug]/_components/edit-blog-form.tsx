@@ -15,6 +15,8 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import EditBlog from "@/actions/edit-blog";
 import { useToast } from "@/hooks/use-toast";
+import Link from "next/link";
+import { Eye } from "lucide-react";
 
 interface EditBlogFormProps {
     blog: string,
@@ -282,6 +284,14 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
                                         {isPending ? <LoaderCircle className="animate-spin"/> : ''}
 
                             </Button>
+
+                            <div className="mb-5">
+                                <Link 
+                                    href={`/${formState.values.slug}`} 
+                                    className="inline-flex items-center" target="_blank">
+                                        <Eye className="mr-1"/> View
+                                </Link>
+                            </div>
 
 
                             <div className="mb-5">
