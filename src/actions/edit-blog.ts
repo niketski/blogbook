@@ -13,6 +13,7 @@ export interface EditBlogFormState {
     message: string,
     values: {
         title: string,
+        excerpt: string,
         slug: string,
         content: string,
         metaTitle: string,
@@ -26,6 +27,7 @@ export interface EditBlogFormState {
     },
     errors: {
         title?: string[],
+        excerpt?: string[],
         slug?: string[],
         content?: string[],
         metaTitle?: string[],
@@ -45,6 +47,7 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
     try {
 
         const title = formData.get('title') as string;
+        const excerpt = formData.get('excerpt') as string;
         const slug = formData.get('slug') as string;
         const content = formData.get('content') as string;
         const metaTitle =  formData.get('metaTitle') as string;
@@ -60,6 +63,7 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
 
         const formSchema = z.object({
             title: z.string().min(1, { message: 'Title is required.' }),
+            excerpt: z.string().optional(),
             content: z.string().min(1, { message: 'Content is required.' }),
             slug: z.string().min(1, { message: 'Slug is required.' }),
             status: z.enum(['published', 'draft']),
@@ -73,6 +77,7 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
 
         const result = formSchema.safeParse({
             title,
+            excerpt,
             slug,
             content,
             status,
@@ -95,6 +100,7 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
                 values: {
                     slug,
                     title,
+                    excerpt,
                     content,
                     status,
                     category,
@@ -123,6 +129,7 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
         const updatedBlogData: BlogDocumentData = {
             slug,
             title,
+            excerpt,
             content,
             status,
             category: selectedCategory?._id as mongoose.Types.ObjectId,
@@ -193,6 +200,7 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
             values: {
                 slug: updatedBlogData.slug,
                 title: updatedBlogData.title,
+                excerpt: updatedBlogData.excerpt,
                 content: updatedBlogData.content,
                 status: updatedBlogData.status,
                 category: category,
@@ -207,9 +215,10 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
         }
 
     } catch(error) {
-        console.log(error);
+        
         const title = formData.get('title') as string;
         const slug = formData.get('slug') as string;
+        const excerpt = formData.get('excerpt') as string;
         const content = formData.get('content') as string;
         const metaTitle =  formData.get('metaTitle') as string;
         const metaDescription = formData.get('metaDescription') as string;
@@ -220,12 +229,15 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
         const featuredImageUrl = formData.get('featuredImageUrl') as string;
         const featuredImageId = formData.get('featuredImageId') as string;
 
+        console.log(error);
+        
         return  {
             status: 'error',
             message: 'There\'s error sending data.',
             values: {
                 title,
                 slug,
+                excerpt,
                 content,
                 metaTitle,
                 metaDescription,
