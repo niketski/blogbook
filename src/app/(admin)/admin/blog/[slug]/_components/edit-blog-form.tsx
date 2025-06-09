@@ -1,6 +1,6 @@
 'use client'
 
-import { Label } from "@/components/ui/label";
+import { Label } from "@/components/ui/label";  
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import EditBlog from "@/actions/edit-blog";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { Eye } from "lucide-react";
+import RichTextEditor from "@/components/rich-text-editor";
 
 interface EditBlogFormProps {
     blog: string,
@@ -47,6 +48,7 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
     const [tags, setTags] = useState<IComboBoxOption[]>(currentBlog.tags);
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [imagePreview, setImagePreview] = useState<string>('');
+    const [blogContent, setBlogContent] = useState(currentBlog.content);
     const [isFileExceeded, setIsFileExceeded] = useState(false);
     const [formState, formAction, isPending] = useActionState(EditBlog, {
         status: 'idle',
@@ -145,7 +147,8 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
             readImageUrl(imageUrl);
 
         }
-            
+        
+        // initialize base url for slug
         if(window.location.origin) {
             
             setOriginUrl(window.location.origin);
@@ -161,8 +164,6 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
         // clear some of the data after successfull submition
         if(formState.status === 'success') {
 
-            setImagePreview('');
-
             setTags([]);
 
             toast({
@@ -173,7 +174,8 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
 
     }, [formState.status, toast]);
 
-    
+    console.log(imagePreview);
+    console.log(formState.values);
     return (
         <div>
             <form action={formAction}>
@@ -229,7 +231,7 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
                             }
                         </div>
 
-                        <div className="mb-10"> 
+                        {/* <div className="mb-10 hidden"> 
                             <Label
                                 htmlFor="content"
                                 className="mb-2 block font-bold">Content</Label>
@@ -239,6 +241,22 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
                                 className={`min-h-[300px] ${formState.errors.content ? 'border-red-500' : ''}`}
                                 defaultValue={formState.values.content}/>
 
+                            {formState.errors.content &&
+                                <p className="text-sm text-red-500 mt-4">{formState.errors.content[0]}</p>
+                            }
+                        </div> */}
+
+                        <div className="mb-10">
+                            <Label
+                                htmlFor="content"
+                                className="mb-2 block font-bold">Content</Label>
+                            <RichTextEditor 
+                                value={blogContent} 
+                                onChange={setBlogContent}/>
+                            <input 
+                                type="hidden" 
+                                name="content" 
+                                value={blogContent}/>
                             {formState.errors.content &&
                                 <p className="text-sm text-red-500 mt-4">{formState.errors.content[0]}</p>
                             }

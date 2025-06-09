@@ -7,6 +7,7 @@ import BlogModel, { IBlog } from "@/models/blog-model";
 import TagModel from "@/models/tag-model";
 import CategoryModel from "@/models/category-model";
 import { ICategory } from "@/models/category-model";
+import RichTextContent from "@/components/rich-text-content";
 
 interface BlogDetailsPageProps {
     params: {
@@ -35,7 +36,7 @@ export default async function BlogDetailsPage({ params }: BlogDetailsPageProps) 
     const category = currentBlog?.category ? await CategoryModel.findById<ICategory>(currentBlog.category) : null;
     const date = currentBlog ? new Intl.DateTimeFormat('en-us').format(new Date(currentBlog.createdAt.toString())) : null;
     const tags: ITag[] = currentBlog?.tags ? await TagModel.find<ITag>({_id: currentBlog.tags}) : [];
-
+    
     return (
         <div className="py-[80px]">
             <div className="px-5">
@@ -56,9 +57,9 @@ export default async function BlogDetailsPage({ params }: BlogDetailsPageProps) 
                     </div>
                     <h1 className="font-bold text-7xl mb-5">{currentBlog?.title}</h1>
                     <span className="mb-10 block text-lg">{date}</span>
-                    <div>
+                    <div className="blog-content">
                         {currentBlog?.content && (
-                            <p>{currentBlog.content}</p>
+                            <RichTextContent content={currentBlog.content}/>
                         )}
                     </div>
                     {tags.length > 0 && (

@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
 import '@/app/admin.css';
+import 'react-quill-new/dist/quill.snow.css';
 import { Poppins } from 'next/font/google';
 import { Toaster } from "@/components/ui/toaster";
-import { auth } from "@/lib/auth";
-import SessionContainer from "@/components/session-container";
 
 // components
 import AdminContainer from "@/components/admin/admin-container";
-import { redirect } from "next/navigation";
 
 const fontPoppins = Poppins({
   subsets: ['latin'],
