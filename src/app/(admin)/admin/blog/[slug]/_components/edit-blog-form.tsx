@@ -164,8 +164,6 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
         // clear some of the data after successfull submition
         if(formState.status === 'success') {
 
-            setImagePreview('');
-
             setTags([]);
 
             toast({
@@ -176,7 +174,8 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
 
     }, [formState.status, toast]);
 
-    
+    console.log(imagePreview);
+    console.log(formState.values);
     return (
         <div>
             <form action={formAction}>
@@ -232,7 +231,7 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
                             }
                         </div>
 
-                        <div className="mb-10 hidden"> 
+                        {/* <div className="mb-10 hidden"> 
                             <Label
                                 htmlFor="content"
                                 className="mb-2 block font-bold">Content</Label>
@@ -245,12 +244,22 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
                             {formState.errors.content &&
                                 <p className="text-sm text-red-500 mt-4">{formState.errors.content[0]}</p>
                             }
-                        </div>
+                        </div> */}
 
                         <div className="mb-10">
+                            <Label
+                                htmlFor="content"
+                                className="mb-2 block font-bold">Content</Label>
                             <RichTextEditor 
                                 value={blogContent} 
                                 onChange={setBlogContent}/>
+                            <input 
+                                type="hidden" 
+                                name="content" 
+                                value={blogContent}/>
+                            {formState.errors.content &&
+                                <p className="text-sm text-red-500 mt-4">{formState.errors.content[0]}</p>
+                            }
                         </div>
 
                         <div>

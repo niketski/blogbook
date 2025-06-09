@@ -25,6 +25,7 @@ const TableHeading = [
     'Tag',
     'Date',
     'Status',
+    'Action'
 ];
 
 export default async function BlogTable({ data } : BlogTableProps) {
@@ -38,9 +39,9 @@ export default async function BlogTable({ data } : BlogTableProps) {
                             <TableHead key={index}>{heading}</TableHead>
                         )
                     })}
-                    <TableHead>
-                        <span className="sr-only">Action Column</span>
-                    </TableHead>
+                    {/* <TableHead>
+                        <span>Action</span>
+                    </TableHead> */}
                 </TableRow>
             </TableHeader>
             <TableBody>

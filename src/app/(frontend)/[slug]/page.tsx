@@ -57,7 +57,7 @@ export default async function BlogDetailsPage({ params }: BlogDetailsPageProps) 
                     </div>
                     <h1 className="font-bold text-7xl mb-5">{currentBlog?.title}</h1>
                     <span className="mb-10 block text-lg">{date}</span>
-                    <div>
+                    <div className="blog-content">
                         {currentBlog?.content && (
                             <RichTextContent content={currentBlog.content}/>
                         )}

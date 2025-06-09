@@ -1,0 +1,12 @@
+.blog-content ul,
+.blog-content ol {
+    padding-left: 20px;
+}
+
+.blog-content ul {
+    list-style: disc;
+}
+
+.blog-content ol {
+    list-style: initial;
+}
