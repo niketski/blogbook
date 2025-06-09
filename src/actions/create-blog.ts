@@ -14,6 +14,7 @@ interface CreateBlogFormState {
     status: 'error' | 'success' | 'pending',
     values: {
         title: string,
+        excerpt: string,
         content: string,
         status: string,
         category: string,
@@ -37,6 +38,7 @@ interface CreateBlogFormState {
 
 export interface BlogDocumentData {
     title: string,
+    excerpt: string,
     content: string,
     status: string,
     category?: mongoose.Types.ObjectId,
@@ -56,6 +58,7 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
 
         // form data
         const title = formData.get('title') as string;
+        const excerpt = formData.get('excerpt') as string;
         const content = formData.get('content') as string;
         const status = formData.get('status') as string;
         const category = formData.get('category') as string;
@@ -66,6 +69,7 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
 
         const formSchema = z.object({
             title: z.string().min(1, { message: 'Title is required.' }),
+            excerpt: z.string().optional(),
             content: z.string().min(1, { message: 'Content is required.' }),
             status: z.enum(['published', 'draft']),
             category: z.string().optional(),
@@ -77,6 +81,7 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
 
         const result = formSchema.safeParse({
             title,
+            excerpt,
             content,
             status,
             category,
@@ -94,6 +99,7 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
                 status: 'error',
                 values: {
                     title,
+                    excerpt,
                     content,
                     status,
                     category,
@@ -122,6 +128,7 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
 
         const blogDocumentData: BlogDocumentData = {
             title,
+            excerpt,
             slug: titleSlug,
             content,
             status,
@@ -164,6 +171,7 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
             status: 'success',
             values: {
                 title: '',
+                excerpt,
                 content: '',
                 status: 'pending',
                 category: '',
@@ -181,6 +189,7 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
         console.log(error);
 
         const title = formData.get('title') as string;
+        const excerpt = formData.get('excerpt') as string;
         const content = formData.get('content') as string;
         const status = formData.get('status') as string;
         const category = formData.get('category') as string;
@@ -194,6 +203,7 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
             status: 'error',
             values: {
                 title,
+                excerpt,
                 content,
                 status,
                 category,
