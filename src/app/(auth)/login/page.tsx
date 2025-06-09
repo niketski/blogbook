@@ -4,17 +4,12 @@ import { redirect } from "next/navigation";
 
 export default async function LoginPage() {
 
-    try {
-        const session = await auth();
-        console.log('login session: ', session);
-        if(session) { 
-            redirect('/admin');
-        }
-
-    } catch (error) {
-
-        console.log('error login: ', error);
-
+    const session = await auth();
+    
+    console.log('login session: ', session);
+    
+    if(session) { 
+        redirect('/admin');
     }
 
     return (
