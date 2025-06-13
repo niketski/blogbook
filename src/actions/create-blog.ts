@@ -25,6 +25,7 @@ interface CreateBlogFormState {
     },
     errors: {
         title?: string[],
+        excerpt?: string[],
         content?: string[],
         status?: string[],
         category?: string[],
@@ -171,7 +172,7 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
             status: 'success',
             values: {
                 title: '',
-                excerpt,
+                excerpt: '',
                 content: '',
                 status: 'pending',
                 category: '',
