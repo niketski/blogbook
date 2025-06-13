@@ -6,7 +6,7 @@ interface BlogCardProps {
     title: string;
     date: string;
     category?: string;
-    excerpt: string;
+    excerpt?: string;
     imageUrl: string;
     link: string;
 }

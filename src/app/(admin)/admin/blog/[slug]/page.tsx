@@ -18,6 +18,7 @@ interface BlogDetailsPageProps {
 interface CurrentBlogResult {
     _id: mongoose.Types.ObjectId,
     title: string,
+    excerpt: string,
     content: string,
     featuredImage: {
         url: string,
@@ -61,6 +62,7 @@ export default async function BlogDetailsPage({ params } : BlogDetailsPageProps)
             id: currentBlog._id as unknown as string,
             title: currentBlog.title,
             slug: currentBlog.slug,
+            excerpt: currentBlog.excerpt,
             content: currentBlog.content,
             metaTitle: currentBlog.metaTitle,
             metaDescription: currentBlog.metaDescription,

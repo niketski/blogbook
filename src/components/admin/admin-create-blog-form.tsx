@@ -38,6 +38,7 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
         status: 'pending',
         values: {
             title: '',
+            excerpt: '',
             content: '',
             status: '',
             category: '',
@@ -155,6 +156,17 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
                             {formState.errors.title &&
                                 <p className="text-sm text-red-500 mt-4">{formState.errors.title.join(', ')}</p>
                             }
+                        </div>
+
+                        <div className="mb-5">
+                            <Label 
+                                htmlFor="excerpt"
+                                className="mb-2 block font-bold">Excerpt</Label>
+                            <Textarea
+                                id="excerpt"
+                                name="excerpt"
+                                className="min-h-[80px]"
+                                defaultValue={formState.values.excerpt}/>
                         </div>
 
                         <div className="mb-10"> 

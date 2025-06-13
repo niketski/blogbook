@@ -3,6 +3,7 @@ import{ Schema, Document, Types, model, models } from "mongoose";
 export interface IBlog extends Document {
     title: string,
     slug: string,
+    excerpt: string,
     content: string,
     featuredImage: {
         url: string,
@@ -26,6 +27,9 @@ const BlogSchema = new Schema<IBlog>({
         type: String,
         required: true,
         unique: true
+    },
+    excerpt: {
+        type: String
     },
     content: {
         type: String,

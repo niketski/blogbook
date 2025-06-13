@@ -1,6 +1,4 @@
 import BlogListing from "@/components/blog-listing";
-import { Suspense } from "react";
-import SkeletonBlogListing from "@/components/skeleton/skeleton-blog-listing";
 
 export default function Home() {
   return (

@@ -28,6 +28,7 @@ interface EditBlogFormProps {
 export interface BlogDetails {
     id: string,
     title: string,
+    excerpt: string,
     slug: string,
     status: string,
     metaTitle: string,
@@ -56,6 +57,7 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
         values: {
             title: currentBlog.title,
             slug: currentBlog.slug ? currentBlog.slug : currentBlog.id,
+            excerpt: currentBlog.excerpt,
             status: currentBlog.status,
             metaTitle: currentBlog.metaTitle,
             metaDescription: currentBlog.metaDescription,
@@ -228,6 +230,22 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
 
                             {formState.errors.slug &&
                                 <p className="text-sm text-red-500 mt-4">{formState.errors.slug.join(', ')}</p>
+                            }
+                        </div>
+
+                        <div className="mb-5">
+                            <Label 
+                                htmlFor="excerpt"
+                                className="mb-2 block font-bold">Excerpt</Label>
+                            <Textarea
+                                id="excerpt"
+                                name="excerpt"
+                                className={`min-h-[80px] ${formState.errors.excerpt ? 'border-red-500' : ''}`}
+                                defaultValue={formState.values.excerpt}/>
+
+                                
+                            {formState.errors.excerpt &&
+                                <p className="text-sm text-red-500 mt-4">{formState.errors.excerpt[0]}</p>
                             }
                         </div>
 
