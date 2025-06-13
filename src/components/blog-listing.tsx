@@ -7,7 +7,6 @@ import { BlogResult } from "@/app/(admin)/admin/blog/_components/blog-table";
 import { LoaderCircle } from "lucide-react";
 import SkeletonFeaturedBlog from "./skeleton/skeleton-featured-blog";
 import SkeletonBlogCard from "./skeleton/skeleton-blog-card";
-import { generateExcerpt } from "@/lib/utils";
 
 export default function BlogListing() {
     const [featuredBlog, setFeaturedBlog] = useState<BlogResult | null>(null);
@@ -21,6 +20,7 @@ export default function BlogListing() {
     const fetchBlogs = async () => {
 
         setLoading(true);
+
         const skip = page === 1 ? (page - 1) * limit : 5 + ((page - 2) * 4);
         const response = await fetch(`/api/blogs?limit=${limit}&page=${page}&skip=${skip}`, {
             cache: 'no-store',
@@ -116,7 +116,7 @@ export default function BlogListing() {
                                 category={featuredBlog.categoryData[0] ? featuredBlog.categoryData[0].name : 'Uncategorized'}
                                 imageUrl={featuredBlog.featuredImage ? featuredBlog.featuredImage.url : defaultImage}
                                 link={`/${featuredBlog.slug}`}
-                                excerpt={generateExcerpt(featuredBlog.content, 300)}/>
+                                excerpt={featuredBlog.excerpt}/>
                         </div>
                     ) : null
                 }
@@ -135,7 +135,7 @@ export default function BlogListing() {
                                         category={blog.categoryData.length ? blog.categoryData[0].name : 'Uncategorized'}
                                         imageUrl={blog.featuredImage ? blog.featuredImage.url : defaultImage}
                                         link={`/${blog.slug}`}
-                                        excerpt={generateExcerpt(blog.content, 150)}/>
+                                        excerpt={featuredBlog?.excerpt}/>
                                 </div>
                             )
                         })}
