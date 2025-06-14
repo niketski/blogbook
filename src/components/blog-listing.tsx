@@ -103,13 +103,13 @@ export default function BlogListing() {
             {/* Featured Blog */}
             {(!featuredBlog && loading) ? 
 
-                <div className="mb-5 lg:mb-10 mx-auto max-w-[475px] lg:max-w-[1640px]">
+                <div className="mb-5 lg:mb-10 custom-container">
                     <SkeletonFeaturedBlog/>
                 </div> : 
                 
                 featuredBlog ? 
                     (
-                        <div className="mb-5 lg:mb-10 mx-auto max-w-[475px] lg:max-w-[1640px]">
+                        <div className="mb-5 lg:mb-10 custom-container">
                             <FeaturedBlog
                                 title={featuredBlog.title}
                                 date={new Intl.DateTimeFormat('en-US').format(new Date(featuredBlog.createdAt))}

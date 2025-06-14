@@ -1,3 +1,7 @@
 body {
     color: #353935;
 }
+
+.custom-container {
+    @apply mx-auto xl:max-w-[1170px] lg:max-w-[950px];
+}
