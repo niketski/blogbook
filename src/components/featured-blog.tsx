@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 interface FeaturedBlogProps {
     title: string;
     date: string;
     category?: string;
     excerpt: string;
-    imageUrl: string;
+    imageUrl?: string;
     link: string;
 }
 
@@ -16,7 +17,7 @@ export default function FeaturedBlog({
     date,
     category,
     excerpt,
-    imageUrl,
+    imageUrl = 'https://res.cloudinary.com/dndtvwfvg/image/upload/v1738577422/blogbook/download_iszr5d.jpg',
     link
  }: FeaturedBlogProps) {
     
@@ -25,7 +26,13 @@ export default function FeaturedBlog({
           <div className="lg:w-1/2">
             <Link href={link} className="block  relative">
               <canvas width="564" height="400" className="w-full"></canvas>
-              <img src={imageUrl} alt={title} className="absolute top-0 left-0 w-full h-full object-cover object-center grayscale transition duration-300 ease-in-out hover:grayscale-0"/>
+              <Image
+                src={imageUrl}
+                alt={title}
+                width="564" 
+                height="400"
+                className="absolute top-0 left-0 w-full h-full object-cover object-center grayscale transition duration-300 ease-in-out hover:grayscale-0"
+                />
             </Link>
           </div>
           <div className="lg:w-1/2 p-6 lg:p-10">
