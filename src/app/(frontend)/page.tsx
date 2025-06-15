@@ -1,6 +1,7 @@
 import BlogListing from "@/components/blog-listing";
 import { BlogResult } from "../(admin)/admin/blog/_components/blog-table";
 import FeaturedBlog from "@/components/featured-blog";
+import CategoryModel, { ICategory } from "@/models/category-model";
 
 export default async function Home() {
   const page = 1;
@@ -9,6 +10,7 @@ export default async function Home() {
   let blogs: BlogResult[] | null = null;
   let totalpages: number = 1;
   let featuredBlog: BlogResult | null = null;
+  const categories  = await CategoryModel.find<ICategory>({});
 
   try {
     
@@ -37,10 +39,11 @@ export default async function Home() {
   return (
     <div className="py-[80px]">
       <div className="px-5">
+
         <div className="custom-container">
           <h1 className="font-bold text-4xl mb-10">Featured</h1>
           {featuredBlog &&
-            <div className="mb-5">
+            <div className="mb-10">
               <FeaturedBlog
                 title={featuredBlog.title}
                 date={new Intl.DateTimeFormat('en-US').format(new Date(featuredBlog.createdAt))}
@@ -50,7 +53,6 @@ export default async function Home() {
                 />
             </div>
           }
-          
         </div>
 
         {blogs && 
@@ -58,6 +60,7 @@ export default async function Home() {
             blogs={blogs}
             page={page}
             limit={limit}
+            categories={categories.length ? categories.map(item => { return { id: item.slug, label: item.name } }) : null}
             totalPages={totalpages}
             />
         }

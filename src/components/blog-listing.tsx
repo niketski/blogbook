@@ -5,12 +5,14 @@ import { Button } from "@/components/ui/button";
 import { BlogResult } from "@/app/(admin)/admin/blog/_components/blog-table";
 import { LoaderCircle } from "lucide-react";
 import SkeletonBlogCard from "./skeleton/skeleton-blog-card";
+import FilterTabs from "./filter-tabs";
 
 interface BlogListingProps {
     page: number,
     limit: number,
     totalPages: number,
     blogs: BlogResult[] | null,
+    categories: { id: string, label: string }[] | null
 }
 
 export default function BlogListing(props : BlogListingProps) {
@@ -19,6 +21,8 @@ export default function BlogListing(props : BlogListingProps) {
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(props.page);
     const [totalPages, setTotalPages] = useState(props.totalPages ? props.totalPages : 0);
+    const [categories] = useState(props.categories ? props.categories : []);
+    const [currentCategory, setCurrentCategory] = useState<string>('');
     const limit = props.limit ? props.limit : 4;
     const defaultImage = 'https://res.cloudinary.com/dndtvwfvg/image/upload/v1738577422/blogbook/download_iszr5d.jpg';
     
@@ -77,6 +81,11 @@ export default function BlogListing(props : BlogListingProps) {
 
     };
 
+    const handleTabChange = (id: string) => {
+        console.log(id);
+        setCurrentCategory(id);
+    };
+
     const SkeletonBlogList = () => {
         return (
             <div className="mx-auto xl:max-w-[1170px] lg:max-w-[950px]">
@@ -107,9 +116,14 @@ export default function BlogListing(props : BlogListingProps) {
     }, [page]);
 
     return (
-        <div>
-           
-            
+        <div> 
+            <div className="custom-container mb-10">
+                <FilterTabs
+                    activeTab={currentCategory}
+                    filters={categories}
+                    handleTabClick={handleTabChange}
+                    />
+            </div>
             {/* Blog List */}
             {!blogs.length && loading ? <SkeletonBlogList/> : (
                 <div className="mx-auto xl:max-w-[1170px] lg:max-w-[950px]">
