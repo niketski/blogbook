@@ -1,8 +1,6 @@
-import { NextApiRequest } from "next";
 import { NextResponse, NextRequest } from "next/server";
 import { PipelineStage } from "mongoose";
 import BlogModel from "@/models/blog-model";
-import dbConnect from "@/lib/db-connect";
 import { BlogResult } from "@/app/(admin)/admin/blog/_components/blog-table";
 
 export interface BlogGetResponse {
@@ -18,8 +16,6 @@ export async function GET(request: NextRequest): Promise<NextResponse<BlogGetRes
     const limit = limitParam ? parseInt(limitParam) :  5;
     const page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1;
     const skip = searchParams.get('skip') ? parseInt(searchParams.get('skip') as string) : (page - 1) * limit;
-    console.log(skip);
-    const url = request.url;
     const query: { [key: string]: string | object } = {};
 
     try {
