@@ -1,4 +1,5 @@
 'use client';
+
 import { useState, useEffect } from "react";
 import BlogCard from "@/components/blog-card";
 import { Button } from "@/components/ui/button";
@@ -16,7 +17,7 @@ interface BlogListingProps {
 }
 
 export default function BlogListing(props : BlogListingProps) {
-    const [featuredBlog, setFeaturedBlog] = useState<BlogResult | null>(null);
+    const [initialLoad, setInitialLoad] = useState(true);
     const [blogs, setBlogs] = useState<BlogResult[]>(props.blogs ? props.blogs : []);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(props.page);
@@ -26,17 +27,16 @@ export default function BlogListing(props : BlogListingProps) {
     const limit = props.limit ? props.limit : 4;
     const defaultImage = 'https://res.cloudinary.com/dndtvwfvg/image/upload/v1738577422/blogbook/download_iszr5d.jpg';
     
-    const fetchBlogs = async () => {
-
+    const fetchBlogs = async (category: string = '') => {
+        
         setLoading(true);
-
+        
         const skip = (page - 1) * limit;
-        const response = await fetch(`/api/blogs?limit=${limit}&page=${page}&skip=${skip}`, {
+        const response = await fetch(`/api/blogs?limit=${limit}&page=${page}&skip=${skip}&category=${category}`, {
             cache: 'no-store',
         });
-
         const data = await response.json();
-
+  
         try {
 
             if(!response.ok) {
@@ -46,20 +46,20 @@ export default function BlogListing(props : BlogListingProps) {
             const blogResult = data.data as BlogResult[];
             const metaData = data.metaData as { page: number, pages: number, total: number };
 
-            if(page === 1) {
-
-                setFeaturedBlog(blogResult[0]);
-                setBlogs(blogResult.slice(1, limit));
-
-            } else {
+            if(page > 1) {
 
                 setBlogs(prevBlogs => [...prevBlogs, ...blogResult]);
 
+            } else {
+
+                setBlogs(blogResult);
+
             }
-
+            
             setLoading(false);
-            setPage(metaData.page)
-
+            setPage(metaData.page);
+            setTotalPages(metaData.pages);
+            
             if(totalPages === 0) {
                 setTotalPages(metaData.pages);
             }
@@ -82,8 +82,8 @@ export default function BlogListing(props : BlogListingProps) {
     };
 
     const handleTabChange = (id: string) => {
-        console.log(id);
         setCurrentCategory(id);
+        setPage(1);
     };
 
     const SkeletonBlogList = () => {
@@ -107,17 +107,25 @@ export default function BlogListing(props : BlogListingProps) {
         );
     };
 
+    
+
     useEffect(() => {
-        
-        if(page > 1) {
-            fetchBlogs();   
+
+        if(initialLoad) {
+            
+            setInitialLoad(false);
+            
+            return;
         }
 
-    }, [page]);
+        fetchBlogs(currentCategory);
+        
+
+    }, [page, currentCategory]);
 
     return (
         <div> 
-            <div className="custom-container mb-10">
+            <div className="custom-container mb-8">
                 <FilterTabs
                     activeTab={currentCategory}
                     filters={categories}
@@ -137,7 +145,7 @@ export default function BlogListing(props : BlogListingProps) {
                                         category={blog.categoryData.length ? blog.categoryData[0].name : 'Uncategorized'}
                                         imageUrl={blog.featuredImage ? blog.featuredImage.url : defaultImage}
                                         link={`/${blog.slug}`}
-                                        excerpt={featuredBlog?.excerpt}/>
+                                        excerpt={blog?.excerpt}/>
                                 </div>
                             )
                         })}

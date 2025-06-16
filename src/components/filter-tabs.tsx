@@ -21,7 +21,7 @@ export default function FilterTabs({ activeTab, filters, handleTabClick } : Filt
             {filters.map((item) => {
                 return (
                     <Button
-                        className="mr-3"
+                        className="mr-3 mb-3"
                         key={item.id}
                         variant={`${item.id === activeTab ? 'default' : 'outline'}`}
                         onClick={() => { handleTabClick(item.id) }}>
