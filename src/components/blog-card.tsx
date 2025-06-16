@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 interface BlogCardProps {
     title: string;
@@ -25,7 +26,13 @@ export default function BlogCard({
           <div className="w-full">
             <Link href={link} className="block  relative">
               <canvas width="549" height="300" className="w-full"></canvas>
-              <img src={imageUrl} alt={title} className="absolute top-0 left-0 w-full h-full object-cover object-center grayscale transition duration-300 ease-in-out hover:grayscale-0"/>
+              <Image
+                src={imageUrl}
+                alt={title}
+                width="549" 
+                height="300"
+                className="absolute top-0 left-0 w-full h-full object-cover object-center grayscale transition duration-300 ease-in-out hover:grayscale-0"
+                />
             </Link>
           </div>
           <div className="w-full p-6 lg:p-10">

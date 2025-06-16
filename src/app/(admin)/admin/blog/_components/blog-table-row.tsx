@@ -83,7 +83,7 @@ export default function BlogTableRow({
                             <Link href={`/${slug}`} className="cursor-pointer" target="_blank">View</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <Link href={`/admin/blog/${id}`} className="cursor-pointer">Edit</Link>
+                            <Link href={`/admin/blog/${slug}`} className="cursor-pointer">Edit</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                             <Link href="#" className="cursor-pointer" onClick={(e) => { e.preventDefault(); setIsDeleteModalActive(true)  }}>Delete</Link>

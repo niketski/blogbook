@@ -1,32 +1,42 @@
 'use client';
+
 import { useState, useEffect } from "react";
-import FeaturedBlog from "@/components/featured-blog";
 import BlogCard from "@/components/blog-card";
 import { Button } from "@/components/ui/button";
 import { BlogResult } from "@/app/(admin)/admin/blog/_components/blog-table";
 import { LoaderCircle } from "lucide-react";
-import SkeletonFeaturedBlog from "./skeleton/skeleton-featured-blog";
 import SkeletonBlogCard from "./skeleton/skeleton-blog-card";
+import FilterTabs from "./filter-tabs";
 
-export default function BlogListing() {
-    const [featuredBlog, setFeaturedBlog] = useState<BlogResult | null>(null);
-    const [blogs, setBlogs] = useState<BlogResult[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(0);
-    const limit = page === 1 ? 5 : 4;
+interface BlogListingProps {
+    page: number,
+    limit: number,
+    totalPages: number,
+    blogs: BlogResult[] | null,
+    categories: { id: string, label: string }[] | null
+}
+
+export default function BlogListing(props : BlogListingProps) {
+    const [initialLoad, setInitialLoad] = useState(true);
+    const [blogs, setBlogs] = useState<BlogResult[]>(props.blogs ? props.blogs : []);
+    const [loading, setLoading] = useState(false);
+    const [page, setPage] = useState(props.page);
+    const [totalPages, setTotalPages] = useState(props.totalPages ? props.totalPages : 0);
+    const [categories] = useState(props.categories ? props.categories : []);
+    const [currentCategory, setCurrentCategory] = useState<string>('');
+    const limit = props.limit ? props.limit : 4;
     const defaultImage = 'https://res.cloudinary.com/dndtvwfvg/image/upload/v1738577422/blogbook/download_iszr5d.jpg';
     
-    const fetchBlogs = async () => {
-
+    const fetchBlogs = async (category: string = '') => {
+        
         setLoading(true);
-
-        const skip = page === 1 ? (page - 1) * limit : 5 + ((page - 2) * 4);
-        const response = await fetch(`/api/blogs?limit=${limit}&page=${page}&skip=${skip}`, {
+        
+        const skip = (page - 1) * limit;
+        const response = await fetch(`/api/blogs?limit=${limit}&page=${page}&skip=${skip}&category=${category}`, {
             cache: 'no-store',
         });
         const data = await response.json();
-
+  
         try {
 
             if(!response.ok) {
@@ -36,20 +46,20 @@ export default function BlogListing() {
             const blogResult = data.data as BlogResult[];
             const metaData = data.metaData as { page: number, pages: number, total: number };
 
-            if(page === 1) {
-
-                setFeaturedBlog(blogResult[0]);
-                setBlogs(blogResult.slice(1, limit));
-
-            } else {
+            if(page > 1) {
 
                 setBlogs(prevBlogs => [...prevBlogs, ...blogResult]);
 
+            } else {
+
+                setBlogs(blogResult);
+
             }
-
+            
             setLoading(false);
-            setPage(metaData.page)
-
+            setPage(metaData.page);
+            setTotalPages(metaData.pages);
+            
             if(totalPages === 0) {
                 setTotalPages(metaData.pages);
             }
@@ -69,6 +79,11 @@ export default function BlogListing() {
 
         setPage(prevPage => prevPage + 1);
 
+    };
+
+    const handleTabChange = (id: string) => {
+        setCurrentCategory(id);
+        setPage(1);
     };
 
     const SkeletonBlogList = () => {
@@ -92,50 +107,45 @@ export default function BlogListing() {
         );
     };
 
+    
+
     useEffect(() => {
 
-        fetchBlogs();   
+        if(initialLoad) {
+            
+            setInitialLoad(false);
+            
+            return;
+        }
 
-    }, [page]);
+        fetchBlogs(currentCategory);
+        
+
+    }, [page, currentCategory]);
 
     return (
-        <div>
-            {/* Featured Blog */}
-            {(!featuredBlog && loading) ? 
-
-                <div className="mb-5 lg:mb-10 mx-auto max-w-[475px] lg:max-w-[1640px]">
-                    <SkeletonFeaturedBlog/>
-                </div> : 
-                
-                featuredBlog ? 
-                    (
-                        <div className="mb-5 lg:mb-10 mx-auto max-w-[475px] lg:max-w-[1640px]">
-                            <FeaturedBlog
-                                title={featuredBlog.title}
-                                date={new Intl.DateTimeFormat('en-US').format(new Date(featuredBlog.createdAt))}
-                                category={featuredBlog.categoryData[0] ? featuredBlog.categoryData[0].name : 'Uncategorized'}
-                                imageUrl={featuredBlog.featuredImage ? featuredBlog.featuredImage.url : defaultImage}
-                                link={`/${featuredBlog.slug}`}
-                                excerpt={featuredBlog.excerpt}/>
-                        </div>
-                    ) : null
-                }
-            
-
+        <div> 
+            <div className="custom-container mb-8">
+                <FilterTabs
+                    activeTab={currentCategory}
+                    filters={categories}
+                    handleTabClick={handleTabChange}
+                    />
+            </div>
             {/* Blog List */}
             {!blogs.length && loading ? <SkeletonBlogList/> : (
                 <div className="mx-auto xl:max-w-[1170px] lg:max-w-[950px]">
-                    <div className="lg:flex md:flex-wrap">
-                        {blogs.map(blog => {
+                    <div className="lg:flex md:flex-wrap md:-mx-[8px]">
+                        {blogs.map((blog, index) => {
                             return (
-                                <div key={blog._id as string} className="lg:w-1/2 pb-5 lg:p-2 max-w-[475px] mx-auto lg:max-w-full lg:mx-0">
+                                <div key={index.toString()} className="lg:w-1/2 pb-5 lg:p-2 max-w-[475px] mx-auto lg:max-w-full lg:mx-0">
                                     <BlogCard
                                         title={blog.title}
                                         date={new Intl.DateTimeFormat('en-US').format(new Date(blog.createdAt))}
                                         category={blog.categoryData.length ? blog.categoryData[0].name : 'Uncategorized'}
                                         imageUrl={blog.featuredImage ? blog.featuredImage.url : defaultImage}
                                         link={`/${blog.slug}`}
-                                        excerpt={featuredBlog?.excerpt}/>
+                                        excerpt={blog?.excerpt}/>
                                 </div>
                             )
                         })}
