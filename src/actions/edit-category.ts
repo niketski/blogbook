@@ -3,6 +3,8 @@
 import CategoryModel from '@/models/category-model';
 import z from 'zod';
 import { revalidatePath } from 'next/cache';
+import mongoose from 'mongoose';
+import dbConnect from '@/lib/db-connect';
 
 interface EditCategoryFormState {
     status: 'error' | 'success' | 'idle',
@@ -21,6 +23,8 @@ interface EditCategoryFormState {
 export default async function editCategory(prevState: EditCategoryFormState, formData: FormData): Promise<EditCategoryFormState> {
 
     try {
+
+        await dbConnect();
 
         const name = formData.get('name') as string;
         const slug = formData.get('slug') as string;
@@ -72,7 +76,7 @@ export default async function editCategory(prevState: EditCategoryFormState, for
             errors: {}
         }
 
-    } catch(error: any) {
+    } catch(error: unknown) {
 
         const name: string = formData.get('name') as string;
         const slug: string = formData.get('slug') as string;
@@ -83,32 +87,33 @@ export default async function editCategory(prevState: EditCategoryFormState, for
                 slug,
             },
             errors: {
-                _form: 'The category either name or slug already exist, please use unique name or slug.',
+                _form: 'Something went wrong.',
             },
             message: 'There\'s error sending data.'
         };
 
-        // duplicate slug or name validation error
-        if(error.code === 11000) {
+        if(error instanceof mongoose.mongo.MongoServerError) {
+            // duplicate slug or name validation error
+            if(error.code === 11000) {
 
-            return {
-                ...responseError, 
-                errors: {
-                    _form: 'The category either name or slug already exist, please use unique name or slug.'
+                return {
+                    ...responseError, 
+                    errors: {
+                        _form: 'The category either name or slug already exist, please use unique name or slug.'
+                    }
                 }
             }
         }
 
-        return {
-            status: 'error',
-            values: {
-                name,
-                slug,
-            },
-            errors: {
-                _form: error.message,
-            },
-            message: 'There\'s error sending data.'
+        if(error instanceof Error) {
+
+            return {
+                ...responseError,
+                message: error.message
+            }
         }
+        
+
+        return responseError;
     }
 }

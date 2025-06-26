@@ -3,6 +3,7 @@
 import z from 'zod';
 import UserModel from '@/models/user-model';
 import bcrypt from 'bcryptjs';
+import dbConnect from '@/lib/db-connect';
 
 export interface registerState {
     status: 'success' | 'error' | 'idle',
@@ -36,6 +37,8 @@ export default async function register(prevState: registerState, formData: FormD
     const confirmPassword = formData.get('confirmPassword') as string;
         
     try {
+
+        await dbConnect();
 
         const formSchema = z.object({
             name: z.string().trim().min(1, { message: 'Name is required' }).min(3, { message: 'Name must be atleast 3 characters'}),

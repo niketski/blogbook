@@ -36,7 +36,7 @@ export default function EditCategoryForm({ category } : EditCategoryFormProps) {
             });
         }
 
-    }, [formState.status])
+    }, [formState.status, formState.message, toast])
 
     return (
         <form action={formAction}>

@@ -7,7 +7,7 @@ interface SessionContainerProps {
     session: Session | null
 }
 
-export default async function SessionContainer({ children, session } : SessionContainerProps) {
+export default async function SessionContainer({ children } : SessionContainerProps) {
     const authSession = await auth();
 
     console.log(authSession);

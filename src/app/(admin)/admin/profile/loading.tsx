@@ -1,4 +1,3 @@
-import { Skeleton } from "@/components/ui/skeleton";
 import SkeletonProfileCard from "@/components/skeleton/skeleton-profile-card";
 
 export default function ProfilePageLoading() {

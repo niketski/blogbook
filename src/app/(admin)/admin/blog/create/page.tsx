@@ -1,8 +1,11 @@
 import AdminCreateBlogForm from "@/components/admin/admin-create-blog-form";
+import dbConnect from "@/lib/db-connect";
 import CategoryModel, { ICategory } from "@/models/category-model";
 import TagModel from "@/models/tag-model";
 
 export default async function CreateBlogPage() {
+    await dbConnect();
+    
     const categories: null | ICategory[] = await CategoryModel.find({});
     const tags = await TagModel.find({});
 

@@ -1,5 +1,6 @@
 'use server'
 
+import dbConnect from "@/lib/db-connect";
 import CategoryModel from "@/models/category-model"
 import { revalidatePath } from "next/cache";
 
@@ -7,6 +8,8 @@ export default async function deleteCategory(id: string){
 
     try {
 
+        await dbConnect();
+        
         // delete category
         await CategoryModel.findByIdAndDelete(id);
 
@@ -15,11 +18,18 @@ export default async function deleteCategory(id: string){
 
         return true;
 
-    } catch(error: any) {
+    } catch(error: unknown) {
 
+        if(error instanceof Error) {
 
+            return {
+                message: error.message
+            }
+
+        }
+        
         return {
-            message: error.message
+            message: 'Something went wrong.'
         }
 
     }

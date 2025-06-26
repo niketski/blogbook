@@ -2,8 +2,11 @@ import BlogListing from "@/components/blog-listing";
 import { BlogResult } from "../(admin)/admin/blog/_components/blog-table";
 import FeaturedBlog from "@/components/featured-blog";
 import CategoryModel, { ICategory } from "@/models/category-model";
+import dbConnect from "@/lib/db-connect";
 
 export default async function Home() {
+  await dbConnect();
+  
   const page = 1;
   const limit = 4;
   const skip = (page - 1) * limit;

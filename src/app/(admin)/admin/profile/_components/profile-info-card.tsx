@@ -7,8 +7,11 @@ import {
     CardTitle
 } from '@/components/ui/card';
 import UserModel from "@/models/user-model";
+import dbConnect from "@/lib/db-connect";
 
 export default async function ProfileInfoCard() {
+    await dbConnect();
+    
     const session = await auth();
     const userId = session && session.user ? session.user.id : null;
     const user = await UserModel.findById({ _id: userId });
