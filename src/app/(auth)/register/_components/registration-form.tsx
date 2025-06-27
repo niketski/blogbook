@@ -44,7 +44,7 @@ export default function RegistrationForm() {
             }, 2000)
         }
 
-   }, [status, formState.message, toast]);
+   }, [status, formState.message, toast, router]);
    
     return (
         <form action={formAction}>

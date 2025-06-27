@@ -159,7 +159,7 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
         
         console.log('render featured image')
 
-    }, [currentFeaturedImageUrl]);
+    }, [currentFeaturedImageUrl, currentBlog.featuredImage, formState.values.featuredImageUrl]);
 
     useEffect(() => {
         
