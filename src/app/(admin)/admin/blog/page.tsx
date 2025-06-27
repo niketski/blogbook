@@ -13,14 +13,15 @@ import { Suspense } from "react";
 import BlogPagination from "./_components/blog-pagination";
 import { BlogGetResponse } from "@/app/api/blogs/route";
 import SkeletonTable from "@/components/skeleton/skeleton-table";
+import dbConnect from "@/lib/db-connect";
 
 interface BlogsPageProps {
-    searchParams: {
-        [key: string] : string | undefined
-    }
+    searchParams: Promise<{[key: string] : string | undefined}>
 }
 
 export default async function BlogsPage({ searchParams } : BlogsPageProps) {
+    await dbConnect();
+    
     const search = await searchParams;
     const queryString = new URLSearchParams(search as Record<string, string>).toString();
     const categories = await CategoryModel.find<ICategory>({});

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Plus, Ellipsis } from "lucide-react";
+import { Plus } from "lucide-react";
 import CreateTagForm from "./_components/create-tag-form";
 import TagModel from "@/models/tag-model";
 import TagTableRow from "./_components/tag-table-row";
@@ -16,14 +16,16 @@ import {
 import {
     Table,
     TableBody,
-    TableCell,
     TableHead,
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import dbConnect from "@/lib/db-connect";
 
 
 export default async function BlogTagPage() {
+    await dbConnect();
+    
     const tags = await TagModel.find({});
 
     return (

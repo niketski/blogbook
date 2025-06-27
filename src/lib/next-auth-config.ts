@@ -2,6 +2,7 @@ import UserModel, { IUser } from "@/models/user-model";
 import { NextAuthConfig } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from 'bcryptjs';
+import dbConnect from "./db-connect";
 
 const nextAuthConfig: NextAuthConfig = {
     providers: [
@@ -11,6 +12,7 @@ const nextAuthConfig: NextAuthConfig = {
                 password: { label: 'Password',  type: 'password' }
             },
             async authorize(credentials) {
+                await dbConnect();
                 console.log('authorize');
 
                 const result = await UserModel.find<IUser>({ username: credentials?.username });
@@ -64,7 +66,8 @@ const nextAuthConfig: NextAuthConfig = {
 
             return session;
         }
-    }
+    },
+    trustHost: true
 };
 
 export default nextAuthConfig;

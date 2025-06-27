@@ -30,7 +30,7 @@ export default function CreateTagForm() {
             });
         }
 
-    }, [formState.status]);
+    }, [formState.status, formState.message, toast]);
 
     return (
         <form action={formAction}>

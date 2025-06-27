@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import BlogCard from "@/components/blog-card";
 import { Button } from "@/components/ui/button";
 import { BlogResult } from "@/app/(admin)/admin/blog/_components/blog-table";
@@ -27,7 +27,7 @@ export default function BlogListing(props : BlogListingProps) {
     const limit = props.limit ? props.limit : 4;
     const defaultImage = 'https://res.cloudinary.com/dndtvwfvg/image/upload/v1738577422/blogbook/download_iszr5d.jpg';
     
-    const fetchBlogs = async (category: string = '') => {
+    const fetchBlogs = useCallback(async (category: string = '') => {
         
         setLoading(true);
         
@@ -73,7 +73,7 @@ export default function BlogListing(props : BlogListingProps) {
 
         setLoading(false);
         
-    };
+    }, [limit, page, totalPages]);
 
     const handleLoadMore = () => {
 
@@ -121,7 +121,7 @@ export default function BlogListing(props : BlogListingProps) {
         fetchBlogs(currentCategory);
         
 
-    }, [page, currentCategory]);
+    }, [page, currentCategory, initialLoad, fetchBlogs]);
 
     return (
         <div> 
@@ -145,7 +145,8 @@ export default function BlogListing(props : BlogListingProps) {
                                         category={blog.categoryData.length ? blog.categoryData[0].name : 'Uncategorized'}
                                         imageUrl={blog.featuredImage ? blog.featuredImage.url : defaultImage}
                                         link={`/${blog.slug}`}
-                                        excerpt={blog?.excerpt}/>
+                                        excerpt={blog?.excerpt}
+                                        className="h-full"/>
                                 </div>
                             )
                         })}

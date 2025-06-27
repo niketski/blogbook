@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev -p 8000",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 8000",
     "lint": "next lint"
   },
   "dependencies": {
@@ -39,12 +39,12 @@
     "react-dom": "19.0.0-rc-02c0e824-20241028",
     "react-hook-form": "^7.53.2",
     "react-quill-new": "^3.4.6",
-    "tailwind-merge": "^2.5.4",
+    "tailwind-merge": "^2.5.4", 
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^20.19.1",
     "@types/quill": "^2.0.14",
     "@types/react": "^18",
     "@types/react-dom": "^18",

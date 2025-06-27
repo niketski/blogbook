@@ -3,6 +3,8 @@
 import z from 'zod';
 import TagModel from '@/models/tag-model';
 import { revalidatePath } from 'next/cache';
+import mongoose from 'mongoose';
+import dbConnect from '@/lib/db-connect';
 
 interface CreateTagFormState {
     message: string,
@@ -21,6 +23,8 @@ interface CreateTagFormState {
 export default async function createTag(prevState: CreateTagFormState, formData: FormData ): Promise<CreateTagFormState> {
 
     try {
+
+        await dbConnect();
 
         const name: string = formData.get('name') as string;
         const slug: string = formData.get('slug') as string;
@@ -71,7 +75,7 @@ export default async function createTag(prevState: CreateTagFormState, formData:
             errors: {}
         }
 
-    } catch(error: any) {
+    } catch(error: unknown) {
 
         const name: string = formData.get('name') as string;
         const slug: string = formData.get('slug') as string;
@@ -82,32 +86,41 @@ export default async function createTag(prevState: CreateTagFormState, formData:
                 slug,
             },
             errors: {
-                _form: error.message,
+                _form: error instanceof Error ? error.message : 'Something went wrong.',
             },
             message: 'There\'s error sending data.'
         };
 
-        // duplicate slug or name validation error
-        if(error.code === 11000) {
+        if(error instanceof mongoose.mongo.MongoServerError) {
+            // duplicate slug or name validation error
+            if(error.code === 11000) {
 
-            return {
-                ...responseError, 
-                errors: {
-                    _form: 'The tag either name or slug already exist, please use unique name or slug.'
+                return {
+                    ...responseError, 
+                    errors: {
+                        _form: 'The tag either name or slug already exist, please use unique name or slug.'
+                    }
                 }
             }
         }
 
-        return {
-            status: 'error',
-            values: {
-                name,
-                slug,
-            },
-            errors: {
-                _form: error.message,
-            },
-            message: 'There\'s error sending data.'
+        if(error instanceof Error) {
+
+             return {
+                status: 'error',
+                values: {
+                    name,
+                    slug,
+                },
+                errors: {
+                    _form: error.message,
+                },
+                message: 'There\'s error sending data.'
+            }
+
         }
+        
+
+        return responseError;
     }
 }

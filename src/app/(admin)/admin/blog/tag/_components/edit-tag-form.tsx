@@ -36,7 +36,7 @@ export default function EditTagForm({ tag } : EditTagFormProps) {
             });
         }
 
-    }, [formState.status])
+    }, [formState.status, toast, formState.message])
 
     return (
         <form action={formAction}>

@@ -1,6 +1,9 @@
+import dbConnect from "@/lib/db-connect";
 import CategoryModel from "@/models/category-model"
 
-export async function GET(request: Request, response: Response) {
+export async function GET() {
+  await dbConnect();
+  
   const categories = await CategoryModel.find({});
 
   return Response.json(categories, {
