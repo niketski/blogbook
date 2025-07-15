@@ -99,7 +99,6 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
             const reader = new FileReader();
 
             reader.onload = () => {
-                
                 setImagePreview(reader.result as string);
             }
 
@@ -122,7 +121,8 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
             const reader = new FileReader;
 
             reader.onloadend = () => {
-               
+                
+                console.log('read image url', reader.result as string)
                 setImagePreview(reader.result as string);
 
             };
@@ -147,8 +147,7 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
             const imageUrl = formState.values.featuredImageUrl ? formState.values.featuredImageUrl : currentBlog.featuredImage.url;
            
             readImageUrl(imageUrl);
-
-        }
+        } 
         
         // initialize base url for slug
         if(window.location.origin) {
@@ -157,7 +156,7 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
 
         }
 
-    }, [currentFeaturedImageUrl, currentBlog.featuredImage, formState.values.featuredImageUrl]);
+    }, [currentFeaturedImageUrl]);
 
     useEffect(() => {
         

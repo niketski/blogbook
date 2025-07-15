@@ -104,8 +104,6 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
             });
         }
 
-        console.log(formState);
-
     }, [formState.status, formState, toast]);
 
     useEffect(() => {
