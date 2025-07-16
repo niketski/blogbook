@@ -24,7 +24,6 @@ export async function generateStaticParams() {
     await dbConnect();
     
     const blogs = await BlogModel.find<IBlog>({});
-    console.log(blogs.map(blog => ({ slug: blog.slug })));
     
     return blogs.map(blog => ({ slug: blog.slug }));
 }
@@ -53,7 +52,7 @@ export default async function BlogDetailsPage({ params }: BlogDetailsPageProps) 
     const category = currentBlog?.category ? await CategoryModel.findById<ICategory>(currentBlog.category) : null;
     const date = currentBlog ? new Intl.DateTimeFormat('en-us').format(new Date(currentBlog.createdAt.toString())) : null;
     const tags: ITag[] = currentBlog?.tags ? await TagModel.find<ITag>({_id: currentBlog.tags}) : [];
-    
+
     return (
         <div className="py-[80px]">
             <div className="px-5">

@@ -22,6 +22,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, LoaderCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { isExceededFileLimit } from "@/lib/utils";
+import RichTextEditor from "../rich-text-editor";
 
 interface AdminCreateBlogFormProps {
     categoriesOptions: IComboBoxOption[],
@@ -32,6 +33,7 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
     const { toast } = useToast();
     const [imagePreview, setImagePreview] = useState<string>('');
     const inputRef = useRef<HTMLInputElement | null>(null);
+    const [blogContent, setBlogContent] = useState('');
     const [isFileExceeded, setIsFileExceeded] = useState(false);
     const [formState, formAction, isPending] = useActionState(createBlog, {
         message: '',
@@ -92,6 +94,7 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
         if(formState.status === 'success') {
 
             setImagePreview('');
+            setBlogContent('');
 
             setTags([]);
 
@@ -100,8 +103,6 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
                 description: 'The blog has been created successfully!'
             });
         }
-
-        console.log(formState);
 
     }, [formState.status, formState, toast]);
 
@@ -124,9 +125,7 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
 
     }, [imagePreview]);
 
-    // console.log(categoriesOptions);
-    // console.log(tagsOptions);
-    console.log(tags);
+    
 
     return (
         <div>
@@ -174,15 +173,16 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
                             }
                         </div>
 
-                        <div className="mb-10"> 
-                            <Label
-                                htmlFor="content"
+                        <div className="mb-10">
+                            <Label htmlFor="content"
                                 className="mb-2 block font-bold">Content</Label>
-                            <Textarea
-                                id="content"
+                            <RichTextEditor
+                                value={blogContent}
+                                onChange={setBlogContent}/>
+                            <input
+                                type="hidden"
                                 name="content"
-                                className={`min-h-[300px] ${formState.errors.content ? 'border-red-500' : ''}`}
-                                defaultValue={formState.values.content}/>
+                                value={blogContent}/>
 
                             {formState.errors.content &&
                                 <p className="text-sm text-red-500 mt-4">{formState.errors.content[0]}</p>
@@ -298,7 +298,8 @@ export default function AdminCreateBlogForm({ categoriesOptions, tagsOptions } :
 
                                     <Input
                                         type="hidden"
-                                        name="featuredImage"/>
+                                        name="featuredImage"
+                                        defaultValue={imagePreview}/>
 
                                     {
                                         !imagePreview &&

@@ -145,7 +145,8 @@ export default function BlogListing(props : BlogListingProps) {
                                         category={blog.categoryData.length ? blog.categoryData[0].name : 'Uncategorized'}
                                         imageUrl={blog.featuredImage ? blog.featuredImage.url : defaultImage}
                                         link={`/${blog.slug}`}
-                                        excerpt={blog?.excerpt}/>
+                                        excerpt={blog?.excerpt}
+                                        className="h-full"/>
                                 </div>
                             )
                         })}

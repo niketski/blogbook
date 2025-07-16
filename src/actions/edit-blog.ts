@@ -77,7 +77,6 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
             metaDescription: z.string().optional()
         });
 
-
         const result = formSchema.safeParse({
             title,
             excerpt,
@@ -95,8 +94,6 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
         if(!result.success) {
 
             const currentErrors = result.error.flatten().fieldErrors;
-
-            console.log(currentErrors);
             
             return {
                 status: 'error',

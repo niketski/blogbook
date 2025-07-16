@@ -53,6 +53,7 @@ export default async function Home() {
                 category={featuredBlog.categoryData.length ? featuredBlog.categoryData[0].name : 'Uncategorized'}
                 excerpt={featuredBlog.excerpt}
                 link={`${featuredBlog.slug}`}
+                imageUrl={featuredBlog.featuredImage.url}
                 />
             </div>
           }

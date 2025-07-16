@@ -140,7 +140,7 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
                                 currentPage={response.metaData?.page}/>
                 }
 
-                {response.data?.length === 0 && <NoBlogResult/>}
+                {response.data?.length === 0 && <div className="pt-7"><NoBlogResult/></div>}
             </div>
         </div>
     );

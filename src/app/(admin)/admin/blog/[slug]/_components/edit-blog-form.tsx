@@ -99,7 +99,6 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
             const reader = new FileReader();
 
             reader.onload = () => {
-                
                 setImagePreview(reader.result as string);
             }
 
@@ -122,7 +121,8 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
             const reader = new FileReader;
 
             reader.onloadend = () => {
-               
+                
+                console.log('read image url', reader.result as string)
                 setImagePreview(reader.result as string);
 
             };
@@ -145,10 +145,9 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
         if(currentBlog.featuredImage && Object.keys(currentBlog.featuredImage).length) {
 
             const imageUrl = formState.values.featuredImageUrl ? formState.values.featuredImageUrl : currentBlog.featuredImage.url;
-            console.log('image to use: ', imageUrl);
+           
             readImageUrl(imageUrl);
-
-        }
+        } 
         
         // initialize base url for slug
         if(window.location.origin) {
@@ -156,17 +155,15 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
             setOriginUrl(window.location.origin);
 
         }
-        
-        console.log('render featured image')
 
-    }, [currentFeaturedImageUrl, currentBlog.featuredImage, formState.values.featuredImageUrl]);
+    }, [currentFeaturedImageUrl]);
 
     useEffect(() => {
         
         // clear some of the data after successfull submition
         if(formState.status === 'success') {
 
-            setTags([]);
+            // setTags([]);
 
             toast({
                 title: 'Success',
@@ -176,8 +173,6 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
 
     }, [formState.status, toast]);
 
-    console.log(imagePreview);
-    console.log(formState.values);
     return (
         <div>
             <form action={formAction}>
@@ -248,21 +243,6 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
                                 <p className="text-sm text-red-500 mt-4">{formState.errors.excerpt[0]}</p>
                             }
                         </div>
-
-                        {/* <div className="mb-10 hidden"> 
-                            <Label
-                                htmlFor="content"
-                                className="mb-2 block font-bold">Content</Label>
-                            <Textarea
-                                id="content"
-                                name="content"
-                                className={`min-h-[300px] ${formState.errors.content ? 'border-red-500' : ''}`}
-                                defaultValue={formState.values.content}/>
-
-                            {formState.errors.content &&
-                                <p className="text-sm text-red-500 mt-4">{formState.errors.content[0]}</p>
-                            }
-                        </div> */}
 
                         <div className="mb-10">
                             <Label
