@@ -57,10 +57,8 @@ async function login(prevState: LoginFormState, formData: FormData): Promise<Log
         // set up connection to the database
         await dbConnect();
 
-        console.log('connecting..')
-
         const existingUser = await UserModel.findOne<IUser>({ username });
-        console.log(existingUser);
+
         // check if there's existing user on the given username
         if(!existingUser) {
             return {

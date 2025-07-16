@@ -6,7 +6,12 @@ import { cookies } from 'next/headers';
 const secretKey = process.env.SESSION_SECRET;
 const encodeKey = new TextEncoder().encode(secretKey);
 
-export async function encrypt(payload: JWTPayload) {
+interface AppSessionPayload extends JWTPayload {
+    userId: string,
+    expiresAt: Date
+}
+
+export async function encrypt(payload: AppSessionPayload) {
     
     return new SignJWT(payload)
             .setProtectedHeader({ alg: 'HS256' })
@@ -19,7 +24,7 @@ export async function decrypt(session: string | undefined = '') {
 
     try {
 
-        const { payload } = await jwtVerify(session, encodeKey, {
+        const { payload } = await jwtVerify<AppSessionPayload>(session, encodeKey, {
             algorithms: ['HS256']
         });
 

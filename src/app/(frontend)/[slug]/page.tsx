@@ -9,7 +9,8 @@ import CategoryModel from "@/models/category-model";
 import { ICategory } from "@/models/category-model";
 import RichTextContent from "@/components/rich-text-content";
 import dbConnect from "@/lib/db-connect";
-import type { Metadata } from 'next'
+import type { Metadata } from 'next';
+import { notFound } from "next/navigation";
 
 interface BlogDetailsPageProps {
     params: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -46,8 +47,14 @@ export default async function BlogDetailsPage({ params }: BlogDetailsPageProps) 
     await dbConnect();
     const { slug } = await params;
     const defaultImage = 'https://res.cloudinary.com/dndtvwfvg/image/upload/v1738577422/blogbook/download_iszr5d.jpg';
-    const result = await BlogModel.find<IBlog>({ slug });
-    const currentBlog = result[0];
+    const currentBlog = await BlogModel.findOne<IBlog>({ slug });
+
+    if(!currentBlog) {
+        
+        notFound();
+
+    }
+
     const featuredImage = currentBlog?.featuredImage ? currentBlog.featuredImage.url : defaultImage;
     const category = currentBlog?.category ? await CategoryModel.findById<ICategory>(currentBlog.category) : null;
     const date = currentBlog ? new Intl.DateTimeFormat('en-us').format(new Date(currentBlog.createdAt.toString())) : null;
