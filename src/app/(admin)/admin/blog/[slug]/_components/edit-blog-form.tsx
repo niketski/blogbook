@@ -122,7 +122,6 @@ export default function EditBlogForm({ blog, categoriesOption, tagsOptions } : E
 
             reader.onloadend = () => {
                 
-                console.log('read image url', reader.result as string)
                 setImagePreview(reader.result as string);
 
             };

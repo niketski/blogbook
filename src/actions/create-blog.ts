@@ -70,17 +70,6 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
         const metaTitle = formData.get('metaTitle') as string;
         const metaDescription = formData.get('metaDescription') as string;
 
-        console.log('featured img: ', featuredImage);
-        console.log({title,
-            excerpt,
-            content,
-            status,
-            category,
-            tags,
-            featuredImage,
-            metaTitle,
-            metaDescription});
-
         const formSchema = z.object({
             title: z.string().min(1, { message: 'Title is required.' }),
             excerpt: z.string().optional(),
@@ -104,8 +93,6 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
             metaTitle,
             metaDescription
         });
-
-        console.log('res: ', result );
 
         if(!result.success) {
 
@@ -180,8 +167,6 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
         const newBlog = new BlogModel(blogDocumentData);
 
         await newBlog.save();
-
-        console.log(newBlog);
 
         return {
             status: 'success',

@@ -9,6 +9,8 @@ export default async function middleware(req: NextRequest) {
     const cookie = (await cookies()).get('session')?.value;
     const session = await decrypt(cookie);
 
+    console.log('running middleware.');
+
     // redirect to logine page if there's no session
     if(!session) {
 

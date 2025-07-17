@@ -17,7 +17,7 @@ export default async function Home() {
 
   try {
     
-    const response = await fetch(`http://localhost:8000/api/blogs?limit=${limit}&page=${page}&skip=${skip}`, {
+    const response = await fetch(`http://localhost:8000/api/blogs?limit=${limit}&page=${page}&skip=${skip}&status=published`, {
         cache: 'no-store',
     });
 

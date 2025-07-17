@@ -27,7 +27,6 @@ async function login(prevState: LoginFormState, formData: FormData): Promise<Log
     const password = formData.get('password') as string;
 
     try {
-        console.log('prev state: ', prevState);
 
         const formSchema = z.object({
             username: z.string().min(3, { message: 'Username is required.' }),

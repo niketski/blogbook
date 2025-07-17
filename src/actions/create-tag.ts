@@ -61,8 +61,6 @@ export default async function createTag(prevState: CreateTagFormState, formData:
 
         await newTag.save();
 
-        console.log(newTag);
-
         revalidatePath('/admin/blog/tag');
 
         return {
