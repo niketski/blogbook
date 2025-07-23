@@ -13,7 +13,6 @@ const nextAuthConfig: NextAuthConfig = {
             },
             async authorize(credentials) {
                 await dbConnect();
-                console.log('authorize');
 
                 const result = await UserModel.find<IUser>({ username: credentials?.username });
                 const existingUser = result[0];

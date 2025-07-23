@@ -61,8 +61,6 @@ export default async function createCategory(prevState: CreateCategoryFormState,
 
         await newCategory.save();
 
-        console.log(newCategory);
-
         revalidatePath('/admin/blog/category');
 
         return {

@@ -32,7 +32,7 @@ export default function BlogListing(props : BlogListingProps) {
         setLoading(true);
         
         const skip = (page - 1) * limit;
-        const response = await fetch(`/api/blogs?limit=${limit}&page=${page}&skip=${skip}&category=${category}`, {
+        const response = await fetch(`/api/blogs?limit=${limit}&page=${page}&skip=${skip}&category=${category}&status=published`, {
             cache: 'no-store',
         });
         const data = await response.json();
