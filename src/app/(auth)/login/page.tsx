@@ -4,7 +4,7 @@ import { decrypt } from "@/lib/session";
 import { redirect } from "next/navigation";
 
 type PageProps = {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export default async function LoginPage({ searchParams }: PageProps) {
