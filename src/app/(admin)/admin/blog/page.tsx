@@ -74,7 +74,7 @@ export default async function BlogsPage({ searchParams } : BlogsPageProps) {
         tagField
     ];
 
-    const result = await fetch(`http://localhost:8000/api/blogs?${queryString}`);
+    const result = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/blogs?${queryString}`);
     const response: BlogGetResponse = await result.json();
 
     return (
