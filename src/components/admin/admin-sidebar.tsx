@@ -15,7 +15,6 @@ import {
     SidebarFooter,
     
 } from "../ui/sidebar";
-import { Button } from "../ui/button";
 import { Collapsible, CollapsibleTrigger } from "@radix-ui/react-collapsible";
 import { Newspaper, User, ChevronRight, LayoutDashboard, LogOut } from "lucide-react";
 import Link from "next/link";
@@ -23,8 +22,10 @@ import { CollapsibleContent } from "../ui/collapsible";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { isMatchedUrlPath } from "@/lib/utils";
-import { signOut } from "next-auth/react";
 import { LucideIcon } from "lucide-react";
+import { logOut } from "@/actions/auth";
+import { useRouter } from "next/navigation";
+import { Button } from "../ui/button";
 
 const initialMenu: Menudata[] = [
     {
@@ -77,6 +78,7 @@ interface Menudata {
     items?: Menudata[]
 }
 export default function AdminSidebar() {
+    const router = useRouter();
     const path = usePathname();
     const [menus, setMenus] = useState<Menudata[]>(initialMenu);
 
@@ -106,8 +108,10 @@ export default function AdminSidebar() {
 
     }, [path]);
 
-    const handleSignOut = () => {
-        signOut({ redirectTo: '/login' });
+    const handleSignOut = async () => {
+        console.log('sign out')
+        await logOut();
+        router.push('/login');
     };
 
     return (
@@ -189,9 +193,9 @@ export default function AdminSidebar() {
         <SidebarFooter>
             <div>
                 <Button 
-                    onClick={handleSignOut}
-                    variant="ghost">
-                    <LogOut/> Signout
+                    variant="ghost"
+                    onClick={handleSignOut}>
+                        <LogOut/> Signout
                 </Button>
             </div>
         </SidebarFooter>

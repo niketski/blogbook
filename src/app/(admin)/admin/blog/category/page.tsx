@@ -1,13 +1,12 @@
 import CategoryModel from "@/models/category-model";
 import { Button } from "@/components/ui/button";
-import { Plus, Ellipsis } from "lucide-react";
+import { Plus } from "lucide-react";
 import AdminCreateCategoryForm from "@/components/admin/admin-create-category-form";
 import CategoryTableRow from "./_components/category-table-row";
 
 import {
     Table,
     TableBody,
-    TableCell,
     TableHead,
     TableHeader,
     TableRow,
@@ -21,10 +20,13 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import dbConnect from "@/lib/db-connect";
 
   
 
 export default async function BlogCategoryPage() {
+    await dbConnect();
+    
     const categories = await CategoryModel.find({});
 
     return (

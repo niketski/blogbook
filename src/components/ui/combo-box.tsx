@@ -9,7 +9,6 @@ import {
 import {
     Command,
     CommandEmpty,
-    CommandGroup,
     CommandInput,
     CommandItem,
     CommandList,
@@ -17,7 +16,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 
-import { ChangeEvent, ChangeEventHandler, Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 

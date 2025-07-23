@@ -10,6 +10,7 @@ interface BlogCardProps {
     excerpt?: string;
     imageUrl: string;
     link: string;
+    className?: string;
 }
 
 export default function BlogCard({ 
@@ -18,11 +19,12 @@ export default function BlogCard({
     category,
     excerpt,
     imageUrl,
-    link
+    link,
+    className
  }: BlogCardProps) {
     
     return (
-        <div className="border-gray-300 border rounded-lg overflow-hidden">
+        <div className={`border-gray-300 border rounded-lg overflow-hidden ${className}`}>
           <div className="w-full">
             <Link href={link} className="block  relative">
               <canvas width="549" height="300" className="w-full"></canvas>

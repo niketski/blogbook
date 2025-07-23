@@ -2,8 +2,11 @@ import BlogListing from "@/components/blog-listing";
 import { BlogResult } from "../(admin)/admin/blog/_components/blog-table";
 import FeaturedBlog from "@/components/featured-blog";
 import CategoryModel, { ICategory } from "@/models/category-model";
+import dbConnect from "@/lib/db-connect";
 
 export default async function Home() {
+  await dbConnect();
+  
   const page = 1;
   const limit = 4;
   const skip = (page - 1) * limit;
@@ -14,7 +17,7 @@ export default async function Home() {
 
   try {
     
-    const response = await fetch(`http://localhost:8000/api/blogs?limit=${limit}&page=${page}&skip=${skip}`, {
+    const response = await fetch(`http://localhost:8000/api/blogs?limit=${limit}&page=${page}&skip=${skip}&status=published`, {
         cache: 'no-store',
     });
 
@@ -50,6 +53,7 @@ export default async function Home() {
                 category={featuredBlog.categoryData.length ? featuredBlog.categoryData[0].name : 'Uncategorized'}
                 excerpt={featuredBlog.excerpt}
                 link={`${featuredBlog.slug}`}
+                imageUrl={featuredBlog.featuredImage.url}
                 />
             </div>
           }

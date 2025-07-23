@@ -13,7 +13,10 @@ export default function RecentBlog({ title, date, link = '#' } : RecentBlog) {
                 <h3 className="font-bold text-xl mb-1">{title}</h3>
                 <p className="text-gray-500 text-sm">{date}</p>
             </div>
-            <Link href={link} className="bg-primary text-white rounded-lg px-5 py-2 leading-none hover:bg-gray-800">View</Link>
+            <Link 
+                href={link} 
+                target="_blank"
+                className="bg-primary text-white rounded-lg px-5 py-2 leading-none hover:bg-gray-800">View</Link>
         </article>
     );
 }

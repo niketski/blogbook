@@ -8,6 +8,7 @@ import {
     CardHeader,
     CardTitle,
   } from "@/components/ui/card"
+import dbConnect from "@/lib/db-connect";
 
 interface StatItem {
     title: string,
@@ -16,6 +17,8 @@ interface StatItem {
 }
 
 export default async function StatsContainer() {
+    await dbConnect();
+    
     const blogs = BlogModel.find<IBlog[]>({});
     const categories = CategoryModel.find<ICategory[]>({});
     const tags = TagModel.find<ITag[]>();

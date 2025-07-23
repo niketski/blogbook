@@ -6,13 +6,13 @@ import { ICategory } from "@/models/category-model";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import mongoose from "mongoose";
+import dbConnect from "@/lib/db-connect";
+import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
 interface BlogDetailsPageProps {
-    params: {
-        slug: string
-    }
+    params: Promise<{ slug: string }>
 }
 
 interface CurrentBlogResult {
@@ -33,9 +33,15 @@ interface CurrentBlogResult {
 }
 
 export default async function BlogDetailsPage({ params } : BlogDetailsPageProps) {
+    await dbConnect();
     const currentParams = await params;
     const slug = currentParams.slug;
     const currentBlog = await BlogModel.findOne<CurrentBlogResult>({ slug: slug }).populate(['tags', 'category']);
+
+    if(!currentBlog) {
+        notFound();
+    }
+
     const categories: null | ICategory[] = await CategoryModel.find({});
     const tags = await TagModel.find({});
     let blogData: BlogDetails | null = null;

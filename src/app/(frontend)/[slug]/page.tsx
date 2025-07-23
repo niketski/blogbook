@@ -8,35 +8,58 @@ import TagModel from "@/models/tag-model";
 import CategoryModel from "@/models/category-model";
 import { ICategory } from "@/models/category-model";
 import RichTextContent from "@/components/rich-text-content";
+import dbConnect from "@/lib/db-connect";
+import type { Metadata } from 'next';
+import { notFound } from "next/navigation";
 
 interface BlogDetailsPageProps {
-    params: {
-        slug: string
-    }
+    params: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+interface generateMetaDataProps {
+    params: Promise<{slug: string}>,
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export async function generateStaticParams() {
+    await dbConnect();
+    
+    const blogs = await BlogModel.find<IBlog>({});
+    
+    return blogs.map(blog => ({ slug: blog.slug }));
 }
 
 // blog meta data
-export async function generateMetadata({ params }: BlogDetailsPageProps) {
+export async function generateMetadata({ params }: generateMetaDataProps): Promise<Metadata>  {
+    await dbConnect();
+
     const { slug } = await params;
     const result = await BlogModel.find<IBlog>({ slug });
     const blog = result[0];
 
     return {
-        title: blog?.metaTitle || blog?.title,
+        title: 'Blogbook | ' + blog?.metaTitle || blog?.title,
         description: blog?.metaDescription || blog?.content
     }
 }
 
 export default async function BlogDetailsPage({ params }: BlogDetailsPageProps) {
+    await dbConnect();
     const { slug } = await params;
     const defaultImage = 'https://res.cloudinary.com/dndtvwfvg/image/upload/v1738577422/blogbook/download_iszr5d.jpg';
-    const result = await BlogModel.find<IBlog>({ slug });
-    const currentBlog = result[0];
+    const currentBlog = await BlogModel.findOne<IBlog>({ slug });
+
+    if(!currentBlog) {
+        
+        notFound();
+
+    }
+
     const featuredImage = currentBlog?.featuredImage ? currentBlog.featuredImage.url : defaultImage;
     const category = currentBlog?.category ? await CategoryModel.findById<ICategory>(currentBlog.category) : null;
     const date = currentBlog ? new Intl.DateTimeFormat('en-us').format(new Date(currentBlog.createdAt.toString())) : null;
     const tags: ITag[] = currentBlog?.tags ? await TagModel.find<ITag>({_id: currentBlog.tags}) : [];
-    
+
     return (
         <div className="py-[80px]">
             <div className="px-5">
@@ -55,7 +78,7 @@ export default async function BlogDetailsPage({ params }: BlogDetailsPageProps) 
                     <div className="mb-5">
                         <span className="border border-primary rounded-full font-bold px-3 py-2 bg-primary text-white text-sm">{category ? category.name : 'Uncategorized'}</span>
                     </div>
-                    <h1 className="font-bold text-7xl mb-5">{currentBlog?.title}</h1>
+                    <h1 className="font-bold text-3xl md:text-4xl lg:text-7xl mb-5">{currentBlog?.title}</h1>
                     <span className="mb-10 block text-lg">{date}</span>
                     <div className="blog-content">
                         {currentBlog?.content && (

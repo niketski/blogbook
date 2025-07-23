@@ -1,14 +1,15 @@
 import LoginForm from "./_components/login-form";
-import { auth } from "@/lib/auth";
+import { cookies } from "next/headers";
+import { decrypt } from "@/lib/session";
 import { redirect } from "next/navigation";
 
 export default async function LoginPage() {
 
-    const session = await auth();
-    
-    console.log('login session: ', session);
-    
-    if(session) { 
+    const cookie = (await cookies()).get('session')?.value;
+    const session = await decrypt(cookie);
+
+    if(session) {
+
         redirect('/admin');
     }
 

@@ -7,6 +7,7 @@ import BlogModel, { IBlog } from '@/models/blog-model';
 import { BlogDocumentData } from './create-blog';
 import mongoose, { UpdateQuery } from 'mongoose';
 import { UploadApiResponse } from 'cloudinary';
+import dbConnect from '@/lib/db-connect';
 
 export interface EditBlogFormState {
     status: 'error' | 'success' | 'idle',
@@ -44,8 +45,10 @@ export interface EditBlogFormState {
 
 export default async function EditBlog(prevState: EditBlogFormState, formData: FormData): Promise<EditBlogFormState> {
 
-    try {
+    try {   
 
+        await dbConnect();
+        
         const title = formData.get('title') as string;
         const excerpt = formData.get('excerpt') as string;
         const slug = formData.get('slug') as string;
@@ -74,7 +77,6 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
             metaDescription: z.string().optional()
         });
 
-
         const result = formSchema.safeParse({
             title,
             excerpt,
@@ -92,8 +94,6 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
         if(!result.success) {
 
             const currentErrors = result.error.flatten().fieldErrors;
-
-            console.log(currentErrors);
             
             return {
                 status: 'error',
@@ -214,7 +214,7 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
             errors: {}
         }
 
-    } catch(error) {
+    } catch(error: unknown) {
         
         const title = formData.get('title') as string;
         const slug = formData.get('slug') as string;
@@ -228,10 +228,7 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
         const featuredImage = formData.get('featuredImage') as string;
         const featuredImageUrl = formData.get('featuredImageUrl') as string;
         const featuredImageId = formData.get('featuredImageId') as string;
-
-        console.log(error);
-        
-        return  {
+        const errorResponse: EditBlogFormState = {
             status: 'error',
             message: 'There\'s error sending data.',
             values: {
@@ -252,6 +249,16 @@ export default async function EditBlog(prevState: EditBlogFormState, formData: F
                 _form: 'Something went wrong.'
             },
         }
+
+        if(error instanceof Error) {
+
+            return  {
+                ...errorResponse,
+                message: error.message
+            }
+        }
+
+        return  errorResponse;
     }
 
 

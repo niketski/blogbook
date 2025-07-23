@@ -8,6 +8,7 @@ import CategoryModel, { ICategory } from '@/models/category-model';
 import TagModel, { ITag } from '@/models/tag-model';
 import { UploadApiResponse } from 'cloudinary';
 import mongoose from 'mongoose';
+import dbConnect from '@/lib/db-connect';
 
 interface CreateBlogFormState {
     message: string,
@@ -54,7 +55,8 @@ export interface BlogDocumentData {
 }
 
 export default async function createBlog(prevState: CreateBlogFormState, formData: FormData): Promise<CreateBlogFormState> {
-
+    await dbConnect();
+    
     try {
 
         // form data
@@ -166,8 +168,6 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
 
         await newBlog.save();
 
-        console.log(newBlog);
-
         return {
             status: 'success',
             values: {
@@ -185,7 +185,7 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
             errors: {}
         }
 
-    } catch(error) {
+    } catch(error: unknown) {
 
         console.log(error);
 
@@ -198,9 +198,7 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
         const featuredImage = formData.get('featuredImage') as string;
         const metaTitle = formData.get('metaTitle') as string;
         const metaDescription = formData.get('metaDescription') as string;
-        
-
-        return {
+        const responseError: CreateBlogFormState = {
             status: 'error',
             values: {
                 title,
@@ -216,8 +214,10 @@ export default async function createBlog(prevState: CreateBlogFormState, formDat
             errors: {
                 _form: 'Something went wrong.'
             },
-            message: 'There\'s error sending data.'
-        }
+            message: error instanceof Error ? error.message : 'There\'s error sending data.'
+        };
+
+        return responseError;
 
     }
 

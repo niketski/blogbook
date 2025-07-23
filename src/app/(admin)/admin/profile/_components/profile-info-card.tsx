@@ -1,4 +1,3 @@
-import { auth } from "@/lib/auth";
 import {
     Card,
     CardContent,
@@ -7,11 +6,18 @@ import {
     CardTitle
 } from '@/components/ui/card';
 import UserModel from "@/models/user-model";
+import dbConnect from "@/lib/db-connect";
+import { cookies } from "next/headers";
+import { decrypt } from "@/lib/session";
 
 export default async function ProfileInfoCard() {
-    const session = await auth();
-    const userId = session && session.user ? session.user.id : null;
-    const user = await UserModel.findById({ _id: userId });
+    const session = (await cookies()).get('session')?.value;
+    const userSession = await decrypt(session);
+
+    // connect to our database
+    await dbConnect();
+
+    const user = await UserModel.findById({ _id: userSession?.userId });
 
     return (
          <Card>

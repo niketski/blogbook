@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Ellipsis } from "lucide-react";
 import { useState } from "react";
-import DeleteBlog from "@/actions/delete-blog";
+import { deleteBlog } from "@/actions/delete-blog";
 import { useToast } from "@/hooks/use-toast";
 
 interface BlogTableRowProps {
@@ -47,7 +47,7 @@ export default function BlogTableRow({
 
     const handleDeleteBlog = async () => {
 
-        await DeleteBlog(id);
+        await deleteBlog(id);
 
         setIsDeleteModalActive(false);
 
@@ -83,7 +83,7 @@ export default function BlogTableRow({
                             <Link href={`/${slug}`} className="cursor-pointer" target="_blank">View</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <Link href={`/admin/blog/${id}`} className="cursor-pointer">Edit</Link>
+                            <Link href={`/admin/blog/${slug}`} className="cursor-pointer">Edit</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                             <Link href="#" className="cursor-pointer" onClick={(e) => { e.preventDefault(); setIsDeleteModalActive(true)  }}>Delete</Link>

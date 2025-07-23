@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { PipelineStage } from "mongoose";
 import BlogModel from "@/models/blog-model";
 import { BlogResult } from "@/app/(admin)/admin/blog/_components/blog-table";
+import dbConnect from "@/lib/db-connect";
 
 export interface BlogGetResponse {
     data?: BlogResult[],
@@ -11,6 +12,8 @@ export interface BlogGetResponse {
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse<BlogGetResponse>> {
+    await dbConnect();
+    
     const searchParams = request.nextUrl.searchParams;
     const limitParam = searchParams.get('limit');
     const limit = limitParam ? parseInt(limitParam) :  5;

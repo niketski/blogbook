@@ -30,7 +30,7 @@ export default function AdminCreateCategoryForm() {
             });
         }
 
-    }, [formState.status]);
+    }, [formState.status, formState.message, toast]);
 
     return (
         <form action={formAction}>
