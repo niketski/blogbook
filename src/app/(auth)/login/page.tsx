@@ -3,12 +3,17 @@ import { cookies } from "next/headers";
 import { decrypt } from "@/lib/session";
 import { redirect } from "next/navigation";
 
-export default async function LoginPage() {
+type PageProps = {
+  searchParams?: { [key: string]: string | string[] | undefined };
+};
+
+export default async function LoginPage({ searchParams }: PageProps) {
 
     const cookie = (await cookies()).get('session')?.value;
     const session = await decrypt(cookie);
+    const redirectUrl = (await searchParams)?.redirect;
 
-    if(session) {
+    if(session && !redirectUrl) {
 
         redirect('/admin');
     }
