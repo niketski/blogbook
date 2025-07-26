@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import BlogListing from "@/components/blog-listing";
 import { BlogResult } from "../(admin)/admin/blog/_components/blog-table";
 import FeaturedBlog from "@/components/featured-blog";
@@ -17,7 +19,7 @@ export default async function Home() {
 
   try {
     
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/blogs?limit=${limit}&page=${page}&skip=${skip}&status=published`, {
+    const response = await fetch(`/api/blogs?limit=${limit}&page=${page}&skip=${skip}&status=published`, {
         cache: 'no-store',
     });
 
