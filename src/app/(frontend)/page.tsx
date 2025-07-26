@@ -19,10 +19,12 @@ export default async function Home() {
 
   try {
     
-    const response = await fetch(`/api/blogs?limit=${limit}&page=${page}&skip=${skip}&status=published`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/blogs?limit=${limit}&page=${page}&skip=${skip}&status=published`, {
         cache: 'no-store',
     });
 
+    console.log('response ', response);
+    
     if(!response.ok) {
 
       throw Error('Error fetching data.');
@@ -30,7 +32,7 @@ export default async function Home() {
     }
 
     const result = await response.json();
-
+    console.log('result: ', result);
     blogs = result.data;
     totalpages = result.metaData.pages;
     featuredBlog = result.data[0]
